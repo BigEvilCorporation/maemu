@@ -1,0 +1,47 @@
+SubDir bigevilcorp mastersysemu ;
+
+ion_renderer_opts ?= fixed ;
+ion_audio_engine ?= sdl2 ;
+ion_online_engine ?= none ;
+
+ApplyIonCompiler mastersysemu ;
+ApplyIonDefines mastersysemu ;
+ApplyIonIncludes mastersysemu ;
+ApplyIonCore mastersysemu ;
+ApplyIonIo mastersysemu ;
+ApplyIonInput mastersysemu ;
+ApplyIonAudio mastersysemu ;
+ApplyIonRenderer mastersysemu : opengl ;
+ApplyIonGui mastersysemu ;
+ApplyIonGameKit mastersysemu ;
+
+SubInclude bigevilcorp mastersysemu emu : emu ;
+C.LinkLibraries mastersysemu : emu ;
+
+local SRC =
+	debugger/WindowConsole.cpp
+	debugger/WindowConsole.h
+	debugger/WindowRegs.cpp
+	debugger/WindowRegs.h
+	debugger/WindowMemory.cpp
+	debugger/WindowMemory.h
+	states/StateEmu.cpp
+	states/StateEmu.h
+	MasterSysEmu.cpp
+	MasterSysEmu.h
+	main.cpp
+	;
+
+# No TTY console in release builds
+CONSOLE_OPTION = windows ;
+
+if ( debug in $(CONFIG) )
+{
+	CONSOLE_OPTION = console ;
+}
+
+C.IncludeDirectories mastersysemu : . ;
+
+AutoSourceGroup mastersysemu : $(SRC) ;
+C.RuntimeType mastersysemu : static ;
+C.Application mastersysemu : $(SRC) : $(CONSOLE_OPTION) ;
