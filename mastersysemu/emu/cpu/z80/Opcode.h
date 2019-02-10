@@ -5,6 +5,7 @@
 #include "../Flags.h"
 #include "../../../Bus.h"
 
+#include <string>
 #include <functional>
 
 #include <ion/core/Types.h>
@@ -26,7 +27,8 @@ namespace emu
 				u8 opcode;
 				u8 paramBytes;
 				OpcodeHandler handler;
-				const char* name;
+				std::string name;
+				std::string paramsFormat;
 			};
 		}
 	}

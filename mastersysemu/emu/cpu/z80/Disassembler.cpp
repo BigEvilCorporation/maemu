@@ -49,9 +49,32 @@ namespace emu
 					std::stringstream text;
 					text << SSTREAM_HEX4(instruction.address) << " " << instruction.opcode->name << " ";
 
-					for (int i = 0; i < instruction.opcode->paramBytes; i++)
+					int paramIdx = 0;
+					const std::string& format = instruction.opcode->paramsFormat;
+					for (int i = 0; i < format.size(); i++)
 					{
-						text << SSTREAM_HEX2(instruction.params[i]) << " ";
+						if (format[i] == '#')
+						{
+							//Constant param
+							text << "$";
+
+							if ((i + 1) < format.size() && format[i + 1] == '#')
+							{
+								//2-byte param, switch endianness
+								text << SSTREAM_HEX2(instruction.params[paramIdx+1]);
+								text << SSTREAM_HEX2(instruction.params[paramIdx]);
+								i += 2;
+							}
+							else
+							{
+								//1-byte param
+								text << SSTREAM_HEX2(instruction.params[paramIdx++]);
+							}
+						}
+						else
+						{
+							text << instruction.opcode->paramsFormat[i];
+						}
 					}
 
 					text << std::endl;
