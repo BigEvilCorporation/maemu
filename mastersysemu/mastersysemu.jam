@@ -21,6 +21,8 @@ C.LinkLibraries mastersysemu : emu ;
 local SRC =
 	debugger/WindowConsole.cpp
 	debugger/WindowConsole.h
+	debugger/WindowDisassembly.cpp
+	debugger/WindowDisassembly.h
 	debugger/WindowRegs.cpp
 	debugger/WindowRegs.h
 	debugger/WindowMemory.cpp

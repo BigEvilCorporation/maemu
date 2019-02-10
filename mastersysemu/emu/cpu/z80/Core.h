@@ -16,9 +16,11 @@ namespace emu
 			public:
 				Core(Bus& bus);
 
+				//Execution
 				void Reset();
 				void Step();
 
+				//Debugging
 				const Registers& GetRegisters() const;
 
 			private:

@@ -9,6 +9,8 @@ ApplyIonIo emu ;
 local SRC =
 	cpu/z80/Core.cpp
 	cpu/z80/Core.h
+	cpu/z80/Disassembler.cpp
+	cpu/z80/Disassembler.h
 	cpu/z80/Opcode.h
 	cpu/z80/Registers.h
 
@@ -21,6 +23,7 @@ local SRC =
 	cpu/z80/opcodes/ld.h
 	cpu/z80/opcodes/or.h
 	cpu/z80/opcodes/nop.h
+	cpu/z80/opcodes/prefix.h
 
 	memory/MemoryController.cpp
 	memory/MemoryController.h

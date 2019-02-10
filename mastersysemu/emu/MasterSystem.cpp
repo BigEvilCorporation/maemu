@@ -41,17 +41,17 @@ namespace emu
 
 		if (file.IsOpen())
 		{
-			u64 fileSize = file.GetSize();
+			m_romSize = (u16)file.GetSize();
 
 			//Load data
-			u8* rom = new u8[fileSize];
+			u8* rom = new u8[m_romSize];
 
-			if (file.Read(rom, fileSize) == fileSize)
+			if (file.Read(rom, m_romSize) == m_romSize)
 			{
 				//TODO: Pre-compile opcodes
 
 				//Write to ROM space
-				m_rom->Initialise(rom, (u16)fileSize);
+				m_rom->Initialise(rom, (u16)m_romSize);
 				success = true;
 			}
 
@@ -60,6 +60,11 @@ namespace emu
 		}
 		
 		return success;
+	}
+
+	void MasterSystem::Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly)
+	{
+		cpu::z80::disassembler::Disassemble(m_rom->GetMemory(), m_romSize, disassembly);
 	}
 
 	void MasterSystem::Reset()

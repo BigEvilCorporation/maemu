@@ -6,6 +6,7 @@
 
 #include "cpu/z80/Core.h"
 #include "cpu/z80/Registers.h"
+#include "cpu/z80/Disassembler.h"
 #include "memory/MemoryController.h"
 #include "memory/Storage.h"
 #include "ports/PortController.h"
@@ -26,6 +27,7 @@ namespace emu
 		void Update(float deltaTime);
 
 		//Debugging
+		void Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly);
 		const debug::SDSCConsole& GetConsole() const;
 		const cpu::z80::Registers& GetRegisters() const;
 		memory::Storage& GetRAM();
@@ -44,6 +46,7 @@ namespace emu
 		memory::Controller* m_memoryController;
 		memory::Storage* m_rom;
 		memory::Storage* m_ram;
+		u16 m_romSize;
 
 		//Ports
 		ports::Controller* m_portController;
