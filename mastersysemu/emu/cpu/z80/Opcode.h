@@ -3,7 +3,7 @@
 #include "Constants.h"
 #include "../Registers.h"
 #include "../Flags.h"
-#include "../../../Bus.h"
+#include "../Bus.h"
 
 #include <string>
 #include <functional>

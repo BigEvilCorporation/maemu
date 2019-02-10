@@ -4,7 +4,8 @@
 
 #include "Constants.h"
 
-#include "cpu/z80/Core.h"
+#include "cpu/z80/Z80.h"
+#include "cpu/z80/Bus.h"
 #include "cpu/z80/Registers.h"
 #include "cpu/z80/Disassembler.h"
 #include "memory/MemoryController.h"
@@ -40,7 +41,7 @@ namespace emu
 		cpu::z80::Core* m_Z80;
 
 		//Memory/peripheral bus
-		Bus* m_bus;
+		cpu::z80::Bus* m_bus;
 
 		//Memory
 		memory::Controller* m_memoryController;

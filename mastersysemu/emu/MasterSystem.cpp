@@ -23,8 +23,8 @@ namespace emu
 		//Create port controller
 		m_portController = new ports::Controller();
 
-		//Create the bus
-		m_bus = new Bus(*m_memoryController, *m_portController);
+		//Create the Z80 bus
+		m_bus = new cpu::z80::Bus(*m_memoryController, *m_portController);
 
 		//Create the CPU
 		m_Z80 = new cpu::z80::Core(*m_bus);
