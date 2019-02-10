@@ -11,10 +11,10 @@ namespace emu
 	{
 		namespace z80
 		{
-			class Core
+			class Z80
 			{
 			public:
-				Core(Bus& bus);
+				Z80(Bus& bus);
 
 				//Execution
 				void Reset();

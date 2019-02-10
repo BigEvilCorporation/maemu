@@ -8,8 +8,10 @@ ApplyIonIo emu ;
 
 local SRC =
 	cpu/z80/Bus.h
+	cpu/z80/Constants.h
 	cpu/z80/Disassembler.cpp
 	cpu/z80/Disassembler.h
+	cpu/z80/Flags.h
 	cpu/z80/Opcode.h
 	cpu/z80/Registers.h
 	cpu/z80/Z80.cpp
@@ -22,10 +24,14 @@ local SRC =
 	cpu/z80/opcodes/io.h
 	cpu/z80/opcodes/jp.h
 	cpu/z80/opcodes/ld.h
-	cpu/z80/opcodes/or.h
 	cpu/z80/opcodes/nop.h
+	cpu/z80/opcodes/or.h
 	cpu/z80/opcodes/prefix.h
 
+	cpu/vdp/Colour.h
+	cpu/vdp/Constants.h
+	cpu/vdp/Flags.h
+	cpu/vdp/Registers.h
 	cpu/vdp/VDP.cpp
 	cpu/vdp/VDP.h
 
@@ -39,7 +45,6 @@ local SRC =
 
 	debug/SDSCConsole.cpp
 	debug/SDSCConsole.h
-
 	
 	Constants.h
 	MasterSystem.cpp

@@ -9,20 +9,20 @@ namespace emu
 	{
 		namespace z80
 		{
-			Core::Core(Bus& bus)
+			Z80::Z80(Bus& bus)
 				: m_bus(bus)
 			{
 				Reset();
 			}
 
-			void Core::Reset()
+			void Z80::Reset()
 			{
 				m_regs.pc = 0x0000;
 				m_regs.sp = 0x0000;
 				m_regs.main.f = 0x00;
 			}
 
-			void Core::Step()
+			void Z80::Step()
 			{
 				//Read and decode next instruction
 				u8 opcodeIdx = m_bus.memoryController.ReadMemory(m_regs.pc++);
@@ -42,7 +42,7 @@ namespace emu
 				opcode.handler(opcode, params, m_regs, m_bus);
 			}
 
-			const Registers& Core::GetRegisters() const
+			const Registers& Z80::GetRegisters() const
 			{
 				return m_regs;
 			}

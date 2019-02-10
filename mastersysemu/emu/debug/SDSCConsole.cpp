@@ -16,7 +16,8 @@ namespace emu
 			m_cursorX = 0;
 			m_cursorY = 0;
 
-			portController.AddHandler(PORT_SDSC_CONTROL, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
+			//Connect ports
+			portController.AddHandler(PORT_SDSC_CTRL, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
 			portController.AddHandler(PORT_SDSC_DATA, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteData, this, std::placeholders::_1, std::placeholders::_2));
 
 			Clear();

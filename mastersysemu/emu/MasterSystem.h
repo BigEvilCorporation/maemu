@@ -8,6 +8,9 @@
 #include "cpu/z80/Bus.h"
 #include "cpu/z80/Registers.h"
 #include "cpu/z80/Disassembler.h"
+#include "cpu/vdp/VDP.h"
+#include "cpu/vdp/Bus.h"
+#include "cpu/vdp/Registers.h"
 #include "memory/MemoryController.h"
 #include "memory/Storage.h"
 #include "ports/PortController.h"
@@ -38,15 +41,21 @@ namespace emu
 		void BuildSystem();
 
 		//Processors
-		cpu::z80::Core* m_Z80;
+		cpu::z80::Z80* m_Z80;
+		cpu::vdp::VDP* m_VDP;
 
 		//Memory/peripheral bus
-		cpu::z80::Bus* m_bus;
+		cpu::z80::Bus* m_busZ80;
+		cpu::vdp::Bus* m_busVDP;
 
 		//Memory
-		memory::Controller* m_memoryController;
+		memory::Controller* m_memoryControllerZ80;
+		memory::Controller* m_memoryControllerVRAM;
+		memory::Controller* m_memoryControllerCRAM;
 		memory::Storage* m_rom;
 		memory::Storage* m_ram;
+		memory::Storage* m_vram;
+		memory::Storage* m_cram;
 		u16 m_romSize;
 
 		//Ports

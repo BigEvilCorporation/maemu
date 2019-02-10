@@ -15,19 +15,27 @@ namespace emu
 
 	void MasterSystem::BuildSystem()
 	{
-		//Create memory controller and storage arenas
-		m_memoryController = new memory::Controller();
-		m_rom = new memory::Storage(ADDR_ROM_START, ADDR_ROM_END, *m_memoryController);
-		m_ram = new memory::Storage(ADDR_RAM_START, ADDR_RAM_END, *m_memoryController);
+		//Create memory controllers and storage
+		m_memoryControllerZ80 = new memory::Controller();
+		m_memoryControllerVRAM = new memory::Controller();
+		m_memoryControllerCRAM = new memory::Controller();
+		m_rom = new memory::Storage(ADDR_ROM_START, ADDR_ROM_END, *m_memoryControllerZ80);
+		m_ram = new memory::Storage(ADDR_RAM_START, ADDR_RAM_END, *m_memoryControllerZ80);
+		m_vram = new memory::Storage(0, cpu::vdp::VDP_VRAM_SIZE, *m_memoryControllerVRAM);
+		m_cram = new memory::Storage(0, cpu::vdp::VDP_CRAM_SIZE, *m_memoryControllerCRAM);
 
 		//Create port controller
 		m_portController = new ports::Controller();
 
-		//Create the Z80 bus
-		m_bus = new cpu::z80::Bus(*m_memoryController, *m_portController);
+		//Create the buses
+		m_busZ80 = new cpu::z80::Bus(*m_memoryControllerZ80, *m_portController);
+		m_busVDP = new cpu::vdp::Bus(*m_memoryControllerVRAM, *m_memoryControllerCRAM, *m_portController);
 
 		//Create the CPU
-		m_Z80 = new cpu::z80::Core(*m_bus);
+		m_Z80 = new cpu::z80::Z80(*m_busZ80);
+
+		//Create the VDP
+		m_VDP = new cpu::vdp::VDP(*m_busVDP);
 
 		//Create peripherals
 		m_console = new debug::SDSCConsole(*m_portController);
@@ -71,8 +79,9 @@ namespace emu
 	{
 		//Reset CPUs
 		m_Z80->Reset();
+		m_VDP->Reset();
 
-		//Clear memory
+		//TODO: Clear memory
 	}
 
 	void MasterSystem::Update(float deltaTime)
