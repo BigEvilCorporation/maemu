@@ -93,8 +93,8 @@ namespace emu
 					//Write to internal buffer
 					m_readBuffer = value;
 
-					//Increment address
-					m_controlReg.word = ((m_controlReg.word + 1) & CTRL_VRAM_MASK);
+					//Increment address (wrap around VRAM, preserve command bits)
+					m_controlReg.word = (m_controlReg.word & CTRL_COMMAND_MASK) | ((m_controlReg.word + 1) & CTRL_VRAM_MASK);
 				}
 				else if ((m_controlReg.word & CTRL_COMMAND_MASK) == CTRL_CRAM_WRITE)
 				{
@@ -104,8 +104,8 @@ namespace emu
 					//Write to internal buffer
 					m_readBuffer = value;
 
-					//Increment address
-					m_controlReg.word = ((m_controlReg.word + 1) & CTRL_VRAM_MASK);
+					//Increment address (wrap around VRAM, preserve command bits)
+					m_controlReg.word = (m_controlReg.word & CTRL_COMMAND_MASK) | ((m_controlReg.word + 1) & CTRL_VRAM_MASK);
 				}
 				else
 				{
@@ -118,17 +118,66 @@ namespace emu
 
 			void VDP::DrawLine(u32* data, int line)
 			{
-				//Initialise with BG colour (from sprite palette)
+				//Get BG colour (from sprite palette)
 				u8 backdropIdx = m_regs[VDP_REG_7_BACKDROP_COLOUR] & 0xF;
 				u8 backdropColour = m_bus.memoryControllerCRAM.ReadMemory(VDP_PALETTE_OFFS_SPRITE + backdropIdx);
 				u32 backdropColourRGBA = ColourToRGB[backdropColour];
 
-				for (int i = 0; i < VDP_SCREEN_WIDTH; i++)
-				{
-					data[i] = backdropColourRGBA;
-				}
+				//BG plane
 
-				//TODO: BG plane
+				//Tile map address bits 13-11 are in bits 3-1 of register 2
+				u8 tileMapBaseAddrBits = (m_regs[VDP_REG_2_NAME_TABLE_ADDR] & VDP_MAP_REG_ADDR_MASK) >> VDP_MAP_REG_ADDR_SHIFT;
+
+				for (int x = 0; x < VDP_SCREEN_WIDTH; x++)
+				{
+					//Compute cell word address
+					CellEntryAddress cellAddr;
+					cellAddr.baseAddr = tileMapBaseAddrBits;
+					cellAddr.x = x / VDP_TILE_WIDTH;
+					cellAddr.y = line / VDP_TILE_HEIGHT;
+
+					//Read cell word
+					CellEntry cell;
+					cell.hi = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address);
+					cell.lo = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address + 1);
+
+					//Get tile address
+					u16 tileAddr = cell.tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
+
+					//Offset by current line (4 bytes per line, wrapping around 32 bytes per tile)
+					u16 offsetY = (line * 4) & 0x1F;
+
+					//Read and combine bits from each bitplane
+					u8 colourIdx = 0;
+					u8 bitplaneShift = 8 - (x & 0x7);
+
+					for (int i = 0; i < 4; i++)
+					{
+						//Read byte at x location
+						u8 bitplaneByte = m_bus.memoryControllerVRAM.ReadMemory(tileAddr + offsetY + i);
+
+						//Shift bitplane bit to LSB, back to top of nybble
+						colourIdx |= ((bitplaneByte >> bitplaneShift) & 1) << 4;
+
+						//Next bit
+						colourIdx >>= 1;
+					}
+
+					//Fetch color from palette
+					u16 colourAddr = cell.palette ? (colourIdx + VDP_PALETTE_OFFS_SPRITE) : colourIdx;
+					u8 colour = m_bus.memoryControllerCRAM.ReadMemory(colourAddr);
+
+					if (colour == 0)
+					{
+						//0 is transparent, write backdrop colour instead
+						data[x] = backdropColourRGBA;
+					}
+					else
+					{
+						//Write RGB
+						data[x] = ColourToRGB[colour];
+					}
+				}
 
 				//TODO: Sprite plane
 			}

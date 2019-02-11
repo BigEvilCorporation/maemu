@@ -23,6 +23,25 @@ namespace emu
 			static const int VDP_PALETTE_OFFS_BG = 0;
 			static const int VDP_PALETTE_OFFS_SPRITE = 16;
 
+			//Pattern table access
+			static const int VDP_MAP_REG_ADDR_MASK = 0xE;
+			static const int VDP_MAP_REG_ADDR_SHIFT = 0x1;
+			static const int VDP_MAP_WORD_Y_SHIFT = 0x6;
+			static const int VDP_MAP_WORD_X_SHIFT = 0x1;
+
+			//Background plane
+			static const int VDP_BG_PLANE_WIDTH_TILES = 32;
+			static const int VDP_BG_PLANE_HEIGHT_TILES = 28;
+
+			//Cell word
+			static const int VDP_CELL_MASK_PALETTE = 0x800;
+			static const int VDP_CELL_SHIFT_PALETTE = 0xB;
+
+			//Tiles
+			static const int VDP_TILE_WIDTH = 8;
+			static const int VDP_TILE_HEIGHT = 8;
+			static const int VDP_TILE_SIZE_BYTE = (VDP_TILE_WIDTH * VDP_TILE_HEIGHT) / 2;
+
 			//Colour conversion
 			static const int VDP_COLOUR_MASK_B = 0x30;
 			static const int VDP_COLOUR_MASK_G = 0x0C;
