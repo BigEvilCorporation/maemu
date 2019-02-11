@@ -11,68 +11,141 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				//Increment A
-				static u16 INC_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static const int REGISTER_DECODE_INCDEC_8_REG_SHIFT = 0x3;
+				static const int REGISTER_DECODE_INCDEC_16_REG_SHIFT = 0x4;
+
+				//Increment 8-bit register
+				static u16 INC_8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Increment A
-					regs.main.a++;
+					//Determine reg
+					u8* reg = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_INCDEC_8_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_8_A << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.a;
+						break;
+					case (REGISTER_DECODE_8_B << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.b;
+						break;
+					case (REGISTER_DECODE_8_C << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.c;
+						break;
+					case (REGISTER_DECODE_8_D << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.d;
+						break;
+					case (REGISTER_DECODE_8_E << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.e;
+						break;
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.h;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.l;
+						break;
+					}
+
+					//Increment reg
+					(*reg)++;
 
 					//Set flags
-					SetFlagsZCS(regs.main.a, regs.main.f);
+					SetFlagsZCS(*reg, regs.main.f);
 
 					return 0;
 				}
 
-				//Decrement A
-				static u16 DEC_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				//Decrement 8-bit register
+				static u16 DEC_8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Decrement A
-					regs.main.a--;
+					//Determine reg
+					u8* reg = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_INCDEC_8_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_8_A << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.a;
+						break;
+					case (REGISTER_DECODE_8_B << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.b;
+						break;
+					case (REGISTER_DECODE_8_C << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.c;
+						break;
+					case (REGISTER_DECODE_8_D << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.d;
+						break;
+					case (REGISTER_DECODE_8_E << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.e;
+						break;
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.h;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_INCDEC_8_REG_SHIFT):
+						reg = &regs.main.l;
+						break;
+					}
+
+					//Decrement reg
+					(*reg)--;
 
 					//Set flags
-					SetFlagsZCS(regs.main.a, regs.main.f);
+					SetFlagsZCS(*reg, regs.main.f);
 
 					return 0;
 				}
 
-				//Increment B
-				static u16 INC_B(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				//Increment 16-bit register
+				static u16 INC_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Increment B
-					regs.main.b++;
+					//Determine reg
+					u16* reg = nullptr;
 
-					//Set flags
-					SetFlagsZCS(regs.main.b, regs.main.f);
+					switch (opcode.opcode & (REGISTER_DECODE_16_MASK << REGISTER_DECODE_INCDEC_16_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_16_BC << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.main.bc;
+						break;
+					case (REGISTER_DECODE_16_DE << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.main.de;
+						break;
+					case (REGISTER_DECODE_16_HL << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.main.hl;
+						break;
+					case (REGISTER_DECODE_16_SP << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.sp;
+						break;
+					}
+
+					//Increment reg
+					(*reg)++;
 
 					return 0;
 				}
 
-				//Decrement B
-				static u16 DEC_B(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				//Decrement 16-bit register
+				static u16 DEC_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Decrement B
-					regs.main.b--;
+					//Determine reg
+					u16* reg = nullptr;
 
-					//Set flags
-					SetFlagsZCS(regs.main.b, regs.main.f);
+					switch (opcode.opcode & (REGISTER_DECODE_16_MASK << REGISTER_DECODE_INCDEC_16_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_16_BC << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.main.bc;
+						break;
+					case (REGISTER_DECODE_16_DE << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.main.de;
+						break;
+					case (REGISTER_DECODE_16_HL << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.main.hl;
+						break;
+					case (REGISTER_DECODE_16_SP << REGISTER_DECODE_INCDEC_16_REG_SHIFT):
+						reg = &regs.sp;
+						break;
+					}
 
-					return 0;
-				}
-
-				//Increment HL
-				static u16 INC_HL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Increment HL
-					regs.main.hl++;
-
-					return 0;
-				}
-
-				//Decrement HL
-				static u16 DEC_HL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Decrement HL
-					regs.main.b--;
+					//Decrement reg
+					(*reg)--;
 
 					return 0;
 				}

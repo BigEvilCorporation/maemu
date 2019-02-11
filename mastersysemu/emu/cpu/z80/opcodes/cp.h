@@ -11,11 +11,41 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				//Compare A with constant byte
-				static u16 CP(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static const int REGISTER_DECODE_CP_8_REG_SHIFT = 0x0;
+
+				//Compare A with 8-bit register
+				static u16 CP_A_r(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Compare A with byte in first param
-					u16 diff = (regs.main.a - params[0]);
+					//Determine reg
+					u8* reg = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_CP_8_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_8_A << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.a;
+						break;
+					case (REGISTER_DECODE_8_B << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.b;
+						break;
+					case (REGISTER_DECODE_8_C << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.c;
+						break;
+					case (REGISTER_DECODE_8_D << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.d;
+						break;
+					case (REGISTER_DECODE_8_E << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.e;
+						break;
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.h;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_CP_8_REG_SHIFT):
+						reg = &regs.main.l;
+						break;
+					}
+
+					//Compare A with reg
+					u16 diff = (regs.main.a - (*reg));
 
 					//Set flags
 					SetFlagsZCS(diff, regs.main.f);
@@ -23,77 +53,11 @@ namespace emu
 					return 0;
 				}
 
-				//Compare A with A - essentially a nop
+				//Compare A with 8-bit literal
 				static u16 CP_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					return 0;
-				}
-
-				//Compare A with B
-				static u16 CP_B(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Compare A with B
-					u16 diff = (regs.main.a - regs.main.b);
-
-					//Set flags
-					SetFlagsZCS(diff, regs.main.f);
-
-					return 0;
-				}
-
-				//Compare A with C
-				static u16 CP_C(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Compare A with C
-					u16 diff = (regs.main.a - regs.main.c);
-
-					//Set flags
-					SetFlagsZCS(diff, regs.main.f);
-
-					return 0;
-				}
-
-				//Compare A with D
-				static u16 CP_D(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Compare A with D
-					u16 diff = (regs.main.a - regs.main.d);
-
-					//Set flags
-					SetFlagsZCS(diff, regs.main.f);
-
-					return 0;
-				}
-
-				//Compare A with E
-				static u16 CP_E(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Compare A with E
-					u16 diff = (regs.main.a - regs.main.e);
-
-					//Set flags
-					SetFlagsZCS(diff, regs.main.f);
-
-					return 0;
-				}
-
-				//Compare A with H
-				static u16 CP_H(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Compare A with H
-					u16 diff = (regs.main.a - regs.main.h);
-
-					//Set flags
-					SetFlagsZCS(diff, regs.main.f);
-
-					return 0;
-				}
-
-				//Compare A with L
-				static u16 CP_L(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Compare A with L
-					u16 diff = (regs.main.a - regs.main.l);
+					//Compare A with param
+					u16 diff = (regs.main.a - params[0]);
 
 					//Set flags
 					SetFlagsZCS(diff, regs.main.f);

@@ -28,7 +28,7 @@ namespace emu
 		void Reset();
 
 		//Processing
-		void Update(float deltaTime);
+		void Update(int steps);
 
 		//Rendering
 		const std::vector<u32>& GetFramebuffer() const;

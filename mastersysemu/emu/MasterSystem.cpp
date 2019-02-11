@@ -88,10 +88,13 @@ namespace emu
 		//TODO: Clear memory
 	}
 
-	void MasterSystem::Update(float deltaTime)
+	void MasterSystem::Update(int steps)
 	{
 		//Tick CPU
-		m_Z80->Step();
+		for (int i = 0; i < steps; i++)
+		{
+			m_Z80->Step();
+		}
 
 		//TODO: Interrupt callbacks
 		for (int i = 0; i < cpu::vdp::VDP_SCANLINES_PAL; i++)

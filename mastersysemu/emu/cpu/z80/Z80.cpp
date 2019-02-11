@@ -17,9 +17,10 @@ namespace emu
 
 			void Z80::Reset()
 			{
+				//Guaranteed initial reg values - all others undefined
 				m_regs.pc = 0x0000;
-				m_regs.sp = 0x0000;
-				m_regs.main.f = 0x00;
+				m_regs.sp = 0xFFFF;
+				m_regs.main.af = 0xFFFF;
 			}
 
 			void Z80::Step()

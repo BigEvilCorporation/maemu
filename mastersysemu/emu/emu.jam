@@ -19,6 +19,7 @@ local SRC =
 
 	cpu/z80/opcodes/OpcodeTable.h
 	cpu/z80/opcodes/OpcodeTableDD.h
+	cpu/z80/opcodes/OpcodeTableED.h
 	cpu/z80/opcodes/cp.h
 	cpu/z80/opcodes/incdec.h
 	cpu/z80/opcodes/io.h

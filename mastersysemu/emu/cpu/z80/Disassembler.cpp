@@ -33,6 +33,11 @@ namespace emu
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
 						}
+						else if (instruction.opcode->handler == opcodes::Prefix_ED)
+						{
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
+						}
 
 						//Output params
 						for (int i = 0; i < instruction.opcode->paramBytes; i++)

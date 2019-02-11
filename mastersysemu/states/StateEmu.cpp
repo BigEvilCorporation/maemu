@@ -104,14 +104,15 @@ namespace app
 		if (m_debuggerState == DebuggerState::Run)
 		{
 			//Update machine
-			m_masterSystem.Update(deltaTime);
+			//TODO: Instruction clock
+			m_masterSystem.Update(10000);
 		}
 		else if (m_debuggerState == DebuggerState::Break)
 		{
 			//Step if F10
 			if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
 			{
-				m_masterSystem.Update(deltaTime);
+				m_masterSystem.Update(1);
 			}
 
 			//Run if F5
