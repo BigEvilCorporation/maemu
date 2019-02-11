@@ -1,16 +1,11 @@
-#include "WindowRegs.h"
+#include "WindowRegsZ80.h"
 
-#include <sstream>
-#include <iomanip>
-
-#define HEX2(val) std::hex << std::setfill('0') << std::setw(2) << std::uppercase << (int)val
-#define HEX4(val) std::hex << std::setfill('0') << std::setw(4) << std::uppercase << (int)val
-#define HEX8(val) std::hex << std::setfill('0') << std::setw(8) << std::uppercase << (int)val
+#include <ion/core/utils/STL.h>
 
 namespace debug
 {
-	WindowRegs::WindowRegs(ion::gui::GUI& gui, const emu::cpu::z80::Registers& regs, const ion::Vector2i& position, const ion::Vector2i& size)
-		: ion::gui::Window("Registers", position, size)
+	WindowRegsZ80::WindowRegsZ80(ion::gui::GUI& gui, const emu::cpu::z80::Registers& regs, const ion::Vector2i& position, const ion::Vector2i& size)
+		: ion::gui::Window("Z80 Registers", position, size)
 		, m_gui(gui)
 		, m_regs(regs)
 	{
@@ -36,21 +31,19 @@ namespace debug
 		AddWidget(m_textBoxes.r);
 	}
 
-	WindowRegs::~WindowRegs()
+	WindowRegsZ80::~WindowRegsZ80()
 	{
 
 	}
 
-	void WindowRegs::Update(float deltaTime)
+	void WindowRegsZ80::Update(float deltaTime)
 	{
 		UpdateRegs();
 		Window::Update(deltaTime);
 	}
 
-	void WindowRegs::UpdateRegs()
+	void WindowRegsZ80::UpdateRegs()
 	{
-		std::stringstream stream;
-
 		SetRegText8(m_textBoxes.main[0], "A", m_regs.main.a);
 		SetRegText8(m_textBoxes.main[1], "F", m_regs.main.f);
 		SetRegText8(m_textBoxes.main[2], "B", m_regs.main.b);
@@ -77,17 +70,17 @@ namespace debug
 		SetRegText8(m_textBoxes.r, "R", m_regs.r);
 	}
 
-	void WindowRegs::SetRegText8(ion::gui::TextBox& text, const std::string& name, u8 value)
+	void WindowRegsZ80::SetRegText8(ion::gui::TextBox& text, const std::string& name, u8 value)
 	{
 		std::stringstream stream;
-		stream << name << ": 0x" << HEX2(value);
+		stream << name << ": 0x" << SSTREAM_HEX2(value);
 		text.SetText(stream.str());
 	}
 
-	void WindowRegs::SetRegText16(ion::gui::TextBox& text, const std::string& name, u16 value)
+	void WindowRegsZ80::SetRegText16(ion::gui::TextBox& text, const std::string& name, u16 value)
 	{
 		std::stringstream stream;
-		stream << name << ": 0x" << HEX4(value);
+		stream << name << ": 0x" << SSTREAM_HEX4(value);
 		text.SetText(stream.str());
 	}
 }

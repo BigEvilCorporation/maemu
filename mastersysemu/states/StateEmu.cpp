@@ -25,8 +25,6 @@ namespace app
 		: ion::gamekit::State("emu", stateManager, resourceManager)
 		, m_window(window)
 	{
-		m_gui = nullptr;
-		m_debuggerRegs = nullptr;
 		m_debuggerState = DebuggerState::Break;
 	}
 
@@ -46,15 +44,19 @@ namespace app
 		m_masterSystem.Disassemble(m_disassembly);
 
 		//Create debugger
-		m_debuggerRegs = new debug::WindowRegs(*m_gui, m_masterSystem.GetRegisters(), ion::Vector2i(20, 20), ion::Vector2i(200, 400));
-		m_debuggerRAM = new debug::WindowMemory(*m_gui, m_masterSystem.GetRAM(), ion::Vector2i(250, 20), ion::Vector2i(600, 195));
-		m_debuggerConsole = new debug::WindowConsole(*m_gui, m_masterSystem.GetConsole().GetBuffer(), ion::Vector2i(250, 230), ion::Vector2i(600, 195));
+		m_debuggerRegsZ80 = new debug::WindowRegsZ80(*m_gui, m_masterSystem.GetRegistersZ80(), ion::Vector2i(20, 20), ion::Vector2i(200, 400));
+		m_debuggerRegsVDP = new debug::WindowRegsVDP(*m_gui, m_masterSystem.GetRegistersVDP(), ion::Vector2i(230, 20), ion::Vector2i(200, 400));
+		m_debuggerRAM = new debug::WindowMemory("RAM", *m_gui, m_masterSystem.GetRAM(), ion::Vector2i(440, 20), ion::Vector2i(400, 195));
+		m_debuggerVRAM = new debug::WindowMemory("VRAM", *m_gui, m_masterSystem.GetVRAM(), ion::Vector2i(430, 30), ion::Vector2i(400, 195));
+		m_debuggerConsole = new debug::WindowConsole(*m_gui, m_masterSystem.GetConsole().GetBuffer(), ion::Vector2i(440, 230), ion::Vector2i(400, 195));
 		m_debuggerDisassembly = new debug::WindowDisassembly(*m_gui, m_disassembly, ion::Vector2i(20, 430), ion::Vector2i(850, 300));
 
 		m_gui->AddWindow(*m_debuggerConsole);
 		m_gui->AddWindow(*m_debuggerDisassembly);
-		m_gui->AddWindow(*m_debuggerRegs);
+		m_gui->AddWindow(*m_debuggerRegsZ80);
+		m_gui->AddWindow(*m_debuggerRegsVDP);
 		m_gui->AddWindow(*m_debuggerRAM);
+		m_gui->AddWindow(*m_debuggerVRAM);
 
 		//Setup rendering
 		SetupRenderer();
@@ -82,8 +84,8 @@ namespace app
 
 	void StateEmu::OnLeaveState()
 	{
-		delete m_debuggerRegs;
-		m_debuggerRegs = nullptr;
+		delete m_debuggerRegsZ80;
+		m_debuggerRegsZ80 = nullptr;
 
 		delete m_gui;
 		m_gui = nullptr;
@@ -109,23 +111,26 @@ namespace app
 		}
 		else if (m_debuggerState == DebuggerState::Break)
 		{
-			//Step if F10
-			if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
+			if (m_window.HasFocus())
 			{
-				m_masterSystem.Update(1);
-			}
+				//Step if F10
+				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
+				{
+					m_masterSystem.Update(1);
+				}
 
-			//Run if F5
-			if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F5))
-			{
-				m_debuggerState = DebuggerState::Run;
+				//Run if F5
+				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F5))
+				{
+					m_debuggerState = DebuggerState::Run;
+				}
 			}
 		}
 
 		//Update debugger
 		if (m_debuggerDisassembly)
 		{
-			m_debuggerDisassembly->HighlightAddress(m_masterSystem.GetRegisters().pc);
+			m_debuggerDisassembly->HighlightAddress(m_masterSystem.GetRegistersZ80().pc);
 		}
 
 		//Update UI

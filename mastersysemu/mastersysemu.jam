@@ -23,8 +23,10 @@ local SRC =
 	debugger/WindowConsole.h
 	debugger/WindowDisassembly.cpp
 	debugger/WindowDisassembly.h
-	debugger/WindowRegs.cpp
-	debugger/WindowRegs.h
+	debugger/WindowRegsVDP.cpp
+	debugger/WindowRegsVDP.h
+	debugger/WindowRegsZ80.cpp
+	debugger/WindowRegsZ80.h
 	debugger/WindowMemory.cpp
 	debugger/WindowMemory.h
 	states/StateEmu.cpp

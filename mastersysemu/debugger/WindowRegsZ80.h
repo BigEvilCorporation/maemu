@@ -11,11 +11,11 @@
 
 namespace debug
 {
-	class WindowRegs : public ion::gui::Window
+	class WindowRegsZ80 : public ion::gui::Window
 	{
 	public:
-		WindowRegs(ion::gui::GUI& gui, const emu::cpu::z80::Registers& regs, const ion::Vector2i& position, const ion::Vector2i& size);
-		~WindowRegs();
+		WindowRegsZ80(ion::gui::GUI& gui, const emu::cpu::z80::Registers& regs, const ion::Vector2i& position, const ion::Vector2i& size);
+		~WindowRegsZ80();
 
 		virtual void Update(float deltaTime);
 

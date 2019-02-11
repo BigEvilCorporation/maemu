@@ -36,9 +36,11 @@ namespace emu
 		//Debugging
 		void Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly);
 		const debug::SDSCConsole& GetConsole() const;
-		const cpu::z80::Registers& GetRegisters() const;
+		const cpu::z80::Registers& GetRegistersZ80() const;
+		const cpu::vdp::Registers& GetRegistersVDP() const;
 		memory::Storage& GetRAM();
 		memory::Storage& GetROM();
+		memory::Storage& GetVRAM();
 
 	private:
 		void BuildSystem();

@@ -113,14 +113,24 @@ namespace emu
 		return *m_console;
 	}
 
-	const cpu::z80::Registers& MasterSystem::GetRegisters() const
+	const cpu::z80::Registers& MasterSystem::GetRegistersZ80() const
 	{
 		return m_Z80->GetRegisters();
+	}
+
+	const cpu::vdp::Registers& MasterSystem::GetRegistersVDP() const
+	{
+		return m_VDP->GetRegisters();
 	}
 
 	memory::Storage& MasterSystem::GetRAM()
 	{
 		return *m_ram;
+	}
+
+	memory::Storage& MasterSystem::GetVRAM()
+	{
+		return *m_vram;
 	}
 
 	memory::Storage& MasterSystem::GetROM()

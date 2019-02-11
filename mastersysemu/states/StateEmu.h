@@ -12,7 +12,8 @@
 
 #include "debugger/WindowConsole.h"
 #include "debugger/WindowDisassembly.h"
-#include "debugger/WindowRegs.h"
+#include "debugger/WindowRegsZ80.h"
+#include "debugger/WindowRegsVDP.h"
 #include "debugger/WindowMemory.h"
 
 #include "emu/MasterSystem.h"
@@ -46,8 +47,10 @@ namespace app
 		ion::render::Window& m_window;
 		debug::WindowConsole* m_debuggerConsole;
 		debug::WindowDisassembly* m_debuggerDisassembly;
-		debug::WindowRegs* m_debuggerRegs;
+		debug::WindowRegsZ80* m_debuggerRegsZ80;
+		debug::WindowRegsVDP* m_debuggerRegsVDP;
 		debug::WindowMemory* m_debuggerRAM;
+		debug::WindowMemory* m_debuggerVRAM;
 
 		//Rendering
 		ion::render::Texture* m_renderTexture;
