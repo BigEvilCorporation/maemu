@@ -97,9 +97,11 @@ namespace emu
 		}
 
 		//TODO: Interrupt callbacks
-		for (int i = 0; i < cpu::vdp::VDP_SCANLINES_PAL; i++)
+		int yoffset = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
+
+		for (int i = 0; i < cpu::vdp::VDP_SCREEN_HEIGHT; i++)
 		{
-			m_VDP->DrawLine(&m_frameBuffer[i * cpu::vdp::VDP_SCREEN_WIDTH], i);
+			m_VDP->DrawLine(&m_frameBuffer[(yoffset + i) * cpu::vdp::VDP_SCREEN_WIDTH], i);
 		}
 	}
 

@@ -118,34 +118,39 @@ namespace emu
 
 			void VDP::DrawLine(u32* data, int line)
 			{
+				///////////////////////////////////////////////////////////////////
 				//Get BG colour (from sprite palette)
+				///////////////////////////////////////////////////////////////////
+
 				u8 backdropIdx = m_regs[VDP_REG_7_BACKDROP_COLOUR] & 0xF;
 				u8 backdropColour = m_bus.memoryControllerCRAM.ReadMemory(VDP_PALETTE_OFFS_SPRITE + backdropIdx);
 				u32 backdropColourRGBA = ColourToRGB[backdropColour];
 
+				///////////////////////////////////////////////////////////////////
 				//BG plane
+				///////////////////////////////////////////////////////////////////
 
 				//Tile map address bits 13-11 are in bits 3-1 of register 2
-				u8 tileMapBaseAddrBits = (m_regs[VDP_REG_2_NAME_TABLE_ADDR] & VDP_MAP_REG_ADDR_MASK) >> VDP_MAP_REG_ADDR_SHIFT;
+				CellEntryAddress cellAddr;
+				cellAddr.baseAddr = (m_regs[VDP_REG_2_NAME_TABLE_ADDR] & VDP_MAP_REG_ADDR_MASK) >> VDP_MAP_REG_ADDR_SHIFT;
+				cellAddr.y = line / VDP_TILE_HEIGHT;
+
+				CellEntry cell;
 
 				for (int x = 0; x < VDP_SCREEN_WIDTH; x++)
 				{
 					//Compute cell word address
-					CellEntryAddress cellAddr;
-					cellAddr.baseAddr = tileMapBaseAddrBits;
 					cellAddr.x = x / VDP_TILE_WIDTH;
-					cellAddr.y = line / VDP_TILE_HEIGHT;
 
 					//Read cell word
-					CellEntry cell;
 					cell.hi = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address);
 					cell.lo = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address + 1);
 
 					//Get tile address
 					u16 tileAddr = cell.tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
 
-					//Offset by current line (4 bytes per line, wrapping around 32 bytes per tile)
-					u16 offsetY = (line * 4) & 0x1F;
+					//Offset by current line (4 bytes per line, wrapping around 8 lines per tile)
+					u16 offsetY = (line & 0x7) * 4;
 
 					//Read and combine bits from each bitplane
 					u8 colourIdx = 0;
@@ -179,7 +184,9 @@ namespace emu
 					}
 				}
 
+				///////////////////////////////////////////////////////////////////
 				//TODO: Sprite plane
+				///////////////////////////////////////////////////////////////////
 			}
 
 			const Registers& VDP::GetRegisters() const
