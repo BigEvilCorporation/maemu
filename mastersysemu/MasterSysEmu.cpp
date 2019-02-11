@@ -159,7 +159,7 @@ namespace app
 	bool MasterSystemEmu::InitialiseGameStates()
 	{
 		//Create states
-		m_stateEmu = new StateEmu(m_stateManager, *m_resourceManager);
+		m_stateEmu = new StateEmu(m_stateManager, *m_resourceManager, *m_window);
 
 		//Push first state
 		m_stateManager.PushState(*m_stateEmu);

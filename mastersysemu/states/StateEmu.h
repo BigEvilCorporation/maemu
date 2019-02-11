@@ -2,6 +2,13 @@
 
 #include <ion/gamekit/StateManager.h>
 #include <ion/gui/GUI.h>
+#include <ion/renderer/Window.h>
+#include <ion/renderer/Camera.h>
+#include <ion/renderer/Texture.h>
+#include <ion/renderer/Shader.h>
+#include <ion/renderer/Material.h>
+#include <ion/renderer/Primitive.h>
+#include <ion/renderer/TexCoord.h>
 
 #include "debugger/WindowConsole.h"
 #include "debugger/WindowDisassembly.h"
@@ -15,7 +22,7 @@ namespace app
 	class StateEmu : public ion::gamekit::State
 	{
 	public:
-		StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager);
+		StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window);
 
 		virtual void OnEnterState();
 		virtual void OnLeaveState();
@@ -32,11 +39,21 @@ namespace app
 			Run
 		};
 
+		void SetupRenderer();
+
+		//UI
 		ion::gui::GUI* m_gui;
+		ion::render::Window& m_window;
 		debug::WindowConsole* m_debuggerConsole;
 		debug::WindowDisassembly* m_debuggerDisassembly;
 		debug::WindowRegs* m_debuggerRegs;
 		debug::WindowMemory* m_debuggerRAM;
+
+		//Rendering
+		ion::render::Texture* m_renderTexture;
+		ion::render::Material* m_renderMaterial;
+		ion::render::Quad* m_renderPrimitive;
+		static const ion::render::TexCoord s_texCoords[4];
 
 		//The machine
 		emu::MasterSystem m_masterSystem;

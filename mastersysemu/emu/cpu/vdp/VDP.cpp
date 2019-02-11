@@ -23,6 +23,11 @@ namespace emu
 			void VDP::Reset()
 			{
 				//TODO: Regs initial state
+				for (int i = 0; i < VDP_NUM_REGISTERS; i++)
+				{
+					m_regs[i] = 0;
+				}
+
 				m_controlReg.word = 0;
 				m_statusFlags = 0;
 				m_hiByteLatch = false;
@@ -57,12 +62,12 @@ namespace emu
 				//If hi byte, check for immediate operations
 				if (m_hiByteLatch)
 				{
-					if ((m_controlReg.word & CTRL_REG_WRITE) == CTRL_REG_WRITE)
+					if ((m_controlReg.word & CTRL_COMMAND_MASK) == CTRL_REG_WRITE)
 					{
 						//Write to register
 						m_regs[m_controlReg.hi & CTRL_HI_REG_MASK] = m_controlReg.lo;
 					}
-					else if ((m_controlReg.word & CTRL_VRAM_READ) == CTRL_VRAM_READ)
+					else if ((m_controlReg.word & CTRL_COMMAND_MASK) == CTRL_VRAM_READ)
 					{
 						//Read from VRAM to internal buffer
 						m_readBuffer = m_bus.memoryControllerVRAM.ReadMemory(m_controlReg.word & CTRL_VRAM_MASK);
@@ -79,8 +84,8 @@ namespace emu
 			void VDP::WriteData(u16 address, u8 value)
 			{
 				//Write data
-				if (((m_controlReg.word & CTRL_VRAM_WRITE) == CTRL_VRAM_WRITE)
-					|| ((m_controlReg.word & CTRL_VRAM_READ) == CTRL_VRAM_READ))
+				if (((m_controlReg.word & CTRL_COMMAND_MASK) == CTRL_VRAM_WRITE)
+					|| ((m_controlReg.word & CTRL_COMMAND_MASK) == CTRL_VRAM_READ))
 				{
 					//Write to VRAM
 					m_bus.memoryControllerVRAM.WriteMemory(m_controlReg.word & CTRL_VRAM_MASK, value);
@@ -91,7 +96,7 @@ namespace emu
 					//Increment address
 					m_controlReg.word = ((m_controlReg.word + 1) & CTRL_VRAM_MASK);
 				}
-				else if ((m_controlReg.word & CTRL_CRAM_WRITE) == CTRL_CRAM_WRITE)
+				else if ((m_controlReg.word & CTRL_COMMAND_MASK) == CTRL_CRAM_WRITE)
 				{
 					//Write to CRAM
 					m_bus.memoryControllerCRAM.WriteMemory(m_controlReg.word & CTRL_CRAM_MASK, value);
@@ -111,13 +116,17 @@ namespace emu
 				m_hiByteLatch = false;
 			}
 
-			void VDP::DrawLine(std::vector<u32>& data, int line)
+			void VDP::DrawLine(u32* data, int line)
 			{
 				//Initialise with BG colour (from sprite palette)
 				u8 backdropIdx = m_regs[VDP_REG_7_BACKDROP_COLOUR] & 0xF;
 				u8 backdropColour = m_bus.memoryControllerCRAM.ReadMemory(VDP_PALETTE_OFFS_SPRITE + backdropIdx);
-				u32 backropColourRGBA = ColourToRGB[backdropColour];
-				std::fill(data.begin(), data.end(), backropColourRGBA);
+				u32 backdropColourRGBA = ColourToRGB[backdropColour];
+
+				for (int i = 0; i < VDP_SCREEN_WIDTH; i++)
+				{
+					data[i] = backdropColourRGBA;
+				}
 
 				//TODO: BG plane
 

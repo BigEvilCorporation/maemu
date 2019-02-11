@@ -39,6 +39,10 @@ namespace emu
 
 		//Create peripherals
 		m_console = new debug::SDSCConsole(*m_portController);
+
+		//Initialise framebuffer
+		//TODO: PAL vs. NTSC
+		m_frameBuffer.resize(cpu::vdp::VDP_SCREEN_WIDTH * cpu::vdp::VDP_SCANLINES_PAL);
 	}
 
 	bool MasterSystem::LoadROM(const std::string& filename)
@@ -88,6 +92,17 @@ namespace emu
 	{
 		//Tick CPU
 		m_Z80->Step();
+
+		//TODO: Interrupt callbacks
+		for (int i = 0; i < cpu::vdp::VDP_SCANLINES_PAL; i++)
+		{
+			m_VDP->DrawLine(&m_frameBuffer[i * cpu::vdp::VDP_SCREEN_WIDTH], i);
+		}
+	}
+
+	const std::vector<u32>& MasterSystem::GetFramebuffer() const
+	{
+		return m_frameBuffer;
 	}
 
 	const debug::SDSCConsole& MasterSystem::GetConsole() const

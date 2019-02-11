@@ -26,7 +26,7 @@ namespace emu
 				void WriteData(u16 address, u8 value);
 
 				//Rendering
-				void DrawLine(std::vector<u32>& data, int line);
+				void DrawLine(u32* data, int line);
 
 				//Debugging
 				const Registers& GetRegisters() const;
@@ -42,9 +42,10 @@ namespace emu
 
 				enum AddressMasks
 				{
-					CTRL_VRAM_MASK	= 0x3FFF,
-					CTRL_CRAM_MASK	= 0x001F,
-					CTRL_HI_REG_MASK= 0x0F
+					CTRL_COMMAND_MASK	= 0xC000,
+					CTRL_VRAM_MASK		= 0x3FFF,
+					CTRL_CRAM_MASK		= 0x001F,
+					CTRL_HI_REG_MASK	= 0x0F
 				};
 
 				struct ControlRegister
@@ -53,8 +54,8 @@ namespace emu
 					{
 						struct
 						{
-							u8 hi;
 							u8 lo;
+							u8 hi;
 						};
 
 						u16 word;

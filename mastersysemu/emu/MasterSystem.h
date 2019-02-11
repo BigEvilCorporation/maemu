@@ -1,9 +1,6 @@
 #pragma once
 
-#include <string>
-
 #include "Constants.h"
-
 #include "cpu/z80/Z80.h"
 #include "cpu/z80/Bus.h"
 #include "cpu/z80/Registers.h"
@@ -15,6 +12,9 @@
 #include "memory/Storage.h"
 #include "ports/PortController.h"
 #include "debug/SDSCConsole.h"
+
+#include <string>
+#include <Vector>
 
 namespace emu
 {
@@ -29,6 +29,9 @@ namespace emu
 
 		//Processing
 		void Update(float deltaTime);
+
+		//Rendering
+		const std::vector<u32>& GetFramebuffer() const;
 
 		//Debugging
 		void Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly);
@@ -60,6 +63,9 @@ namespace emu
 
 		//Ports
 		ports::Controller* m_portController;
+
+		//Rendering
+		std::vector<u32> m_frameBuffer;
 
 		//Debug
 		debug::SDSCConsole* m_console;
