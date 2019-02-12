@@ -92,6 +92,7 @@ namespace emu
 					u8 im;
 					u8 iff1;
 					u8 iff2;
+					u8 err;
 				} internal;
 			};
 		}

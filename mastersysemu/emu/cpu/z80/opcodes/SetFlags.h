@@ -10,6 +10,11 @@ namespace emu
 		{
 			namespace opcodes
 			{
+				static void SetFlagZ(u8 value, u8& flags)
+				{
+					flags ^= (-value ^ flags) & (1 << FLAG_INDEX_Z);
+				}
+
 				static void SetFlagC(u8 value, u8& flags)
 				{
 					flags ^= (-value ^ flags) & (1 << FLAG_INDEX_C);

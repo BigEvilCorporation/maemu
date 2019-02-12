@@ -10,10 +10,7 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				enum RegisterDecode_Stack_16Bit
-				{
-					REGISTER_DECODE_STACK_16_REG_SHIFT = 0x4,
-				};
+				static const int REGISTER_DECODE_STACK_16_REG_SHIFT = 0x4;
 
 				//Push 16-bit register to stack
 				static u16 PUSH_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)

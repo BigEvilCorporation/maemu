@@ -139,7 +139,8 @@ namespace app
 		}
 
 		//Update UI
-		m_gui->Update(deltaTime, keyboard, mouse, gamepad);
+		bool passGUIInput = m_window.HasFocus();
+		m_gui->Update(deltaTime, passGUIInput ? keyboard : nullptr, passGUIInput ? mouse : nullptr, passGUIInput ? gamepad : nullptr);
 
 		//Update FPS display
 		m_fpsCounter.Update();

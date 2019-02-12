@@ -11,10 +11,14 @@ namespace emu
 		{
 			namespace opcodes
 			{
+				static const int REGISTER_DECODE_BIT_8_REG_SHIFT = 0x0;
 				static const int REGISTER_DECODE_SET_8_REG_SHIFT = 0x0;
 				static const int REGISTER_DECODE_SHIFT_8_REG_SHIFT = 0x0;
 				static const int REGISTER_DECODE_OR_8_REG_SHIFT = 0x0;
 				static const int REGISTER_DECODE_AND_8_REG_SHIFT = 0x0;
+
+				static const int REGISTER_DECODE_BIT_MASK = 0x38;
+				static const int REGISTER_DECODE_BIT_SHIFT = 0x03;
 
 				//Set specified bit in an 8-bit register
 				static u16 SET_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -49,6 +53,46 @@ namespace emu
 
 					//Bit in first param
 					*(reg) |= (1 << params[0]);
+				}
+
+				//Test specified bit on an 8-bit register
+				static u16 BIT_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8* reg = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_OR_8_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_8_A << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.a;
+						break;
+					case (REGISTER_DECODE_8_B << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.b;
+						break;
+					case (REGISTER_DECODE_8_C << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.c;
+						break;
+					case (REGISTER_DECODE_8_D << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.d;
+						break;
+					case (REGISTER_DECODE_8_E << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.e;
+						break;
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.h;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_OR_8_REG_SHIFT):
+						reg = &regs.main.l;
+						break;
+					}
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode & (REGISTER_DECODE_BIT_MASK << REGISTER_DECODE_BIT_SHIFT));
+
+					//Set Z flag to bit
+					SetFlagZ(((*reg) >> bitIdx) & 1, regs.main.f);
+
+					return 0;
 				}
 
 				//Shift an 8-bit register to the left

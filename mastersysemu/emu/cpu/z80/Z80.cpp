@@ -29,26 +29,32 @@ namespace emu
 				m_regs.internal.im = Z80_INT_MODE0;
 				m_regs.internal.iff1 = 0;
 				m_regs.internal.iff2 = 0;
+
+				//Clear error flag
+				m_regs.internal.err = 0;
 			}
 
 			void Z80::Step()
 			{
-				//Read and decode next instruction
-				u8 opcodeIdx = m_bus.memoryController.ReadMemory(m_regs.pc++);
-
-				//Get opcode
-				const Opcode& opcode = OpcodeTable[opcodeIdx];
-
-				//Read params
-				OpcodeParams params;
-
-				for (int i = 0; i < opcode.paramBytes; i++)
+				if (m_regs.internal.err == 0)
 				{
-					params[i] = m_bus.memoryController.ReadMemory(m_regs.pc++);
-				}
+					//Read and decode next instruction
+					u8 opcodeIdx = m_bus.memoryController.ReadMemory(m_regs.pc++);
 
-				//Execute instruction
-				opcode.handler(opcode, params, m_regs, m_bus);
+					//Get opcode
+					const Opcode& opcode = OpcodeTable[opcodeIdx];
+
+					//Read params
+					OpcodeParams params;
+
+					for (int i = 0; i < opcode.paramBytes; i++)
+					{
+						params[i] = m_bus.memoryController.ReadMemory(m_regs.pc++);
+					}
+
+					//Execute instruction
+					opcode.handler(opcode, params, m_regs, m_bus);
+				}
 			}
 
 			const Registers& Z80::GetRegisters() const

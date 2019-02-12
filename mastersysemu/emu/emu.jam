@@ -37,6 +37,7 @@ local SRC =
 	cpu/z80/opcodes/ld.h
 	cpu/z80/opcodes/nop.h
 	cpu/z80/opcodes/prefix.h
+	cpu/z80/opcodes/routines.h
 	cpu/z80/opcodes/stack.h
 
 	cpu/vdp/Colour.h

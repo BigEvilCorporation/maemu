@@ -35,7 +35,7 @@ namespace emu
 			}
 			else
 			{
-				ion::debug::log << "Controller::ReadMemory() Could not read from unmapped address: " << address << ion::debug::end;
+				ion::debug::log << "memory::Controller::ReadMemory() - Could not read from unmapped address: " << address << ion::debug::end;
 			}
 
 			return 0;
@@ -49,7 +49,7 @@ namespace emu
 			}
 			else
 			{
-				ion::debug::log << "Controller::ReadMemory() Could not write to unmapped address: " << address << ion::debug::end;
+				ion::debug::log << "memory::Controller::WriteMemory() - Could not write to unmapped address: " << address << ion::debug::end;
 			}
 		}
 

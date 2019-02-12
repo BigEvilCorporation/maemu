@@ -31,7 +31,7 @@ namespace emu
 				}
 			}
 
-			ion::debug::log << "Read from unknown port " << address << ion::debug::end;
+			ion::debug::log << "ports::Controller::Read() - Read from unknown port " << address << ion::debug::end;
 
 			return 0;
 		}
@@ -48,7 +48,7 @@ namespace emu
 				
 			}
 			
-			ion::debug::log << "Write to unknown port " << address << ion::debug::end;
+			ion::debug::log << "ports::Controller::Write() - Write to unknown port " << address << ion::debug::end;
 		}
 
 		Controller::MappedPort* Controller::FindPort(u16 address)

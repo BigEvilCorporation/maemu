@@ -11,16 +11,9 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				enum RegisterDecode_LD_8Bit
-				{
-					REGISTER_DECODE_LD_8_REG1_SHIFT = 0x3,
-					REGISTER_DECODE_LD_8_REG2_SHIFT = 0x0
-				};
-
-				enum RegisterDecode_LD_16Bit
-				{
-					REGISTER_DECODE_LD_16_REG1_SHIFT = 0x4,
-				};
+				static const int REGISTER_DECODE_LD_8_REG1_SHIFT = 0x3;
+				static const int REGISTER_DECODE_LD_8_REG2_SHIFT = 0x0;
+				static const int REGISTER_DECODE_LD_16_REG1_SHIFT = 0x4;
 
 				//Load 8-bit register from 8-bit literal
 				static u16 LD_r8_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -194,8 +187,8 @@ namespace emu
 					return 0;
 				}
 
-				//Load 16-bit register from 8-bit literal
-				static u16 LD_r16_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				//Load 16-bit register from 16-bit literal
+				static u16 LD_r16_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u16* reg = nullptr;

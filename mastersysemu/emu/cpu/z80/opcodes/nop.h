@@ -3,6 +3,7 @@
 #include "../Opcode.h"
 
 #include <ion/core/debug/Debug.h>
+#include <ion/core/utils/STL.h>
 
 namespace emu
 {
@@ -19,7 +20,14 @@ namespace emu
 
 				static u16 Unknown(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					ion::debug::log << "Unknown opcode at " << regs.pc << ion::debug::end;
+					//Unknown opcode
+					std::stringstream err;
+					err << "Unknown opcode (" << SSTREAM_HEX2(opcode.opcode) << ") at 0x" << SSTREAM_HEX4(regs.pc) << " - system halted";
+					ion::debug::Log(err.str().c_str());
+
+					//Halt execution
+					regs.internal.err = 1;
+
 					return 0;
 				}
 			}
