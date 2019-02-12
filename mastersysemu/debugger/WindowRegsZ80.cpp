@@ -22,6 +22,9 @@ namespace debug
 		AddWidget(m_textBoxes.sp);
 		AddWidget(m_textBoxes.i);
 		AddWidget(m_textBoxes.r);
+		AddWidget(m_textBoxes.im);
+		AddWidget(m_textBoxes.iff1);
+		AddWidget(m_textBoxes.iff2);
 	}
 
 	WindowRegsZ80::~WindowRegsZ80()
@@ -53,6 +56,10 @@ namespace debug
 		SetRegText16(m_textBoxes.iy, "IY", m_regs.iy);
 		SetRegText8(m_textBoxes.i, "I", m_regs.i);
 		SetRegText8(m_textBoxes.r, "R", m_regs.r);
+
+		SetRegText8(m_textBoxes.im, "IM", m_regs.internal.im);
+		SetRegText8(m_textBoxes.iff1, "IFF1", m_regs.internal.iff1);
+		SetRegText8(m_textBoxes.iff2, "IFF2", m_regs.internal.iff2);
 	}
 
 	void WindowRegsZ80::SetRegText8(ion::gui::TextBox& text, const std::string& name, u8 value)
