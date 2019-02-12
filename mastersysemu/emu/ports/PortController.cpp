@@ -25,7 +25,10 @@ namespace emu
 		{
 			if (MappedPort* port = FindPort(address))
 			{
-				return port->reader(address);
+				if (port->reader)
+				{
+					return port->reader(address);
+				}
 			}
 
 			ion::debug::log << "Read from unknown port " << address << ion::debug::end;
@@ -37,12 +40,15 @@ namespace emu
 		{
 			if (MappedPort* port = FindPort(address))
 			{
-				port->writer(address, value);
+				if (port->writer)
+				{
+					port->writer(address, value);
+					return;
+				}
+				
 			}
-			else
-			{
-				ion::debug::log << "Write to unknown port " << address << ion::debug::end;
-			}
+			
+			ion::debug::log << "Write to unknown port " << address << ion::debug::end;
 		}
 
 		Controller::MappedPort* Controller::FindPort(u16 address)

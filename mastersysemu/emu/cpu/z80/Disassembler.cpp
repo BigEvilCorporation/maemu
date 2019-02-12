@@ -52,7 +52,7 @@ namespace emu
 				std::string ToText(const Instruction& instruction)
 				{
 					std::stringstream text;
-					text << SSTREAM_HEX4(instruction.address) << " " << instruction.opcode->name << " ";
+					text << SSTREAM_HEX4(instruction.address) << " " << SSTREAM_HEX2(instruction.opcodeIdx) << " " << instruction.opcode->name << " ";
 
 					int paramIdx = 0;
 					const std::string& format = instruction.opcode->paramsFormat;

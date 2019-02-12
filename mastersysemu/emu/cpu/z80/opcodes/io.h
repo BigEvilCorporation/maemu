@@ -19,6 +19,15 @@ namespace emu
 					return 0;
 				}
 
+				//Read from port at 8-bit address to A
+				static u16 IN_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Read port in param 1 to A
+					regs.main.a = bus.portController.Read(params[0]);
+
+					return 0;
+				}
+
 				//Write from (HL) to port and increment HL while B!=0
 				static u16 OTIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{

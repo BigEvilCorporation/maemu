@@ -4,6 +4,7 @@
 
 //All opcode handlers
 #include "opcodes/prefix.h"
+#include "opcodes/stack.h"
 #include "opcodes/ld.h"
 #include "opcodes/nop.h"
 
@@ -146,8 +147,8 @@ namespace emu
 				{ 0x79, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7A, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7B, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x7C, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x7D, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x7C, 0, &opcodes::LD_r_r_DD, "LD", "A, IXH" },
+				{ 0x7D, 0, &opcodes::LD_r_r_DD, "LD", "A, IXL" },
 				{ 0x7E, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7F, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
@@ -254,11 +255,11 @@ namespace emu
 				{ 0xDF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
 				{ 0xE0, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xE1, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xE1, 1, &opcodes::POP_16,  "POP", "IX" },
 				{ 0xE2, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE3, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xE5, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xE5, 1, &opcodes::PUSH_16, "PUSH", "HL" },
 				{ 0xE6, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE7, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE8, 0, &opcodes::Unknown, "UNKNOWN", "" },

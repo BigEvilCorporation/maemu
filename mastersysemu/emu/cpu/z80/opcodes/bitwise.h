@@ -52,6 +52,14 @@ namespace emu
 
 					return 0;
 				}
+
+				//Invert A
+				static u16 CPL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					regs.main.a = ~regs.main.a;
+
+					return 0;
+				}
 			}
 		}
 	}

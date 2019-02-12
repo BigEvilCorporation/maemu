@@ -4,13 +4,15 @@
 
 //All opcode handlers
 #include "opcodes/prefix.h"
+#include "opcodes/stack.h"
 #include "opcodes/cp.h"
+#include "opcodes/halt.h"
 #include "opcodes/incdec.h"
 #include "opcodes/io.h"
 #include "opcodes/jp.h"
 #include "opcodes/ld.h"
 #include "opcodes/nop.h"
-#include "opcodes/or.h"
+#include "opcodes/bitwise.h"
 
 namespace emu
 {
@@ -54,7 +56,7 @@ namespace emu
 				{ 0x1E, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x1F, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
-				{ 0x20, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x20, 1, &opcodes::JR_NZ,   "JR", "NZ,#" },
 				{ 0x21, 2, &opcodes::LD_16,   "LD", "HL, ##" },
 				{ 0x22, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x23, 0, &opcodes::INC_16,  "INC", "HL" },
@@ -69,7 +71,7 @@ namespace emu
 				{ 0x2C, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x2D, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x2E, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x2F, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x2F, 0, &opcodes::CPL,     "CPL", "" },
 
 				{ 0x30, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x31, 2, &opcodes::LD_16,   "LD", "SP, ##" },
@@ -145,14 +147,14 @@ namespace emu
 				{ 0x73, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x74, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x75, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x76, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x76, 0, &opcodes::HALT,    "HALT", "" },
 				{ 0x77, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x78, 0, &opcodes::LD_r_r,  "LD", "A, B" },
 				{ 0x79, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7A, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7B, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x7C, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x7D, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x7C, 0, &opcodes::LD_r_r,  "LD", "A, H" },
+				{ 0x7D, 0, &opcodes::LD_r_r,  "LD", "A, L" },
 				{ 0x7E, 0, &opcodes::LD_8_HL, "LD", "A, (HL)" },
 				{ 0x7F, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
@@ -207,14 +209,14 @@ namespace emu
 				{ 0xAE, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xAF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
-				{ 0xB0, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xB0, 0, &opcodes::OR_r,    "OR", "B" },
 				{ 0xB1, 0, &opcodes::OR_r,    "OR", "C" },
-				{ 0xB2, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xB3, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xB4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xB5, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xB2, 0, &opcodes::OR_r,    "OR", "D" },
+				{ 0xB3, 0, &opcodes::OR_r,    "OR", "E" },
+				{ 0xB4, 0, &opcodes::OR_r,    "OR", "H" },
+				{ 0xB5, 0, &opcodes::OR_r,    "OR", "L" },
 				{ 0xB6, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xB7, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xB7, 0, &opcodes::OR_r,    "OR", "A" },
 				{ 0xB8, 0, &opcodes::CP_A_r,  "CP", "B" },
 				{ 0xB9, 0, &opcodes::CP_A_r,  "CP", "C" },
 				{ 0xBA, 0, &opcodes::CP_A_r,  "CP", "D" },
@@ -225,11 +227,11 @@ namespace emu
 				{ 0xBF, 0, &opcodes::CP_A_r,  "CP", "A" },
 
 				{ 0xC0, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xC1, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xC1, 1, &opcodes::POP_16,  "POP", "BC" },
 				{ 0xC2, 2, &opcodes::JP_NZ,   "JP", "NZ, ##" },
 				{ 0xC3, 2, &opcodes::JP,      "JP", "##" },
 				{ 0xC4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xC5, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xC5, 1, &opcodes::PUSH_16, "PUSH", "BC" },
 				{ 0xC6, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xC7, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xC8, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -242,28 +244,28 @@ namespace emu
 				{ 0xCF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
 				{ 0xD0, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xD1, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xD1, 1, &opcodes::POP_16,  "POP", "DE" },
 				{ 0xD2, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xD3, 1, &opcodes::OUT_A,   "OUT", "#, A" },
 				{ 0xD4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xD5, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xD5, 1, &opcodes::PUSH_16, "PUSH", "DE" },
 				{ 0xD6, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xD7, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xD8, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xD9, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xDA, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xDB, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xDB, 1, &opcodes::IN_A,    "IN", "A, #" },
 				{ 0xDC, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xDD, 1, &opcodes::Prefix_DD, "" },
 				{ 0xDE, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xDF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
 				{ 0xE0, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xE1, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xE1, 1, &opcodes::POP_16,  "POP", "HL" },
 				{ 0xE2, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE3, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xE5, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xE5, 1, &opcodes::PUSH_16, "PUSH", "HL" },
 				{ 0xE6, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE7, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE8, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -276,11 +278,11 @@ namespace emu
 				{ 0xEF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
 				{ 0xF0, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xF1, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xF1, 1, &opcodes::POP_16,  "POP", "AF" },
 				{ 0xF2, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xF3, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xF4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xF5, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xF5, 1, &opcodes::PUSH_16, "PUSH", "AF" },
 				{ 0xF6, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xF7, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xF8, 0, &opcodes::Unknown, "UNKNOWN", "" },

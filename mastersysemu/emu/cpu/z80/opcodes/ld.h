@@ -121,6 +121,54 @@ namespace emu
 					return 0;
 				}
 
+				//Load 8-bit register from IXH/IXL
+				static u16 LD_r_r_DD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine regs
+					u8* reg1 = nullptr;
+					u8* reg2 = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_LD_8_REG1_SHIFT))
+					{
+					case (REGISTER_DECODE_8_A << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.a;
+						break;
+					case (REGISTER_DECODE_8_B << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.b;
+						break;
+					case (REGISTER_DECODE_8_C << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.c;
+						break;
+					case (REGISTER_DECODE_8_D << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.d;
+						break;
+					case (REGISTER_DECODE_8_E << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.e;
+						break;
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.h;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_LD_8_REG1_SHIFT):
+						reg1 = &regs.main.l;
+						break;
+					}
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_LD_8_REG2_SHIFT))
+					{
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_LD_8_REG2_SHIFT):
+						reg2 = &regs.ixh;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_LD_8_REG2_SHIFT):
+						reg2 = &regs.ixl;
+						break;
+					}
+
+					//Load
+					(*reg1) = (*reg2);
+
+					return 0;
+				}
+
 				//Load 16-bit register from literal
 				static u16 LD_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
