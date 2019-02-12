@@ -10,7 +10,12 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static void SetFlagsZCS(u16 diff, u8& flags)
+				static void SetFlagC(u8 value, u8& flags)
+				{
+					flags ^= (-value ^ flags) & (1 << FLAG_INDEX_C);
+				}
+
+				static void ComputeFlagsZCS(u16 diff, u8& flags)
 				{
 					//Zero flag if 0
 					if ((diff & 0xFF) == 0)
@@ -23,6 +28,21 @@ namespace emu
 						flags |= FLAG_C;
 					else
 						flags &= ~FLAG_C;
+
+					//Sign flag if bit 7 (signed overflow)
+					if (diff & 0x80)
+						flags |= FLAG_S;
+					else
+						flags &= ~FLAG_S;
+				}
+
+				static void ComputeFlagsZS(u16 diff, u8& flags)
+				{
+					//Zero flag if 0
+					if ((diff & 0xFF) == 0)
+						flags |= FLAG_Z;
+					else
+						flags &= ~FLAG_Z;
 
 					//Sign flag if bit 7 (signed overflow)
 					if (diff & 0x80)

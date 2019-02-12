@@ -20,6 +20,7 @@ namespace emu
 					{
 						Instruction instruction;
 						instruction.address = address;
+						instruction.prefix = 0;
 
 						//Get opcode idx
 						instruction.opcodeIdx = rom[address++];
@@ -28,15 +29,29 @@ namespace emu
 						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
 
 						//Handle redirects
-						if (instruction.opcode->handler == opcodes::Prefix_DD)
+						if (instruction.opcode->handler == opcodes::Prefix_CB)
 						{
+							instruction.prefix = 0xCB;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_DD)
+						{
+							instruction.prefix = 0xDD;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
 						}
 						else if (instruction.opcode->handler == opcodes::Prefix_ED)
 						{
+							instruction.prefix = 0xED;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_FD)
+						{
+							instruction.prefix = 0xFD;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
 						}
 
 						//Output params
@@ -52,7 +67,14 @@ namespace emu
 				std::string ToText(const Instruction& instruction)
 				{
 					std::stringstream text;
-					text << SSTREAM_HEX4(instruction.address) << " " << SSTREAM_HEX2(instruction.opcodeIdx) << " " << instruction.opcode->name << " ";
+					text << SSTREAM_HEX4(instruction.address) << " ";
+
+					if (instruction.prefix)
+					{
+						text << "[" << SSTREAM_HEX2(instruction.prefix) << "] ";
+					}
+
+					text << SSTREAM_HEX2(instruction.opcodeIdx) << " " << instruction.opcode->name << " ";
 
 					int paramIdx = 0;
 					const std::string& format = instruction.opcode->paramsFormat;

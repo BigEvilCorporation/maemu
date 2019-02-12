@@ -15,7 +15,7 @@ namespace emu
 				static const int REGISTER_DECODE_INCDEC_16_REG_SHIFT = 0x4;
 
 				//Increment 8-bit register
-				static u16 INC_8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 INC_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u8* reg = nullptr;
@@ -49,13 +49,13 @@ namespace emu
 					(*reg)++;
 
 					//Set flags
-					SetFlagsZCS(*reg, regs.main.f);
+					ComputeFlagsZCS(*reg, regs.main.f);
 
 					return 0;
 				}
 
 				//Decrement 8-bit register
-				static u16 DEC_8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 DEC_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u8* reg = nullptr;
@@ -89,13 +89,13 @@ namespace emu
 					(*reg)--;
 
 					//Set flags
-					SetFlagsZCS(*reg, regs.main.f);
+					ComputeFlagsZCS(*reg, regs.main.f);
 
 					return 0;
 				}
 
 				//Increment 16-bit register
-				static u16 INC_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 INC_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u16* reg = nullptr;
@@ -123,7 +123,7 @@ namespace emu
 				}
 
 				//Decrement 16-bit register
-				static u16 DEC_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 DEC_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u16* reg = nullptr;

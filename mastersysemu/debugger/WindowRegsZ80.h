@@ -29,8 +29,8 @@ namespace debug
 
 		struct
 		{
-			ion::gui::TextBox main[8];
-			ion::gui::TextBox alt[8];
+			ion::gui::TextBox main[4];
+			ion::gui::TextBox alt[4];
 			ion::gui::TextBox pc;
 			ion::gui::TextBox sp;
 			ion::gui::TextBox ix;

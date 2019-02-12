@@ -1,7 +1,10 @@
 #pragma once
 
 #include "opcodes/OpcodeTable.h"
+#include "opcodes/OpcodeTableCB.h"
 #include "opcodes/OpcodeTableDD.h"
+#include "opcodes/OpcodeTableED.h"
+#include "opcodes/OpcodeTableFD.h"
 
 #include <string>
 #include <vector>
@@ -17,6 +20,7 @@ namespace emu
 				struct Instruction
 				{
 					u16 address;
+					u8 prefix;
 					u8 opcodeIdx;
 					const Opcode* opcode;
 					OpcodeParams params;

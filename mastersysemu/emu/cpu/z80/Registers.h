@@ -17,8 +17,8 @@ namespace emu
 						u16 af;
 						struct
 						{
-							u8 a;
 							u8 f;
+							u8 a;
 						};
 					};
 
@@ -27,8 +27,8 @@ namespace emu
 						u16 bc;
 						struct
 						{
-							u8 b;
 							u8 c;
+							u8 b;
 						};
 					};
 
@@ -37,8 +37,8 @@ namespace emu
 						u16 de;
 						struct
 						{
-							u8 d;
 							u8 e;
+							u8 d;
 						};
 					};
 
@@ -47,14 +47,17 @@ namespace emu
 						u16 hl;
 						struct
 						{
-							u8 h;
 							u8 l;
-						};					};
+							u8 h;
+						};
+					};
 				};
 
+				//8-bit register pairs
 				Pairs main;
 				Pairs alt;
 
+				//16-bit registers
 				u16 sp;
 				u16 pc;
 
@@ -63,8 +66,8 @@ namespace emu
 					u16 ix;
 					struct
 					{
-						u8 ixh;
 						u8 ixl;
+						u8 ixh;
 					};
 				};
 				
@@ -73,13 +76,23 @@ namespace emu
 					u16 iy;
 					struct
 					{
-						u8 iyh;
 						u8 iyl;
+						u8 iyh;
 					};
 				};
 				
+
+				//I/R
 				u8 i;
 				u8 r;
+
+				//Internal regs
+				struct
+				{
+					u8 im;
+					u8 iff1;
+					u8 iff2;
+				} internal;
 			};
 		}
 	}

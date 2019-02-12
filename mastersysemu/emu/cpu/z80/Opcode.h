@@ -17,6 +17,19 @@ namespace emu
 	{
 		namespace z80
 		{
+			//Opcode handler naming convention:
+			//
+			// r8  : 8-bit register
+			// r16 : 16-bit register
+			// n8  : 8-bit literal number
+			// n16 : 16-bit literal number
+			// d   : dereference register (read/write address)
+			// b   : bit
+			//
+			// e.g.:
+			//   LD_r8_n8  : Load 8-bit register from 8-bit literal
+			//   LD_dHL_r8 : Load address at HL from 8-bit register
+
 			struct Opcode;
 
 			typedef ion::FixedArray<u8, Z80_MAX_OPCODE_PARAMS> OpcodeParams;

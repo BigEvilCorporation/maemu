@@ -1,5 +1,6 @@
 #include "Z80.h"
 #include "Constants.h"
+#include "Interrupts.h"
 
 #include <ion/core/debug/Debug.h>
 
@@ -20,7 +21,14 @@ namespace emu
 				//Guaranteed initial reg values - all others undefined
 				m_regs.pc = 0x0000;
 				m_regs.sp = 0xFFFF;
+				m_regs.i = 0;
+				m_regs.r = 0;
 				m_regs.main.af = 0xFFFF;
+
+				//Interrupt mode 0 by default
+				m_regs.internal.im = Z80_INT_MODE0;
+				m_regs.internal.iff1 = 0;
+				m_regs.internal.iff2 = 0;
 			}
 
 			void Z80::Step()

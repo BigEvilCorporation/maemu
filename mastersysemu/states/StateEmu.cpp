@@ -103,11 +103,14 @@ namespace app
 
 	bool StateEmu::Update(float deltaTime, ion::input::Keyboard* keyboard, ion::input::Mouse* mouse, ion::input::Gamepad* gamepad)
 	{
+		bool debugAddressUpdated = false;
+
 		if (m_debuggerState == DebuggerState::Run)
 		{
 			//Update machine
 			//TODO: Instruction clock
 			m_masterSystem.Update(10000);
+			debugAddressUpdated = true;
 		}
 		else if (m_debuggerState == DebuggerState::Break)
 		{
@@ -117,24 +120,38 @@ namespace app
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
 				{
 					m_masterSystem.Update(1);
+					debugAddressUpdated = true;
 				}
 
 				//Run if F5
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F5))
 				{
 					m_debuggerState = DebuggerState::Run;
+					debugAddressUpdated = true;
 				}
 			}
 		}
 
 		//Update debugger
-		if (m_debuggerDisassembly)
+		if (m_debuggerDisassembly && debugAddressUpdated)
 		{
 			m_debuggerDisassembly->HighlightAddress(m_masterSystem.GetRegistersZ80().pc);
 		}
 
 		//Update UI
 		m_gui->Update(deltaTime, keyboard, mouse, gamepad);
+
+		//Update FPS display
+		m_fpsCounter.Update();
+		if (m_fpsCounter.GetFrameCount() % 30 == 0)
+		{
+			//Set window title
+			std::stringstream text;
+			text.setf(std::ios::fixed, std::ios::floatfield);
+			text.precision(2);
+			text << "Master System Emu : FPS: " << m_fpsCounter.GetLastFPS();
+			m_window.SetTitle(text.str().c_str());
+		}
 
 		return true;
 	}

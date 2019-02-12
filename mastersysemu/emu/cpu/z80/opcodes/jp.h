@@ -11,7 +11,7 @@ namespace emu
 			namespace opcodes
 			{
 				//Jump to constant address
-				static u16 JP(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 JP_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Get address
 					u16 address = (params[1] << 8) | params[0];
@@ -23,7 +23,7 @@ namespace emu
 				}
 
 				//Jump if Z set
-				static u16 JP_Z(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 JP_Z_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//If Z set
 					if (regs.main.f & FLAG_Z)
@@ -39,7 +39,7 @@ namespace emu
 				}
 
 				//Jump if Z not set (to 16-bit literal)
-				static u16 JP_NZ(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 JP_NZ_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//If Z reset
 					if ((regs.main.f & FLAG_Z) == 0)
@@ -55,7 +55,7 @@ namespace emu
 				}
 
 				//Jump if Z not set (offset by 8-bit literal)
-				static u16 JR_NZ(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 JR_NZ_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//If Z reset
 					if ((regs.main.f & FLAG_Z) == 0)

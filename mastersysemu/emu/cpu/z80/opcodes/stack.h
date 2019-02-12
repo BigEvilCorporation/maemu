@@ -16,7 +16,7 @@ namespace emu
 				};
 
 				//Push 16-bit register to stack
-				static u16 PUSH_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 PUSH_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u16* reg = nullptr;
@@ -37,18 +37,17 @@ namespace emu
 						break;
 					}
 
-					//Decrement stack
+					//Decrement stack and push register
 					regs.sp--;
-
-					//Push register
 					bus.memoryController.WriteMemory(regs.sp, (*reg) >> 8);
+					regs.sp--;
 					bus.memoryController.WriteMemory(regs.sp, (*reg) & 0xFF);
 
 					return 0;
 				}
 
 				//Pop 16-bit register from stack
-				static u16 POP_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u16 POP_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
 					u16* reg = nullptr;
@@ -69,13 +68,11 @@ namespace emu
 						break;
 					}
 
-					//Decrement stack
-					regs.sp--;
-
-					//Pop register
+					//Pop register and increment stack
 					u8 lo = bus.memoryController.ReadMemory(regs.sp);
 					regs.sp++;
 					u8 hi = bus.memoryController.ReadMemory(regs.sp);
+					regs.sp++;
 
 					(*reg) = (hi << 8) | lo;
 

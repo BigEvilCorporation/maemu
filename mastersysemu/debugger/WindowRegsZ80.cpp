@@ -9,18 +9,11 @@ namespace debug
 		, m_gui(gui)
 		, m_regs(regs)
 	{
-		for (int i = 0; i < 8; i += 2)
+		for (int i = 0; i < 4; i++)
 		{
 			AddWidget(m_textBoxes.main[i]);
-			m_textBoxes.main[i+1].SetArrangement(ion::gui::Widget::Arrangement::Horizontal);
-			AddWidget(m_textBoxes.main[i+1]);
-		}
-
-		for (int i = 0; i < 8; i += 2)
-		{
+			m_textBoxes.alt[i].SetArrangement(ion::gui::Widget::Arrangement::Horizontal);
 			AddWidget(m_textBoxes.alt[i]);
-			m_textBoxes.alt[i+1].SetArrangement(ion::gui::Widget::Arrangement::Horizontal);
-			AddWidget(m_textBoxes.alt[i + 1]);
 		}
 
 		AddWidget(m_textBoxes.ix);
@@ -44,23 +37,15 @@ namespace debug
 
 	void WindowRegsZ80::UpdateRegs()
 	{
-		SetRegText8(m_textBoxes.main[0], "A", m_regs.main.a);
-		SetRegText8(m_textBoxes.main[1], "F", m_regs.main.f);
-		SetRegText8(m_textBoxes.main[2], "B", m_regs.main.b);
-		SetRegText8(m_textBoxes.main[3], "C", m_regs.main.c);
-		SetRegText8(m_textBoxes.main[4], "D", m_regs.main.d);
-		SetRegText8(m_textBoxes.main[5], "E", m_regs.main.e);
-		SetRegText8(m_textBoxes.main[6], "H", m_regs.main.h);
-		SetRegText8(m_textBoxes.main[7], "L", m_regs.main.l);
+		SetRegText16(m_textBoxes.main[0], "AF", m_regs.main.af);
+		SetRegText16(m_textBoxes.main[1], "BC", m_regs.main.bc);
+		SetRegText16(m_textBoxes.main[2], "DE", m_regs.main.de);
+		SetRegText16(m_textBoxes.main[3], "HL", m_regs.main.hl);
 
-		SetRegText8(m_textBoxes.alt[0], "A'", m_regs.alt.a);
-		SetRegText8(m_textBoxes.alt[1], "F'", m_regs.alt.f);
-		SetRegText8(m_textBoxes.alt[2], "B'", m_regs.alt.b);
-		SetRegText8(m_textBoxes.alt[3], "C'", m_regs.alt.c);
-		SetRegText8(m_textBoxes.alt[4], "D'", m_regs.alt.d);
-		SetRegText8(m_textBoxes.alt[5], "E'", m_regs.alt.e);
-		SetRegText8(m_textBoxes.alt[6], "H'", m_regs.alt.h);
-		SetRegText8(m_textBoxes.alt[7], "L'", m_regs.alt.l);
+		SetRegText16(m_textBoxes.alt[0], "AF'", m_regs.alt.af);
+		SetRegText16(m_textBoxes.alt[1], "BC'", m_regs.alt.bc);
+		SetRegText16(m_textBoxes.alt[2], "DE'", m_regs.alt.de);
+		SetRegText16(m_textBoxes.alt[3], "HL'", m_regs.alt.hl);
 
 		SetRegText16(m_textBoxes.pc, "PC", m_regs.pc);
 		SetRegText16(m_textBoxes.sp, "SP", m_regs.sp);
@@ -73,14 +58,14 @@ namespace debug
 	void WindowRegsZ80::SetRegText8(ion::gui::TextBox& text, const std::string& name, u8 value)
 	{
 		std::stringstream stream;
-		stream << name << ": 0x" << SSTREAM_HEX2(value);
+		stream << name << ": " << SSTREAM_HEX2(value);
 		text.SetText(stream.str());
 	}
 
 	void WindowRegsZ80::SetRegText16(ion::gui::TextBox& text, const std::string& name, u16 value)
 	{
 		std::stringstream stream;
-		stream << name << ": 0x" << SSTREAM_HEX4(value);
+		stream << name << ": " << SSTREAM_HEX4(value);
 		text.SetText(stream.str());
 	}
 }

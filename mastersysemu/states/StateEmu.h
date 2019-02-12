@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ion/gamekit/StateManager.h>
+#include <ion/gamekit/FPSCounter.h>
 #include <ion/gui/GUI.h>
 #include <ion/renderer/Window.h>
 #include <ion/renderer/Camera.h>
@@ -51,6 +52,7 @@ namespace app
 		debug::WindowRegsVDP* m_debuggerRegsVDP;
 		debug::WindowMemory* m_debuggerRAM;
 		debug::WindowMemory* m_debuggerVRAM;
+		ion::gamekit::FPSCounter m_fpsCounter;
 
 		//Rendering
 		ion::render::Texture* m_renderTexture;
