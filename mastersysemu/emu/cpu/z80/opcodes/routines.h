@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Opcode.h"
-#include "SetFlags.h"
 
 namespace emu
 {
@@ -14,6 +13,7 @@ namespace emu
 				static const int REGISTER_DECODE_RST_CODE_MASK = 0x38;
 				static const int REGISTER_DECODE_RST_CODE_SHIFT = 0x03;
 				static const int REGISTER_DECODE_RST_CODE_TO_ADDR = 0x8;
+				static const int REGISTER_DECODE_RET_CONDITION_SHIFT = 0x03;
 
 				//Call routine at literal address
 				static u16 CALL_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -47,38 +47,8 @@ namespace emu
 				//Return on condition to address at top of stack
 				static u16 RET_CC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					bool result = false;
-
 					//Determine condition
-					u8 condition = ((opcode.opcode >> REGISTER_DECODE_JP_CONDITION_SHIFT) & REGISTER_DECODE_CONDITION_MASK);
-
-					switch (condition)
-					{
-					case REGISTER_DECODE_CONDITION_NZ:
-						result = !CheckFlagsZ(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_Z:
-						result = CheckFlagsZ(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_NC:
-						result = !CheckFlagsC(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_C:
-						result = CheckFlagsC(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_PO:
-						result = !CheckFlagsP(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_PE:
-						result = CheckFlagsP(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_POS:
-						result = !CheckFlagsS(regs.main.f);
-						break;
-					case REGISTER_DECODE_CONDITION_NEG:
-						result = CheckFlagsS(regs.main.f);
-						break;
-					}
+					bool result = DecodeCondition(regs, opcode.opcode, REGISTER_DECODE_RET_CONDITION_SHIFT);
 
 					//If condition met
 					if (result)

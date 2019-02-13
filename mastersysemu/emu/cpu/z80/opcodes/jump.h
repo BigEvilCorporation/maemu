@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Opcode.h"
-#include "SetFlags.h"
 
 namespace emu
 {
@@ -11,9 +10,6 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				
-				static const int REGISTER_DECODE_JP_CONDITION_SHIFT = 0x03;
-
 				//Jump to literal 16-bit address
 				static u16 JP_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{

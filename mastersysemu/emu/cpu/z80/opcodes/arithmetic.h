@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Opcode.h"
-#include "SetFlags.h"
 
 namespace emu
 {
@@ -29,36 +28,10 @@ namespace emu
 				static u16 SUB_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-					u8 regType = ((opcode.opcode >> REGISTER_DECODE_ARITH_REG_SHIFT) & REGISTER_DECODE_8_MASK);
-
-					switch (regType)
-					{
-					case (REGISTER_DECODE_8_A):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG_SHIFT);
 
 					//Subtract from A
-					regs.main.a -= *reg;
+					regs.main.a -= reg;
 
 					//Set flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);

@@ -10,6 +10,7 @@
 
 #include <ion/core/Types.h>
 #include <ion/core/containers/FixedArray.h>
+#include <ion/core/debug/Debug.h>
 
 namespace emu
 {
@@ -78,6 +79,111 @@ namespace emu
 				REGISTER_DECODE_CONDITION_NEG,
 				REGISTER_DECODE_CONDITION_MASK = 0x07
 			};
+
+			static u8& DecodeReg8(Registers& regs, u8 opcode, u8 shift)
+			{
+				u8* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_8_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_8_A):
+					reg = &regs.main.a;
+					break;
+				case (REGISTER_DECODE_8_B):
+					reg = &regs.main.b;
+					break;
+				case (REGISTER_DECODE_8_C):
+					reg = &regs.main.c;
+					break;
+				case (REGISTER_DECODE_8_D):
+					reg = &regs.main.d;
+					break;
+				case (REGISTER_DECODE_8_E):
+					reg = &regs.main.e;
+					break;
+				case (REGISTER_DECODE_8_H):
+					reg = &regs.main.h;
+					break;
+				case (REGISTER_DECODE_8_L):
+					reg = &regs.main.l;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg8() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
+			static u16& DecodeReg16(Registers& regs, u8 opcode, u8 shift)
+			{
+				u16* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_16_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_16_BC):
+					reg = &regs.main.bc;
+					break;
+				case (REGISTER_DECODE_16_DE):
+					reg = &regs.main.de;
+					break;
+				case (REGISTER_DECODE_16_HL):
+					reg = &regs.main.hl;
+					break;
+				case (REGISTER_DECODE_16_SP):
+					reg = &regs.sp;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg16() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
+			static bool DecodeCondition(Registers& regs, u8 opcode, u8 shift)
+			{
+				bool result = false;
+				u8 condition = (opcode >> shift) & REGISTER_DECODE_CONDITION_MASK;
+
+				switch (condition)
+				{
+				case REGISTER_DECODE_CONDITION_NZ:
+					result = !CheckFlagsZ(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_Z:
+					result = CheckFlagsZ(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_NC:
+					result = !CheckFlagsC(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_C:
+					result = CheckFlagsC(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_PO:
+					result = !CheckFlagsP(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_PE:
+					result = CheckFlagsP(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_POS:
+					result = !CheckFlagsS(regs.main.f);
+					break;
+				case REGISTER_DECODE_CONDITION_NEG:
+					result = CheckFlagsS(regs.main.f);
+					break;
+				}
+
+				return result;
+			}
 		}
 	}
 }

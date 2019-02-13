@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Opcode.h"
-#include "SetFlags.h"
 
 namespace emu
 {
@@ -17,80 +16,30 @@ namespace emu
 				static const int REGISTER_DECODE_OR_8_REG_SHIFT = 0x0;
 				static const int REGISTER_DECODE_AND_8_REG_SHIFT = 0x0;
 
-				static const int REGISTER_DECODE_BIT_MASK = 0x38;
+				static const int REGISTER_DECODE_BIT_MASK = 0x07;
 				static const int REGISTER_DECODE_BIT_SHIFT = 0x03;
 
 				//Set specified bit in an 8-bit register
 				static u16 SET_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_OR_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SET_8_REG_SHIFT);
 
 					//Bit in first param
-					*(reg) |= (1 << params[0]);
+					reg |= (1 << params[0]);
 				}
 
 				//Test specified bit on an 8-bit register
 				static u16 BIT_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_OR_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_BIT_8_REG_SHIFT);
 
 					//Determine bit
-					u8 bitIdx = (opcode.opcode & (REGISTER_DECODE_BIT_MASK << REGISTER_DECODE_BIT_SHIFT));
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
 
 					//Set Z flag to bit
-					SetFlagZ(((*reg) >> bitIdx) & 1, regs.main.f);
+					SetFlagZ((reg >> bitIdx) & 1, regs.main.f);
 
 					return 0;
 				}
@@ -99,41 +48,16 @@ namespace emu
 				static u16 SLA_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_SHIFT_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
 
 					//Copy top bit to C flag
-					SetFlagC((*reg) >> 7, regs.main.f);
+					SetFlagC(reg >> 7, regs.main.f);
 
 					//Shift left
-					(*reg) <<= 1;
+					reg <<= 1;
 
 					//Set Z/S flags
-					ComputeFlagsZS(*reg, regs.main.f);
+					ComputeFlagsZS(reg, regs.main.f);
 
 					return 0;
 				}
@@ -147,41 +71,16 @@ namespace emu
 				static u16 SRL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_SHIFT_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
 
 					//Copy bottom bit to C flag
-					SetFlagC((*reg) & 1, regs.main.f);
+					SetFlagC(reg & 1, regs.main.f);
 
 					//Shift right
-					(*reg) >>= 1;
+					reg >>= 1;
 
 					//Set Z/S flags
-					ComputeFlagsZS(*reg, regs.main.f);
+					ComputeFlagsZS(reg, regs.main.f);
 
 					return 0;
 				}
@@ -230,35 +129,10 @@ namespace emu
 				static u16 OR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_OR_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_OR_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
 
 					//OR A with reg
-					regs.main.a |= (*reg);
+					regs.main.a |= reg;
 
 					//Set flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -270,35 +144,10 @@ namespace emu
 				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_AND_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_AND_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_AND_8_REG_SHIFT);
 
 					//AND A with reg
-					regs.main.a &= (*reg);
+					regs.main.a &= reg;
 
 					//Set flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);

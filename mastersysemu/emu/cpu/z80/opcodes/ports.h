@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Opcode.h"
-#include "SetFlags.h"
 
 namespace emu
 {
@@ -26,35 +25,10 @@ namespace emu
 				static u16 OUT_C_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8* reg = nullptr;
-
-					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_IO_8_REG_SHIFT))
-					{
-					case (REGISTER_DECODE_8_A << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.a;
-						break;
-					case (REGISTER_DECODE_8_B << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.b;
-						break;
-					case (REGISTER_DECODE_8_C << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.c;
-						break;
-					case (REGISTER_DECODE_8_D << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.d;
-						break;
-					case (REGISTER_DECODE_8_E << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.e;
-						break;
-					case (REGISTER_DECODE_8_H << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.h;
-						break;
-					case (REGISTER_DECODE_8_L << REGISTER_DECODE_IO_8_REG_SHIFT):
-						reg = &regs.main.l;
-						break;
-					}
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_IO_8_REG_SHIFT);
 
 					//Write register to port in C
-					bus.portController.Write(regs.main.c, *reg);
+					bus.portController.Write(regs.main.c, reg);
 
 					return 0;
 				}
