@@ -95,7 +95,7 @@ namespace emu
 					return 0;
 				}
 
-				//Shift an 8-bit register to the left
+				//Arithmetic shift an 8-bit register to the left
 				static u16 SLA_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
@@ -131,6 +131,54 @@ namespace emu
 
 					//Shift left
 					(*reg) <<= 1;
+
+					//Set Z/S flags
+					ComputeFlagsZS(*reg, regs.main.f);
+
+					return 0;
+				}
+
+				//Arithmetic shift an 8-bit register to the right (preserving sign bit)
+				//static u16 SRA_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				//{
+				//}
+
+				//Non-arithmetic shift an 8-bit register to the right
+				static u16 SRL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8* reg = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_8_MASK << REGISTER_DECODE_SHIFT_8_REG_SHIFT))
+					{
+					case (REGISTER_DECODE_8_A << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.a;
+						break;
+					case (REGISTER_DECODE_8_B << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.b;
+						break;
+					case (REGISTER_DECODE_8_C << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.c;
+						break;
+					case (REGISTER_DECODE_8_D << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.d;
+						break;
+					case (REGISTER_DECODE_8_E << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.e;
+						break;
+					case (REGISTER_DECODE_8_H << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.h;
+						break;
+					case (REGISTER_DECODE_8_L << REGISTER_DECODE_SHIFT_8_REG_SHIFT):
+						reg = &regs.main.l;
+						break;
+					}
+
+					//Copy bottom bit to C flag
+					SetFlagC((*reg) & 1, regs.main.f);
+
+					//Shift right
+					(*reg) >>= 1;
 
 					//Set Z/S flags
 					ComputeFlagsZS(*reg, regs.main.f);

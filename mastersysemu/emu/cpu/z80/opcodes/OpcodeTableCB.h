@@ -5,8 +5,8 @@
 //All opcode handlers
 #include "opcodes/prefix.h"
 #include "opcodes/bitwise.h"
-#include "opcodes/io.h"
-#include "opcodes/ld.h"
+#include "opcodes/ports.h"
+#include "opcodes/load.h"
 #include "opcodes/nop.h"
 
 namespace emu
@@ -76,14 +76,14 @@ namespace emu
 				{ 0x35, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x36, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x37, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x38, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x39, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x3A, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x3B, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x3C, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x3D, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x38, 0, &opcodes::SRL_r8, "SRL", "B" },
+				{ 0x39, 0, &opcodes::SRL_r8, "SRL", "C" },
+				{ 0x3A, 0, &opcodes::SRL_r8, "SRL", "D" },
+				{ 0x3B, 0, &opcodes::SRL_r8, "SRL", "E" },
+				{ 0x3C, 0, &opcodes::SRL_r8, "SRL", "H" },
+				{ 0x3D, 0, &opcodes::SRL_r8, "SRL", "L" },
 				{ 0x3E, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x3F, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x3F, 0, &opcodes::SRL_r8, "SRL", "A" },
 				
 				{ 0x40, 0, &opcodes::BIT_b_r8, "BIT", "0, B" },
 				{ 0x41, 0, &opcodes::BIT_b_r8, "BIT", "0, C" },

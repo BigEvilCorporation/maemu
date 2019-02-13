@@ -5,7 +5,7 @@
 //All opcode handlers
 #include "opcodes/prefix.h"
 #include "opcodes/stack.h"
-#include "opcodes/ld.h"
+#include "opcodes/load.h"
 #include "opcodes/nop.h"
 
 namespace emu

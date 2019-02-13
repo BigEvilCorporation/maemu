@@ -26,15 +26,16 @@ local SRC =
 	cpu/z80/opcodes/SetFlags.h
 
 	# Z80 opcodes
+	cpu/z80/opcodes/arithmetic.h
 	cpu/z80/opcodes/bitwise.h
-	cpu/z80/opcodes/cp.h
-	cpu/z80/opcodes/ex.h
+	cpu/z80/opcodes/comparison.h
+	cpu/z80/opcodes/exchange.h
 	cpu/z80/opcodes/halt.h
 	cpu/z80/opcodes/incdec.h
 	cpu/z80/opcodes/interrupts.h
-	cpu/z80/opcodes/io.h
-	cpu/z80/opcodes/jp.h
-	cpu/z80/opcodes/ld.h
+	cpu/z80/opcodes/ports.h
+	cpu/z80/opcodes/jump.h
+	cpu/z80/opcodes/load.h
 	cpu/z80/opcodes/nop.h
 	cpu/z80/opcodes/prefix.h
 	cpu/z80/opcodes/routines.h
