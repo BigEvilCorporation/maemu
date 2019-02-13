@@ -10,7 +10,7 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static const int REGISTER_DECODE_RST_CODE_MASK = 0x38;
+				static const int REGISTER_DECODE_RST_CODE_MASK = 0x07;
 				static const int REGISTER_DECODE_RST_CODE_SHIFT = 0x03;
 				static const int REGISTER_DECODE_RST_CODE_TO_ADDR = 0x8;
 				static const int REGISTER_DECODE_RET_CONDITION_SHIFT = 0x03;
@@ -69,7 +69,7 @@ namespace emu
 				static u16 RST(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Get the address code
-					u8 addrCode = (opcode.opcode & REGISTER_DECODE_RST_CODE_MASK) >> REGISTER_DECODE_RST_CODE_SHIFT;
+					u8 addrCode = (opcode.opcode >> REGISTER_DECODE_RST_CODE_SHIFT ) & REGISTER_DECODE_RST_CODE_MASK;
 
 					//Convert to address
 					u8 addrLo = addrCode * REGISTER_DECODE_RST_CODE_TO_ADDR;

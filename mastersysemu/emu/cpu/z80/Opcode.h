@@ -149,6 +149,36 @@ namespace emu
 				return *reg;
 			}
 
+			static u16& DecodeReg16Stack(Registers& regs, u8 opcode, u8 shift)
+			{
+				u16* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_16_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_16_BC):
+					reg = &regs.main.bc;
+					break;
+				case (REGISTER_DECODE_16_DE):
+					reg = &regs.main.de;
+					break;
+				case (REGISTER_DECODE_16_HL):
+					reg = &regs.main.hl;
+					break;
+				case (REGISTER_DECODE_16_AF):
+					reg = &regs.main.af;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg16Stack() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
 			static bool DecodeCondition(Registers& regs, u8 opcode, u8 shift)
 			{
 				bool result = false;
