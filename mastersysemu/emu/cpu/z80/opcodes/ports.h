@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Opcode.h"
+#include "SetFlags.h"
 
 namespace emu
 {
@@ -63,6 +64,25 @@ namespace emu
 				{
 					//Read port in param 1 to A
 					regs.main.a = bus.portController.Read(params[0]);
+
+					return 0;
+				}
+
+				//Read from port at C into address at (HL), increment HL, decrement B
+				static u16 INI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Read from port in C
+					u8 value = bus.portController.Read(regs.main.c);
+
+					//Write to address at (HL)
+					bus.memoryController.WriteMemory(regs.main.hl, value);
+
+					//Increment HL, decrement B
+					regs.main.hl++;
+					regs.main.b--;
+
+					//Set Z flag based on B
+					ComputeFlagsZ(regs.main.b, regs.main.f);
 
 					return 0;
 				}

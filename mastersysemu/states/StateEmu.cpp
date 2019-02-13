@@ -111,6 +111,16 @@ namespace app
 			//TODO: Instruction clock
 			m_masterSystem.Update(10000);
 			debugAddressUpdated = true;
+
+			if (m_window.HasFocus())
+			{
+				//Break if F10
+				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
+				{
+					m_debuggerState = DebuggerState::Break;
+					debugAddressUpdated = true;
+				}
+			}
 		}
 		else if (m_debuggerState == DebuggerState::Break)
 		{

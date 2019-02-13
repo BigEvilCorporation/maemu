@@ -20,6 +20,26 @@ namespace emu
 					flags ^= (-value ^ flags) & (1 << FLAG_INDEX_C);
 				}
 
+				static bool CheckFlagsZ(u8& flags)
+				{
+					return (flags & FLAG_Z) != 0;
+				}
+
+				static bool CheckFlagsC(u8& flags)
+				{
+					return (flags & FLAG_C) != 0;
+				}
+
+				static bool CheckFlagsS(u8& flags)
+				{
+					return (flags & FLAG_S) != 0;
+				}
+
+				static bool CheckFlagsP(u8& flags)
+				{
+					return (flags & FLAG_PV) != 0;
+				}
+
 				static void ComputeFlagsZCS(u16 diff, u8& flags)
 				{
 					//Zero flag if 0
@@ -54,6 +74,15 @@ namespace emu
 						flags |= FLAG_S;
 					else
 						flags &= ~FLAG_S;
+				}
+
+				static void ComputeFlagsZ(u16 diff, u8& flags)
+				{
+					//Zero flag if 0
+					if ((diff & 0xFF) == 0)
+						flags |= FLAG_Z;
+					else
+						flags &= ~FLAG_Z;
 				}
 			}
 		}

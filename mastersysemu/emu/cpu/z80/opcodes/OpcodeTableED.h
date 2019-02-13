@@ -5,8 +5,8 @@
 //All opcode handlers
 #include "opcodes/prefix.h"
 #include "opcodes/interrupts.h"
-#include "opcodes/io.h"
-#include "opcodes/ld.h"
+#include "opcodes/ports.h"
+#include "opcodes/load.h"
 #include "opcodes/nop.h"
 
 namespace emu
@@ -88,7 +88,7 @@ namespace emu
 				{ 0x40, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x41, 0, &opcodes::OUT_C_r8, "OUT", "(C), B" },
 				{ 0x42, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x43, 2, &opcodes::LD_n16_r16, "LD", "##, BC" },
+				{ 0x43, 2, &opcodes::LD_n16_r16, "LD", "(##), BC" },
 				{ 0x44, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x45, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x46, 0, &opcodes::IM_0,    "IM", "0" },
@@ -96,7 +96,7 @@ namespace emu
 				{ 0x48, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x49, 0, &opcodes::OUT_C_r8, "OUT", "(C), C" },
 				{ 0x4A, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x4B, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x4B, 2, &opcodes::LD_r16_dn16, "LD", "BC, (##)" },
 				{ 0x4C, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x4D, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x4E, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -105,7 +105,7 @@ namespace emu
 				{ 0x50, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x51, 0, &opcodes::OUT_C_r8, "OUT", "(C), D" },
 				{ 0x52, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x53, 2, &opcodes::LD_n16_r16, "LD", "##, DE" },
+				{ 0x53, 2, &opcodes::LD_n16_r16, "LD", "(##), DE" },
 				{ 0x54, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x55, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x56, 0, &opcodes::IM_1,    "IM", "1" },
@@ -113,7 +113,7 @@ namespace emu
 				{ 0x58, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x59, 0, &opcodes::OUT_C_r8, "OUT", "(C), E" },
 				{ 0x5A, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x5B, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x5B, 2, &opcodes::LD_r16_dn16, "LD", "DE, (##)" },
 				{ 0x5C, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x5D, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x5E, 0, &opcodes::IM_2,    "IM", "2" },
@@ -122,7 +122,7 @@ namespace emu
 				{ 0x60, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x61, 0, &opcodes::OUT_C_r8, "OUT", "(C), H" },
 				{ 0x62, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x63, 2, &opcodes::LD_n16_r16, "LD", "##, HL" },
+				{ 0x63, 2, &opcodes::LD_n16_r16, "LD", "(##), HL" },
 				{ 0x64, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x65, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x66, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -130,7 +130,7 @@ namespace emu
 				{ 0x68, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x69, 0, &opcodes::OUT_C_r8, "OUT", "(C), L" },
 				{ 0x6A, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x6B, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x6B, 2, &opcodes::LD_r16_dn16, "LD", "HL, (##)" },
 				{ 0x6C, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x6D, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x6E, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -139,7 +139,7 @@ namespace emu
 				{ 0x70, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x71, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x72, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x73, 2, &opcodes::LD_n16_r16, "LD", "##, SP" },
+				{ 0x73, 2, &opcodes::LD_n16_r16, "LD", "(##), SP" },
 				{ 0x74, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x75, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x76, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -147,7 +147,7 @@ namespace emu
 				{ 0x78, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x79, 0, &opcodes::OUT_C_r8, "OUT", "(C), A" },
 				{ 0x7A, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x7B, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x7B, 2, &opcodes::LD_r16_dn16, "LD", "SP, (##)" },
 				{ 0x7C, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7D, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x7E, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -189,7 +189,7 @@ namespace emu
 
 				{ 0xA0, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xA1, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xA2, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xA2, 0, &opcodes::INI,     "INI", "" },
 				{ 0xA3, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xA4, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xA5, 0, &opcodes::Unknown, "UNKNOWN", "" },

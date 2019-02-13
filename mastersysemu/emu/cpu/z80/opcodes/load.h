@@ -163,7 +163,7 @@ namespace emu
 					return 0;
 				}
 
-				//Load I into A
+				//Load A from I
 				static u16 LD_A_I(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//A = I
@@ -175,7 +175,7 @@ namespace emu
 					return 0;
 				}
 
-				//Load R into A
+				//Load A from R
 				static u16 LD_A_R(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//A = R
@@ -211,6 +211,39 @@ namespace emu
 
 					//Load 16-bit param
 					(*reg) = (params[1] << 8) | params[0];
+
+					return 0;
+				}
+
+				//Load 16-bit register from value at 16-bit literal address
+				static u16 LD_r16_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u16* reg = nullptr;
+
+					switch (opcode.opcode & (REGISTER_DECODE_16_MASK << REGISTER_DECODE_LD_16_REG1_SHIFT))
+					{
+					case (REGISTER_DECODE_16_BC << REGISTER_DECODE_LD_16_REG1_SHIFT):
+						reg = &regs.main.bc;
+						break;
+					case (REGISTER_DECODE_16_DE << REGISTER_DECODE_LD_16_REG1_SHIFT):
+						reg = &regs.main.de;
+						break;
+					case (REGISTER_DECODE_16_HL << REGISTER_DECODE_LD_16_REG1_SHIFT):
+						reg = &regs.main.hl;
+						break;
+					case (REGISTER_DECODE_16_SP << REGISTER_DECODE_LD_16_REG1_SHIFT):
+						reg = &regs.sp;
+						break;
+					}
+
+					//Get address
+					u16 address = (params[1] << 8) | params[0];
+
+					//Read value at address
+					u8 lo = bus.memoryController.ReadMemory(address);
+					u8 hi = bus.memoryController.ReadMemory(address + 1);
+					(*reg) = (hi << 8) | lo;
 
 					return 0;
 				}
@@ -392,6 +425,18 @@ namespace emu
 					return 0;
 				}
 
+				//Load A from value at literal address
+				static u16 LD_A_d16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address
+					u16 address = (params[1] << 8) | params[0];
+
+					//Load into A
+					regs.main.a = bus.memoryController.ReadMemory(address);
+
+					return 0;
+				}
+
 				//Load literal address from A
 				static u16 LD_n16_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -400,6 +445,15 @@ namespace emu
 
 					//Load A into address
 					bus.memoryController.WriteMemory(address, regs.main.a);
+
+					return 0;
+				}
+
+				//Load address in (DE) from A
+				static u16 LD_dDE_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load A into address in DE
+					bus.memoryController.WriteMemory(regs.main.de, regs.main.a);
 
 					return 0;
 				}

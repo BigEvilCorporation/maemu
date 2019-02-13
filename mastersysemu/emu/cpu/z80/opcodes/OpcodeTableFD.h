@@ -4,8 +4,8 @@
 
 //All opcode handlers
 #include "opcodes/prefix.h"
-#include "opcodes/io.h"
-#include "opcodes/ld.h"
+#include "opcodes/ports.h"
+#include "opcodes/load.h"
 #include "opcodes/nop.h"
 
 namespace emu

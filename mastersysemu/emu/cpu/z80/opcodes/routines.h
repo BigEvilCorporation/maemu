@@ -44,6 +44,57 @@ namespace emu
 					return 0;
 				}
 
+				//Return on condition to address at top of stack
+				static u16 RET_CC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					bool result = false;
+
+					//Determine condition
+					u8 condition = ((opcode.opcode >> REGISTER_DECODE_JP_CONDITION_SHIFT) & REGISTER_DECODE_CONDITION_MASK);
+
+					switch (condition)
+					{
+					case REGISTER_DECODE_CONDITION_NZ:
+						result = !CheckFlagsZ(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_Z:
+						result = CheckFlagsZ(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_NC:
+						result = !CheckFlagsC(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_C:
+						result = CheckFlagsC(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_PO:
+						result = !CheckFlagsP(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_PE:
+						result = CheckFlagsP(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_POS:
+						result = !CheckFlagsS(regs.main.f);
+						break;
+					case REGISTER_DECODE_CONDITION_NEG:
+						result = CheckFlagsS(regs.main.f);
+						break;
+					}
+
+					//If condition met
+					if (result)
+					{
+						//Pop PC from stack
+						u8 lo = bus.memoryController.ReadMemory(regs.sp);
+						regs.sp++;
+						u8 hi = bus.memoryController.ReadMemory(regs.sp);
+						regs.sp++;
+
+						regs.pc = (hi << 8) | lo;
+					}
+
+					return 0;
+				}
+
 				//Call a restart routine
 				static u16 RST(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
