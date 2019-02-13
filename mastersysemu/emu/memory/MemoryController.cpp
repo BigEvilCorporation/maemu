@@ -59,7 +59,7 @@ namespace emu
 			{
 				MappedMemory& area = m_memoryMap[i];
 
-				if (address >= area.mapStart && address < area.mapEnd)
+				if (address >= area.mapStart && address <= area.mapEnd)
 				{
 					return &area;
 				}

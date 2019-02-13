@@ -104,6 +104,17 @@ namespace emu
 				else
 					flags &= ~FLAG_Z;
 			}
+
+			static void ComputeFlagsHC(u32 diff, u8& flags)
+			{
+				//Carry flag if bit 16 (unsigned overflow)
+				if (diff & 0x10000)
+					flags |= FLAG_C;
+				else
+					flags &= ~FLAG_C;
+
+				//TODO: H flag (carry from bit 3 to 4)
+			}
 		}
 	}
 }

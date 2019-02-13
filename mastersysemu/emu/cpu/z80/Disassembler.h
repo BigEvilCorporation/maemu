@@ -20,7 +20,7 @@ namespace emu
 				struct Instruction
 				{
 					u16 address;
-					u8 prefix;
+					u16 prefix;
 					u8 opcodeIdx;
 					const Opcode* opcode;
 					OpcodeParams params;

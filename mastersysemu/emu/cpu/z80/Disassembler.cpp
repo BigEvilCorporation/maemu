@@ -12,6 +12,46 @@ namespace emu
 		{
 			namespace disassembler
 			{
+				void HandleRedirect(u16& address, Instruction& instruction, const std::vector<u8>& rom)
+				{
+					u8 prefix = 0;
+
+					do
+					{
+						prefix = 0;
+
+						if (instruction.opcode->handler == opcodes::Prefix_CB)
+						{
+							prefix = 0xCB;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_DD)
+						{
+							prefix = 0xDD;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_ED)
+						{
+							prefix = 0xED;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_FD)
+						{
+							prefix = 0xFD;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
+						}
+
+					} while (prefix != 0);
+				}
+
 				void Disassemble(const std::vector<u8>& rom, u16 size, std::vector<Instruction>& disassembly)
 				{
 					u16 address = 0;
@@ -29,30 +69,7 @@ namespace emu
 						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
 
 						//Handle redirects
-						if (instruction.opcode->handler == opcodes::Prefix_CB)
-						{
-							instruction.prefix = 0xCB;
-							instruction.opcodeIdx = rom[address++];
-							instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
-						}
-						else if (instruction.opcode->handler == opcodes::Prefix_DD)
-						{
-							instruction.prefix = 0xDD;
-							instruction.opcodeIdx = rom[address++];
-							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
-						}
-						else if (instruction.opcode->handler == opcodes::Prefix_ED)
-						{
-							instruction.prefix = 0xED;
-							instruction.opcodeIdx = rom[address++];
-							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
-						}
-						else if (instruction.opcode->handler == opcodes::Prefix_FD)
-						{
-							instruction.prefix = 0xFD;
-							instruction.opcodeIdx = rom[address++];
-							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
-						}
+						HandleRedirect(address, instruction, rom);
 
 						//Output params
 						for (int i = 0; i < instruction.opcode->paramBytes; i++)
@@ -71,7 +88,7 @@ namespace emu
 
 					if (instruction.prefix)
 					{
-						text << "[" << SSTREAM_HEX2(instruction.prefix) << "] ";
+						text << "[" << SSTREAM_HEX4(instruction.prefix) << "] ";
 					}
 
 					text << SSTREAM_HEX2(instruction.opcodeIdx) << " " << instruction.opcode->name << " ";

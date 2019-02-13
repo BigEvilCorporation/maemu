@@ -11,6 +11,7 @@
 #include "memory/MemoryController.h"
 #include "memory/Storage.h"
 #include "ports/PortController.h"
+#include "peripherals/Joypad.h"
 #include "debug/SDSCConsole.h"
 
 #include <string>
@@ -35,6 +36,7 @@ namespace emu
 
 		//Debugging
 		void Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly);
+		void GetPCHistory(std::vector<u16>& history) const;
 		const debug::SDSCConsole& GetConsole() const;
 		const cpu::z80::Registers& GetRegistersZ80() const;
 		const cpu::vdp::Registers& GetRegistersVDP() const;
@@ -66,10 +68,11 @@ namespace emu
 		//Ports
 		ports::Controller* m_portController;
 
+		//Peripherals
+		peripherals::Joypad* m_joypad;
+		debug::SDSCConsole* m_console;
+
 		//Rendering
 		std::vector<u32> m_frameBuffer;
-
-		//Debug
-		debug::SDSCConsole* m_console;
 	};
 }

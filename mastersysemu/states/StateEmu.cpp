@@ -26,6 +26,7 @@ namespace app
 		, m_window(window)
 	{
 		m_debuggerState = DebuggerState::Break;
+		m_Z80ErrorState = 0;
 	}
 
 	void StateEmu::OnEnterState()
@@ -35,7 +36,7 @@ namespace app
 		m_gui = new ion::gui::GUI(ion::Vector2i(1024, 768));
 
 		//Initialise emulator
-		if (!m_masterSystem.LoadROM("roms/z80.bin"))
+		if (!m_masterSystem.LoadROM("roms/vdptest.sms"))
 		{
 			//Error
 		}
@@ -146,6 +147,12 @@ namespace app
 		if (m_debuggerDisassembly && debugAddressUpdated)
 		{
 			m_debuggerDisassembly->HighlightAddress(m_masterSystem.GetRegistersZ80().pc);
+
+			if (m_Z80ErrorState != m_masterSystem.GetRegistersZ80().internal.err)
+			{
+				DumpError();
+				m_Z80ErrorState = m_masterSystem.GetRegistersZ80().internal.err;
+			}
 		}
 
 		//Update UI
@@ -182,5 +189,21 @@ namespace app
 
 		//Render UI
 		m_gui->Render(renderer, viewport);
+	}
+
+	void StateEmu::DumpError()
+	{
+		std::stringstream error;
+		error << "Error: Z80 halted" << std::endl << "PC history: " << std::endl;
+
+		std::vector<u16> history;
+		m_masterSystem.GetPCHistory(history);
+
+		for (int i = 0; i < history.size(); i++)
+		{
+			error << i << " : 0x" << SSTREAM_HEX4(history[i]) << std::endl;
+		}
+
+		ion::debug::Log(error.str().c_str());
 	}
 }

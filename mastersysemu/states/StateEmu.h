@@ -42,6 +42,7 @@ namespace app
 		};
 
 		void SetupRenderer();
+		void DumpError();
 
 		//UI
 		ion::gui::GUI* m_gui;
@@ -66,5 +67,6 @@ namespace app
 		//Debugging
 		DebuggerState m_debuggerState;
 		std::vector<emu::cpu::z80::disassembler::Instruction> m_disassembly;
+		u8 m_Z80ErrorState;
 	};
 }

@@ -16,11 +16,11 @@
 #include <limits.h>
 #endif
 
-#if defined ION_PLATFORM_WINDOWS && !defined DEBUG
-int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-#else
+//#if defined ION_PLATFORM_WINDOWS && !defined DEBUG
+//int  WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+//#else
 int main(int numargs, char** args)
-#endif
+//#endif
 {
 	//Initialise platform
 	ion::platform::Initialise();

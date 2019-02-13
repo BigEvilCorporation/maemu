@@ -38,6 +38,7 @@ namespace emu
 		m_VDP = new cpu::vdp::VDP(*m_busVDP);
 
 		//Create peripherals
+		m_joypad = new peripherals::Joypad(*m_portController);
 		m_console = new debug::SDSCConsole(*m_portController);
 
 		//Initialise framebuffer
@@ -138,5 +139,10 @@ namespace emu
 	memory::Storage& MasterSystem::GetROM()
 	{
 		return *m_rom;
+	}
+
+	void MasterSystem::GetPCHistory(std::vector<u16>& history) const
+	{
+		return m_Z80->GetPCHistory(history);
 	}
 }

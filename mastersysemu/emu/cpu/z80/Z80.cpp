@@ -14,6 +14,8 @@ namespace emu
 				: m_bus(bus)
 			{
 				Reset();
+
+				m_history.resize(Z80_DEBUG_MAX_PC_HISTORY);
 			}
 
 			void Z80::Reset()
@@ -38,6 +40,12 @@ namespace emu
 			{
 				if (m_regs.internal.err == 0)
 				{
+					m_history[m_historyIdx++ % m_history.size()] = m_regs.pc;
+
+					//Clear prefix
+					m_regs.internal.prefix1 = 0;
+					m_regs.internal.prefix2 = 0;
+
 					//Read and decode next instruction
 					u8 opcodeIdx = m_bus.memoryController.ReadMemory(m_regs.pc++);
 
@@ -60,6 +68,16 @@ namespace emu
 			const Registers& Z80::GetRegisters() const
 			{
 				return m_regs;
+			}
+
+			void Z80::GetPCHistory(std::vector<u16>& history) const
+			{
+				history.resize(Z80_DEBUG_MAX_PC_HISTORY);
+
+				for (int i = 0; i < Z80_DEBUG_MAX_PC_HISTORY; i++)
+				{
+					history[i] = m_history[(m_historyIdx + i) % Z80_DEBUG_MAX_PC_HISTORY];
+				}
 			}
 		}
 	}

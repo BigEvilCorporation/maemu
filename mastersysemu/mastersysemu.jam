@@ -37,12 +37,13 @@ local SRC =
 	;
 
 # No TTY console in release builds
-CONSOLE_OPTION = windows ;
+#CONSOLE_OPTION = windows ;
+CONSOLE_OPTION = console ;
 
-if ( debug in $(CONFIG) )
-{
-	CONSOLE_OPTION = console ;
-}
+# if ( debug in $(CONFIG) )
+#{
+#	CONSOLE_OPTION = console ;
+#}
 
 C.IncludeDirectories mastersysemu : . ;
 

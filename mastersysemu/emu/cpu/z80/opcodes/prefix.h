@@ -20,6 +20,9 @@ namespace emu
 			{
 				static u16 Prefix_CB(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//CB prefix
+					regs.internal.prefix1 = 0xCB;
+
 					//Opcode in first param
 					const Opcode& redirect = OpcodeTableCB[params[0]];
 
@@ -37,6 +40,9 @@ namespace emu
 
 				static u16 Prefix_DD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//DD prefix
+					regs.internal.prefix1 = 0xDD;
+
 					//Opcode in first param
 					const Opcode& redirect = OpcodeTableDD[params[0]];
 
@@ -54,6 +60,9 @@ namespace emu
 
 				static u16 Prefix_ED(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//ED prefix
+					regs.internal.prefix1 = 0xED;
+
 					//Opcode in first param
 					const Opcode& redirect = OpcodeTableED[params[0]];
 
@@ -71,6 +80,9 @@ namespace emu
 
 				static u16 Prefix_FD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//FD prefix
+					regs.internal.prefix1 = 0xFD;
+
 					//Opcode in first param
 					const Opcode& redirect = OpcodeTableFD[params[0]];
 

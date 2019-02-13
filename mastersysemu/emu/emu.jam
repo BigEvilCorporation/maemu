@@ -55,6 +55,9 @@ local SRC =
 	ports/PortController.cpp
 	ports/PortController.h
 
+	peripherals/Joypad.cpp
+	peripherals/Joypad.h
+
 	debug/SDSCConsole.cpp
 	debug/SDSCConsole.h
 	

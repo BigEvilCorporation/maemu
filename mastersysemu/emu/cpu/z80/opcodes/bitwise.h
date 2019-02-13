@@ -140,6 +140,18 @@ namespace emu
 					return 0;
 				}
 
+				//Logic OR A with 8-bit literal
+				static u16 OR_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//OR A with param
+					regs.main.a |= params[0];
+
+					//Set flags
+					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
 				//Logic AND A with 8-bit register
 				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
