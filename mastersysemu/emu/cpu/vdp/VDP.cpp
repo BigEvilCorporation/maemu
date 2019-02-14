@@ -18,6 +18,8 @@ namespace emu
 				//Connect ports
 				bus.portController.AddHandler(PORT_VDP_CTRL, std::bind(&VDP::ReadControl, this, std::placeholders::_1), std::bind(&VDP::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
 				bus.portController.AddHandler(PORT_VDP_DATA, std::bind(&VDP::ReadData, this, std::placeholders::_1), std::bind(&VDP::WriteData, this, std::placeholders::_1, std::placeholders::_2));
+				bus.portController.AddHandler(PORT_VDP_HCOUNTER, std::bind(&VDP::ReadHCounter, this, std::placeholders::_1), std::bind(&VDP::WritePSG, this, std::placeholders::_1, std::placeholders::_2));
+				bus.portController.AddHandler(PORT_VDP_VCOUNTER, std::bind(&VDP::ReadVCounter, this, std::placeholders::_1), std::bind(&VDP::WritePSG, this, std::placeholders::_1, std::placeholders::_2));
 			}
 
 			void VDP::Reset()
@@ -31,6 +33,8 @@ namespace emu
 				m_controlReg.word = 0;
 				m_statusFlags = 0;
 				m_hiByteLatch = false;
+				m_counterH = 0;
+				m_counterV = 0;
 			}
 
 			u8 VDP::ReadControl(u16 address)
@@ -49,6 +53,16 @@ namespace emu
 
 				//Data port read returns internal read buffer
 				return m_readBuffer;
+			}
+
+			u8 VDP::ReadHCounter(u16 address)
+			{
+				return m_counterH;
+			}
+
+			u8 VDP::ReadVCounter(u16 address)
+			{
+				return m_counterV;
 			}
 
 			void VDP::WriteControl(u16 address, u8 value)
@@ -114,6 +128,16 @@ namespace emu
 
 				//Reset byte latch
 				m_hiByteLatch = false;
+			}
+
+			void VDP::WritePSG(u16 address, u8 value)
+			{
+
+			}
+
+			void VDP::BeginScanline(u8 scanline)
+			{
+				m_counterV = scanline;
 			}
 
 			void VDP::DrawLine(u32* data, int line)

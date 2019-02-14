@@ -86,6 +86,10 @@ namespace emu
 		m_Z80->Reset();
 		m_VDP->Reset();
 
+		//Reset counters
+		m_cycleCount = 0;
+		m_cyclesToNextScanline = MS_CYCLES_PER_SCANLINE;
+
 		//TODO: Clear memory
 	}
 
@@ -95,15 +99,40 @@ namespace emu
 		for (int i = 0; i < steps; i++)
 		{
 			m_Z80->Step();
+
+			//TODO: Get cycle count from Step();
+			m_cycleCount += 4;
+			m_cyclesToNextScanline -= 4;
+
+			if (m_cyclesToNextScanline <= 0)
+			{
+				//TODO: Interrupt callbacks
+				m_VDP->BeginScanline(m_scanline);
+				
+				int yborder = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
+				if (m_scanline >= yborder)
+				{
+					m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline - yborder);
+				}
+
+				m_scanline++;
+
+				if (m_scanline >= cpu::vdp::VDP_SCREEN_HEIGHT)
+				{
+					m_scanline = 0;
+				}
+
+				m_cyclesToNextScanline = MS_CYCLES_PER_SCANLINE;
+			}
 		}
 
 		//TODO: Interrupt callbacks
-		int yoffset = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
-
-		for (int i = 0; i < cpu::vdp::VDP_SCREEN_HEIGHT; i++)
-		{
-			m_VDP->DrawLine(&m_frameBuffer[(yoffset + i) * cpu::vdp::VDP_SCREEN_WIDTH], i);
-		}
+		//int yoffset = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
+		//
+		//for (int i = 0; i < cpu::vdp::VDP_SCREEN_HEIGHT; i++)
+		//{
+		//	m_VDP->DrawLine(&m_frameBuffer[(yoffset + i) * cpu::vdp::VDP_SCREEN_WIDTH], i);
+		//}
 	}
 
 	const std::vector<u32>& MasterSystem::GetFramebuffer() const

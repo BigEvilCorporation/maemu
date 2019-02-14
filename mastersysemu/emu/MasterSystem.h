@@ -72,6 +72,11 @@ namespace emu
 		peripherals::Joypad* m_joypad;
 		debug::SDSCConsole* m_console;
 
+		//Timing
+		s64 m_cycleCount;
+		s64 m_cyclesToNextScanline;
+		u8 m_scanline;
+
 		//Rendering
 		std::vector<u32> m_frameBuffer;
 	};

@@ -22,8 +22,16 @@ namespace emu
 				//Ports
 				u8 ReadControl(u16 address);
 				u8 ReadData(u16 address);
+				u8 ReadHCounter(u16 address);
+				u8 ReadVCounter(u16 address);
 				void WriteControl(u16 address, u8 value);
 				void WriteData(u16 address, u8 value);
+
+				//Timing
+				void BeginScanline(u8 scanline);
+
+				//TODO: Move PSG
+				void WritePSG(u16 address, u8 value);
 
 				//Rendering
 				void DrawLine(u32* data, int line);
@@ -139,6 +147,9 @@ namespace emu
 				bool m_hiByteLatch;
 				u8 m_statusFlags;
 				u8 m_readBuffer;
+
+				u8 m_counterH;
+				u8 m_counterV;
 			};
 		}
 	}
