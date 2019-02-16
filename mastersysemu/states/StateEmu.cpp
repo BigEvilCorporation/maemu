@@ -36,7 +36,7 @@ namespace app
 		m_gui = new ion::gui::GUI(ion::Vector2i(1024, 768));
 
 		//Initialise emulator
-		if (!m_masterSystem.LoadROM("roms/vdptest.sms"))
+		if (!m_masterSystem.LoadROM("roms/zexall_sdsc.sms"))
 		{
 			//Error
 		}
@@ -47,6 +47,7 @@ namespace app
 		//Create debugger
 		m_debuggerRegsZ80 = new debug::WindowRegsZ80(*m_gui, m_masterSystem.GetRegistersZ80(), ion::Vector2i(20, 20), ion::Vector2i(200, 400));
 		m_debuggerRegsVDP = new debug::WindowRegsVDP(*m_gui, m_masterSystem.GetRegistersVDP(), ion::Vector2i(230, 20), ion::Vector2i(200, 400));
+		m_debuggerROM = new debug::WindowMemory("ROM", *m_gui, m_masterSystem.GetROM(), ion::Vector2i(450, 10), ion::Vector2i(400, 195));
 		m_debuggerRAM = new debug::WindowMemory("RAM", *m_gui, m_masterSystem.GetRAM(), ion::Vector2i(440, 20), ion::Vector2i(400, 195));
 		m_debuggerVRAM = new debug::WindowMemory("VRAM", *m_gui, m_masterSystem.GetVRAM(), ion::Vector2i(430, 30), ion::Vector2i(400, 195));
 		m_debuggerConsole = new debug::WindowConsole(*m_gui, m_masterSystem.GetConsole().GetBuffer(), ion::Vector2i(440, 230), ion::Vector2i(400, 195));
@@ -56,6 +57,7 @@ namespace app
 		m_gui->AddWindow(*m_debuggerDisassembly);
 		m_gui->AddWindow(*m_debuggerRegsZ80);
 		m_gui->AddWindow(*m_debuggerRegsVDP);
+		m_gui->AddWindow(*m_debuggerROM);
 		m_gui->AddWindow(*m_debuggerRAM);
 		m_gui->AddWindow(*m_debuggerVRAM);
 
@@ -143,6 +145,15 @@ namespace app
 			}
 		}
 
+		//Reset button
+		if (m_window.HasFocus())
+		{
+			if (keyboard->KeyPressedThisFrame(ion::input::Keycode::TAB))
+			{
+				m_masterSystem.Reset();
+			}
+		}
+
 		//Update debugger
 		if (m_debuggerDisassembly && debugAddressUpdated)
 		{
@@ -152,6 +163,7 @@ namespace app
 			{
 				DumpError();
 				m_Z80ErrorState = m_masterSystem.GetRegistersZ80().internal.err;
+				m_debuggerState = DebuggerState::Break;
 			}
 		}
 
@@ -201,7 +213,18 @@ namespace app
 
 		for (int i = 0; i < history.size(); i++)
 		{
-			error << i << " : 0x" << SSTREAM_HEX4(history[i]) << std::endl;
+			std::vector<emu::cpu::z80::disassembler::Instruction> instructions;
+			m_masterSystem.Disassemble(instructions, history[i], 1);
+
+			if (instructions.size() > 0)
+			{
+				error << i << " : 0x" << SSTREAM_HEX4(history[i]) << " : " << emu::cpu::z80::disassembler::ToText(instructions[0]) << std::endl;
+			}
+			else
+			{
+				error << i << " : 0x" << SSTREAM_HEX4(history[i]) << " : ? " << std::endl;
+			}
+			
 		}
 
 		ion::debug::Log(error.str().c_str());

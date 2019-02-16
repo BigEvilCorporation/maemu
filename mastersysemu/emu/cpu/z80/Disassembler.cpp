@@ -52,6 +52,46 @@ namespace emu
 					} while (prefix != 0);
 				}
 
+				void HandleRedirect(u16& address, Instruction& instruction, memory::Controller& memoryController)
+				{
+					u8 prefix = 0;
+
+					do
+					{
+						prefix = 0;
+
+						if (instruction.opcode->handler == opcodes::Prefix_CB)
+						{
+							prefix = 0xCB;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = memoryController.ReadMemory(address++);
+							instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_DD)
+						{
+							prefix = 0xDD;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = memoryController.ReadMemory(address++);
+							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_ED)
+						{
+							prefix = 0xED;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = memoryController.ReadMemory(address++);
+							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
+						}
+						else if (instruction.opcode->handler == opcodes::Prefix_FD)
+						{
+							prefix = 0xFD;
+							instruction.prefix = (instruction.prefix << 8) | prefix;
+							instruction.opcodeIdx = memoryController.ReadMemory(address++);
+							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
+						}
+
+					} while (prefix != 0);
+				}
+
 				void Disassemble(const std::vector<u8>& rom, u16 size, std::vector<Instruction>& disassembly)
 				{
 					u16 address = 0;
@@ -75,6 +115,33 @@ namespace emu
 						for (int i = 0; i < instruction.opcode->paramBytes; i++)
 						{
 							instruction.params[i] = rom[address++];
+						}
+
+						disassembly.push_back(instruction);
+					}
+				}
+
+				void Disassemble(memory::Controller& memoryController, u16 address, int numInstructions, std::vector<Instruction>& disassembly)
+				{
+					for (int i = 0; i < numInstructions; i++)
+					{
+						Instruction instruction;
+						instruction.address = address;
+						instruction.prefix = 0;
+
+						//Get opcode idx
+						instruction.opcodeIdx = memoryController.ReadMemory(address++);
+
+						//Get opcode
+						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
+
+						//Handle redirects
+						HandleRedirect(address, instruction, memoryController);
+
+						//Output params
+						for (int i = 0; i < instruction.opcode->paramBytes; i++)
+						{
+							instruction.params[i] = memoryController.ReadMemory(address++);
 						}
 
 						disassembly.push_back(instruction);
@@ -107,7 +174,7 @@ namespace emu
 								//2-byte param, switch endianness
 								text << SSTREAM_HEX2(instruction.params[paramIdx+1]);
 								text << SSTREAM_HEX2(instruction.params[paramIdx]);
-								i += 2;
+								i++;
 							}
 							else
 							{

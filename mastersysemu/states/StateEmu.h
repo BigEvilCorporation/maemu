@@ -51,6 +51,7 @@ namespace app
 		debug::WindowDisassembly* m_debuggerDisassembly;
 		debug::WindowRegsZ80* m_debuggerRegsZ80;
 		debug::WindowRegsVDP* m_debuggerRegsVDP;
+		debug::WindowMemory* m_debuggerROM;
 		debug::WindowMemory* m_debuggerRAM;
 		debug::WindowMemory* m_debuggerVRAM;
 		ion::gamekit::FPSCounter m_fpsCounter;

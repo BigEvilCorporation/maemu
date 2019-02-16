@@ -6,6 +6,8 @@
 #include "opcodes/OpcodeTableED.h"
 #include "opcodes/OpcodeTableFD.h"
 
+#include "../../memory/MemoryController.h"
+
 #include <string>
 #include <vector>
 
@@ -27,6 +29,7 @@ namespace emu
 				};
 
 				void Disassemble(const std::vector<u8>& rom, u16 size, std::vector<Instruction>& disassembly);
+				void Disassemble(memory::Controller& memoryController, u16 address, int numInstructions, std::vector<Instruction>& disassembly);
 				std::string ToText(const Instruction& instruction);
 				std::string ToText(const std::vector<Instruction>& disassembly);
 			}

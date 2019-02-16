@@ -2,7 +2,11 @@
 #include "Constants.h"
 #include "Interrupts.h"
 
+#include "../../Constants.h"
+
 #include <ion/core/debug/Debug.h>
+#include <ion/maths/Maths.h>
+#include <ion/core/time/Time.h>
 
 namespace emu
 {
@@ -34,6 +38,26 @@ namespace emu
 
 				//Clear error flag
 				m_regs.internal.err = 0;
+
+				// 1616147354
+
+				int seed = -1328377131; // ion::time::GetSystemTicks();
+				ion::debug::log << "Rand seed: " << seed << ion::debug::end;
+				ion::maths::RandSeed(seed);
+				m_regs.main.bc = ion::maths::RandInt();
+				m_regs.main.de = ion::maths::RandInt();
+				m_regs.main.hl = ion::maths::RandInt();
+				m_regs.alt.af = ion::maths::RandInt();
+				m_regs.alt.bc = ion::maths::RandInt();
+				m_regs.alt.de = ion::maths::RandInt();
+				m_regs.alt.hl = ion::maths::RandInt();
+				m_regs.ix = ion::maths::RandInt();
+				m_regs.iy = ion::maths::RandInt();
+
+				for (int i = ADDR_RAM_START; i < ADDR_RAM_END; i++)
+				{
+					m_bus.memoryController.WriteMemory(i, ion::maths::RandInt());
+				}
 			}
 
 			void Z80::Step()

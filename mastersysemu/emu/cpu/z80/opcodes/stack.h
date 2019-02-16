@@ -43,6 +43,20 @@ namespace emu
 
 					return 0;
 				}
+
+				//Pop IY from stack
+				static u16 POP_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Pop register and increment stack
+					u8 lo = bus.memoryController.ReadMemory(regs.sp);
+					regs.sp++;
+					u8 hi = bus.memoryController.ReadMemory(regs.sp);
+					regs.sp++;
+
+					regs.iy = (hi << 8) | lo;
+
+					return 0;
+				}
 			}
 		}
 	}

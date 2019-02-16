@@ -26,6 +26,7 @@ namespace emu
 			// n16 : 16-bit literal number
 			// d   : dereference register (read/write address)
 			// b   : bit
+			// a   : alt register
 			//
 			// e.g.:
 			//   LD_r8_n8  : Load 8-bit register from 8-bit literal

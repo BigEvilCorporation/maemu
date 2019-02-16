@@ -13,6 +13,18 @@ namespace emu
 				static const int REGISTER_DECODE_ARITH_REG8_SHIFT = 0x3;
 				static const int REGISTER_DECODE_ARITH_REG16_SHIFT = 0x4;
 
+				//Add 8-bit literal to A
+				static u16 ADD_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Add param to A
+					regs.main.hl += params[0];
+
+					//Determine flags
+					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
 				//Add 16-bit register to HL
 				static u16 ADD_HL_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{

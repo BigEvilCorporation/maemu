@@ -66,6 +66,22 @@ namespace emu
 
 					return 0;
 				}
+
+				//Increment value at address in (HL)
+				static u16 INC_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+
+					//Increment and write
+					value++;
+					bus.memoryController.WriteMemory(regs.main.hl, value);
+
+					//Set flags
+					ComputeFlagsZCS(value, regs.main.f);
+
+					return 0;
+				}
 			}
 		}
 	}

@@ -113,7 +113,7 @@ namespace emu
 				//Load IY from 16-bit literal
 				static u16 LD_IY_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Load param into IX
+					//Load param into IY
 					regs.iyh = params[0];
 					regs.iyl = params[1];
 
@@ -133,7 +133,7 @@ namespace emu
 				static u16 LD_dHL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG2_SHIFT);
 
 					//Load reg into (HL)
 					bus.memoryController.WriteMemory(regs.main.hl, reg);
@@ -201,6 +201,15 @@ namespace emu
 					return 0;
 				}
 
+				//Load A from address in (DE)
+				static u16 LD_A_dDE(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load A from address in DE
+					regs.main.a = bus.memoryController.ReadMemory(regs.main.de);
+
+					return 0;
+				}
+
 				//Load address in (DE) from A
 				static u16 LD_dDE_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -261,6 +270,29 @@ namespace emu
 					//Load IX into address
 					bus.memoryController.WriteMemory(address, regs.iyl);
 					bus.memoryController.WriteMemory(address + 1, regs.iyh);
+
+					return 0;
+				}
+
+				//Load address at (DE) from address at (HL), inc both regs, loop until BC == 0
+				static u16 LDIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy from (HL) to (DE)
+					bus.memoryController.WriteMemory(regs.main.de, bus.memoryController.ReadMemory(regs.main.hl));
+
+					//Increment addresses
+					regs.main.hl++;
+					regs.main.de++;
+
+					//Decrement counter
+					regs.main.bc--;
+
+					//If BC != 0, decrement PC to loop
+					if (regs.main.bc != 0)
+					{
+						//This instruction + prefix = 2 bytes
+						regs.pc -= 2;
+					}
 
 					return 0;
 				}

@@ -20,6 +20,16 @@ namespace emu
 					return 0;
 				}
 
+				//Exchange DE with HL
+				static u16 EX_DE_HL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					u16 temp = regs.main.de;
+					regs.main.de = regs.main.hl;
+					regs.main.hl = temp;
+
+					return 0;
+				}
+
 				//Exchange BC with BC', DE with DE', HL with HL'
 				static u16 EXX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{

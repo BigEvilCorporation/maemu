@@ -125,6 +125,42 @@ namespace emu
 					bus.memoryController.WriteMemory(regs.iy + params[0], value);
 				}
 
+				//Rotate A to the left
+				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Shift left 16-bit
+					u16 shift = ((u16)regs.main.a << 1);
+
+					//Back to A
+					regs.main.a = (shift & 0xff);
+
+					//Copy bit 7 to bit 0 and C flag
+					u8 carry = (shift >> 8);
+					regs.main.a = (regs.main.a & 0xFE) | carry;
+					SetFlagC(carry, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate A to the right
+				static u16 RRCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Shift to upper byte -1 bit
+					u16 shift = ((u16)regs.main.a << 15);
+
+					//Byte part back to A
+					regs.main.a = (shift >> 8);
+
+					//Copy bit 0 to bit 7
+					regs.main.a = (regs.main.a & 0x7F) | (u8)shift;
+
+					//Copy bit 0 to C flag
+					u8 carry = (shift >> 7);
+					SetFlagC(carry, regs.main.f);
+
+					return 0;
+				}
+
 				//Logic OR A with 8-bit register
 				static u16 OR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -152,6 +188,18 @@ namespace emu
 					return 0;
 				}
 
+				//Logic OR A with value at address in (HL)
+				static u16 OR_A_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//OR A with (HL)
+					regs.main.a |= bus.memoryController.ReadMemory(regs.main.hl);
+
+					//Set flags
+					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
 				//Logic AND A with 8-bit register
 				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -172,6 +220,33 @@ namespace emu
 				{
 					//AND A with literal
 					regs.main.a &= params[0];
+
+					//Set flags
+					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Logic XOR A with 8-bit register
+				static u16 XOR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+
+					//XOR A with reg
+					regs.main.a ^= reg;
+
+					//Set flags
+					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Logic XOR A with value at address in (HL)
+				static u16 XOR_A_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//XOR A with (HL)
+					regs.main.a ^= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);

@@ -19,7 +19,7 @@ namespace emu
 		m_memoryControllerZ80 = new memory::Controller();
 		m_memoryControllerVRAM = new memory::Controller();
 		m_memoryControllerCRAM = new memory::Controller();
-		m_rom = new memory::Storage(ADDR_ROM_START, ADDR_ROM_END, *m_memoryControllerZ80);
+		m_rom = new memory::Storage(ADDR_ROM_START, ADDR_ROM_END, *m_memoryControllerZ80, memory::Storage::FLAGS_READONLY);
 		m_ram = new memory::Storage(ADDR_RAM_START, ADDR_RAM_END, *m_memoryControllerZ80);
 		m_vram = new memory::Storage(0, cpu::vdp::VDP_VRAM_SIZE, *m_memoryControllerVRAM);
 		m_cram = new memory::Storage(0, cpu::vdp::VDP_CRAM_SIZE, *m_memoryControllerCRAM);
@@ -78,6 +78,11 @@ namespace emu
 	void MasterSystem::Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly)
 	{
 		cpu::z80::disassembler::Disassemble(m_rom->GetMemory(), m_romSize, disassembly);
+	}
+
+	void MasterSystem::Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly, u16 address, int numInstructions)
+	{
+		cpu::z80::disassembler::Disassemble(*m_memoryControllerZ80, address, numInstructions, disassembly);
 	}
 
 	void MasterSystem::Reset()

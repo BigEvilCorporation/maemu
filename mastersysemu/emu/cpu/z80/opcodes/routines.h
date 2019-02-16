@@ -13,6 +13,7 @@ namespace emu
 				static const int REGISTER_DECODE_RST_CODE_MASK = 0x07;
 				static const int REGISTER_DECODE_RST_CODE_SHIFT = 0x03;
 				static const int REGISTER_DECODE_RST_CODE_TO_ADDR = 0x8;
+				static const int REGISTER_DECODE_CALL_CONDITION_SHIFT = 0x03;
 				static const int REGISTER_DECODE_RET_CONDITION_SHIFT = 0x03;
 
 				//Call routine at literal address
@@ -26,6 +27,28 @@ namespace emu
 
 					//Load PC
 					regs.pc = (params[1] << 8) | params[0];
+
+					return 0;
+				}
+
+				//Call on condition routine at literal address
+				static u16 CALL_CC_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine condition
+					bool result = DecodeCondition(regs, opcode.opcode, REGISTER_DECODE_CALL_CONDITION_SHIFT);
+
+					//If condition met
+					if (result)
+					{
+						//Push PC to stack
+						regs.sp--;
+						bus.memoryController.WriteMemory(regs.sp, (regs.pc >> 8));
+						regs.sp--;
+						bus.memoryController.WriteMemory(regs.sp, (regs.pc & 0xFF));
+
+						//Load PC
+						regs.pc = (params[1] << 8) | params[0];
+					}
 
 					return 0;
 				}

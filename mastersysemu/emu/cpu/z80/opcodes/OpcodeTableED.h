@@ -204,7 +204,7 @@ namespace emu
 				{ 0xAE, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xAF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
-				{ 0xB0, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xB0, 0, &opcodes::LDIR,    "LDIR", "" },
 				{ 0xB1, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xB2, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xB3, 0, &opcodes::OTIR,    "OTIR", "" },
