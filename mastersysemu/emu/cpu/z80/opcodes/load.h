@@ -83,6 +83,20 @@ namespace emu
 					return 0;
 				}
 
+				//Load HL from value at 16-bit literal address
+				static u16 LD_HL_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address
+					u16 address = (params[1] << 8) | params[0];
+
+					//Read value at address
+					u8 lo = bus.memoryController.ReadMemory(address);
+					u8 hi = bus.memoryController.ReadMemory(address + 1);
+					regs.main.hl = (hi << 8) | lo;
+
+					return 0;
+				}
+
 				//Load 16-bit register from value at 16-bit literal address
 				static u16 LD_r16_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -96,6 +110,34 @@ namespace emu
 					u8 lo = bus.memoryController.ReadMemory(address);
 					u8 hi = bus.memoryController.ReadMemory(address + 1);
 					reg = (hi << 8) | lo;
+
+					return 0;
+				}
+
+				//Load IX from value at 16-bit literal address
+				static u16 LD_IX_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address
+					u16 address = (params[1] << 8) | params[0];
+
+					//Read value at address
+					u8 lo = bus.memoryController.ReadMemory(address);
+					u8 hi = bus.memoryController.ReadMemory(address + 1);
+					regs.ix = (hi << 8) | lo;
+
+					return 0;
+				}
+
+				//Load IY from value at 16-bit literal address
+				static u16 LD_IY_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address
+					u16 address = (params[1] << 8) | params[0];
+
+					//Read value at address
+					u8 lo = bus.memoryController.ReadMemory(address);
+					u8 hi = bus.memoryController.ReadMemory(address + 1);
+					regs.iy = (hi << 8) | lo;
 
 					return 0;
 				}
@@ -149,6 +191,15 @@ namespace emu
 
 					//Load reg into (IX + offset)
 					bus.memoryController.WriteMemory(regs.ix + params[0], reg);
+
+					return 0;
+				}
+
+				//Load address in IX + offset from 8-bit literal
+				static u16 LD_dIX_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load literal into (IX + offset)
+					bus.memoryController.WriteMemory(regs.ix + params[0], params[1]);
 
 					return 0;
 				}

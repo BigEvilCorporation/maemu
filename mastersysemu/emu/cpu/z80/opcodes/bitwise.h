@@ -146,13 +146,13 @@ namespace emu
 				static u16 RRCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Shift to upper byte -1 bit
-					u16 shift = ((u16)regs.main.a << 15);
+					u16 shift = ((u16)regs.main.a << 7);
 
 					//Byte part back to A
 					regs.main.a = (shift >> 8);
 
 					//Copy bit 0 to bit 7
-					regs.main.a = (regs.main.a & 0x7F) | (u8)shift;
+					regs.main.a = (regs.main.a & 0x7F) | (shift & 0xFF);
 
 					//Copy bit 0 to C flag
 					u8 carry = (shift >> 7);

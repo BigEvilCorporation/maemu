@@ -22,13 +22,13 @@ namespace emu
 
 				//Debugging
 				const Registers& GetRegisters() const;
-				void GetPCHistory(std::vector<u16>& history) const;
+				void GetPCHistory(std::vector<Registers>& history) const;
 
 			private:
 				Registers m_regs;
 				Bus& m_bus;
 
-				std::vector<u16> m_history;
+				std::vector<Registers> m_history;
 				u32 m_historyIdx;
 			};
 		}

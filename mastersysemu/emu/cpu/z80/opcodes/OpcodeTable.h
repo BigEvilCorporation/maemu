@@ -71,7 +71,7 @@ namespace emu
 				{ 0x27, 0, &opcodes::Unknown,	"UNKNOWN", "" },
 				{ 0x28, 1, &opcodes::JR_Z_n8,	"JR", "Z, #" },
 				{ 0x29, 0, &opcodes::ADD_HL_r16,"ADD", "HL, HL" },
-				{ 0x2A, 2, &opcodes::LD_r16_dn16,"LD", "HL, (##)" },
+				{ 0x2A, 2, &opcodes::LD_HL_dn16,"LD", "HL, (##)" },
 				{ 0x2B, 0, &opcodes::DEC_r16,	"DEC", "HL" },
 				{ 0x2C, 0, &opcodes::INC_r8,	"INC", "L" },
 				{ 0x2D, 0, &opcodes::DEC_r8,	"DEC", "L" },

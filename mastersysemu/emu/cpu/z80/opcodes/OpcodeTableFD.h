@@ -60,7 +60,7 @@ namespace emu
 				{ 0x27, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x28, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x29, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x2A, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x2A, 2, &opcodes::LD_IY_dn16, "LD", "IY, (##)" },
 				{ 0x2B, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x2C, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x2D, 0, &opcodes::Unknown, "UNKNOWN", "" },

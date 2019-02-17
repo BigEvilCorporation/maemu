@@ -26,13 +26,13 @@ namespace emu
 		void SDSCConsole::Clear()
 		{
 			m_buffer.clear();
-			m_buffer.resize(SDSC_CONSOLE_WIDTH * SDSC_CONSOLE_HEIGHT);
-
-			//Fill with spaces, rather than 0
-			for (int i = 0; i < m_buffer.size(); i++)
-			{
-				m_buffer[i] = ' ';
-			}
+			//m_buffer.resize(SDSC_CONSOLE_WIDTH * SDSC_CONSOLE_HEIGHT);
+			//
+			////Fill with spaces, rather than 0
+			//for (int i = 0; i < m_buffer.size(); i++)
+			//{
+			//	m_buffer[i] = ' ';
+			//}
 		}
 
 		u8 SDSCConsole::Read(u16 address)
@@ -95,11 +95,26 @@ namespace emu
 
 		void SDSCConsole::WriteData(u16 address, u8 value)
 		{
-			//Write to buffer
-			m_buffer[(m_cursorY * SDSC_CONSOLE_WIDTH) + m_cursorX] = value;
+			if (value < 10)
+			{
+				value += '0';
+			}
 
-			//Next X
-			m_cursorX++;
+			m_buffer.push_back(value);
+
+			/*
+			if (value == '\n')
+			{
+				m_cursorX = SDSC_CONSOLE_WIDTH;
+			}
+			else
+			{
+				//Write to buffer
+				m_buffer[(m_cursorY * SDSC_CONSOLE_WIDTH) + m_cursorX] = value;
+
+				//Next X
+				m_cursorX++;
+			}
 
 			if (m_cursorX == SDSC_CONSOLE_WIDTH)
 			{
@@ -113,6 +128,7 @@ namespace emu
 					m_cursorY = SDSC_CONSOLE_HEIGHT - 1;
 				}
 			}
+			*/
 		}
 	}
 }

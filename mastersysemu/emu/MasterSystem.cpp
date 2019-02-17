@@ -175,7 +175,7 @@ namespace emu
 		return *m_rom;
 	}
 
-	void MasterSystem::GetPCHistory(std::vector<u16>& history) const
+	void MasterSystem::GetPCHistory(std::vector<cpu::z80::Registers>& history) const
 	{
 		return m_Z80->GetPCHistory(history);
 	}

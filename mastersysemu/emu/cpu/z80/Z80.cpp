@@ -64,7 +64,7 @@ namespace emu
 			{
 				if (m_regs.internal.err == 0)
 				{
-					m_history[m_historyIdx++ % m_history.size()] = m_regs.pc;
+					m_history[m_historyIdx++ % m_history.size()] = m_regs;
 
 					//Clear prefix
 					m_regs.internal.prefix1 = 0;
@@ -94,7 +94,7 @@ namespace emu
 				return m_regs;
 			}
 
-			void Z80::GetPCHistory(std::vector<u16>& history) const
+			void Z80::GetPCHistory(std::vector<Registers>& history) const
 			{
 				history.resize(Z80_DEBUG_MAX_PC_HISTORY);
 

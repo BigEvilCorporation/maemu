@@ -208,23 +208,38 @@ namespace app
 		std::stringstream error;
 		error << "Error: Z80 halted" << std::endl << "PC history: " << std::endl;
 
-		std::vector<u16> history;
+		std::vector<emu::cpu::z80::Registers> history;
 		m_masterSystem.GetPCHistory(history);
 
 		for (int i = 0; i < history.size(); i++)
 		{
 			std::vector<emu::cpu::z80::disassembler::Instruction> instructions;
-			m_masterSystem.Disassemble(instructions, history[i], 1);
+			m_masterSystem.Disassemble(instructions, history[i].pc, 1);
+
+			error << i << " : 0x" << SSTREAM_HEX4(history[i].pc);
+			error << " AF:" << SSTREAM_HEX4(history[i].main.af);
+			error << " BC:" << SSTREAM_HEX4(history[i].main.bc);
+			error << " DE:" << SSTREAM_HEX4(history[i].main.de);
+			error << " HL:" << SSTREAM_HEX4(history[i].main.hl);
+			error << " AF':" << SSTREAM_HEX4(history[i].alt.af);
+			error << " BC':" << SSTREAM_HEX4(history[i].alt.bc);
+			error << " DE':" << SSTREAM_HEX4(history[i].alt.de);
+			error << " HL:" << SSTREAM_HEX4(history[i].main.hl);
+			error << " IX:" << SSTREAM_HEX4(history[i].ix);
+			error << " IY:" << SSTREAM_HEX4(history[i].iy);
+			error << " SP:" << SSTREAM_HEX4(history[i].sp);
+			error << std::endl;
 
 			if (instructions.size() > 0)
 			{
-				error << i << " : 0x" << SSTREAM_HEX4(history[i]) << " : " << emu::cpu::z80::disassembler::ToText(instructions[0]) << std::endl;
+				error << emu::cpu::z80::disassembler::ToText(instructions[0]);
 			}
 			else
 			{
-				error << i << " : 0x" << SSTREAM_HEX4(history[i]) << " : ? " << std::endl;
+				error << "?";
 			}
-			
+
+			error << std::endl;
 		}
 
 		ion::debug::Log(error.str().c_str());
