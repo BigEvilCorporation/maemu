@@ -47,6 +47,34 @@ namespace emu
 					return 0;
 				}
 
+				//Load IXH from 8-bit literal
+				static u16 LD_IXH_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					regs.ixh = params[0];
+					return 0;
+				}
+
+				//Load IXL from 8-bit literal
+				static u16 LD_IXL_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					regs.ixl = params[0];
+					return 0;
+				}
+
+				//Load IYH from 8-bit literal
+				static u16 LD_IYH_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					regs.iyh = params[0];
+					return 0;
+				}
+
+				//Load IYL from 8-bit literal
+				static u16 LD_IYL_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					regs.iyl = params[0];
+					return 0;
+				}
+
 				//Load A from I
 				static u16 LD_A_I(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -183,7 +211,7 @@ namespace emu
 					return 0;
 				}
 
-				//Load address in IX + offset from 8-bit register
+				//Load address in (IX + offset) from 8-bit register
 				static u16 LD_dIX_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
@@ -195,7 +223,19 @@ namespace emu
 					return 0;
 				}
 
-				//Load address in IX + offset from 8-bit literal
+				//Load address in (IY + offset) from 8-bit register
+				static u16 LD_dIY_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
+
+					//Load reg into (IY + offset)
+					bus.memoryController.WriteMemory(regs.iy + params[0], reg);
+
+					return 0;
+				}
+
+				//Load address in (IX + offset) from 8-bit literal
 				static u16 LD_dIX_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Load literal into (IX + offset)
@@ -204,14 +244,11 @@ namespace emu
 					return 0;
 				}
 
-				//Load address in IY + offset from 8-bit register
-				static u16 LD_dIY_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				//Load address in (IY + offset) from 8-bit literal
+				static u16 LD_dIY_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
-
-					//Load reg into (IY + offset)
-					bus.memoryController.WriteMemory(regs.iy + params[0], reg);
+					//Load literal into (IY + offset)
+					bus.memoryController.WriteMemory(regs.iy + params[0], params[1]);
 
 					return 0;
 				}
@@ -321,6 +358,45 @@ namespace emu
 					//Load IX into address
 					bus.memoryController.WriteMemory(address, regs.iyl);
 					bus.memoryController.WriteMemory(address + 1, regs.iyh);
+
+					return 0;
+				}
+
+				//Load address at (DE) from address at (HL), dec both regs and dec BC
+				static u16 LDD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy from (HL) to (DE)
+					bus.memoryController.WriteMemory(regs.main.de, bus.memoryController.ReadMemory(regs.main.hl));
+
+					//Decrement addresses
+					regs.main.hl--;
+					regs.main.de--;
+
+					//Decrement counter
+					regs.main.bc--;
+
+					return 0;
+				}
+
+				//Load address at (DE) from address at (HL), dec both regs, loop until BC == 0
+				static u16 LDDR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy from (HL) to (DE)
+					bus.memoryController.WriteMemory(regs.main.de, bus.memoryController.ReadMemory(regs.main.hl));
+
+					//Decrement addresses
+					regs.main.hl--;
+					regs.main.de--;
+
+					//Decrement counter
+					regs.main.bc--;
+
+					//If BC != 0, decrement PC to loop
+					if (regs.main.bc != 0)
+					{
+						//This instruction + prefix = 2 bytes
+						regs.pc -= 2;
+					}
 
 					return 0;
 				}
