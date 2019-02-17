@@ -55,6 +55,21 @@ namespace emu
 					return 0;
 				}
 
+				//Add 16-bit register to IY
+				static u16 ADD_IY_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
+
+					//Add to IX
+					regs.iy += reg;
+
+					//Determine C/H flags
+					ComputeFlagsHC(regs.iy, regs.main.f);
+
+					return 0;
+				}
+
 				//Subtract 8-bit literal from A
 				static u16 SUB_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{

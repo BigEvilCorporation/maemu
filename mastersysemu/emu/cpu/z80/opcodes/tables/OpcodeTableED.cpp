@@ -1,13 +1,20 @@
-#pragma once
+#include "OpcodeTableED.h"
 
-#include "Opcode.h"
+//Re-redirect tables
+#include "OpcodeTableDD.h"
+#include "OpcodeTableCB.h"
+#include "OpcodeTableFD.h"
+
+//Re-redirect prefix handlers
+#include "../prefix_dd.h"
+#include "../prefix_cb.h"
+#include "../prefix_fd.h"
 
 //All opcode handlers
-#include "opcodes/prefix.h"
-#include "opcodes/interrupts.h"
-#include "opcodes/ports.h"
-#include "opcodes/load.h"
-#include "opcodes/nop.h"
+#include "../interrupts.h"
+#include "../ports.h"
+#include "../load.h"
+#include "../nop.h"
 
 namespace emu
 {
@@ -15,7 +22,7 @@ namespace emu
 	{
 		namespace z80
 		{
-			static const Opcode OpcodeTableED[] =
+			const Opcode OpcodeTableED[Z80_MAX_OPCODE_TABLE_SIZE] =
 			{
 				{ 0x00, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x01, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -187,7 +194,7 @@ namespace emu
 				{ 0x9E, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x9F, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
-				{ 0xA0, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xA0, 0, &opcodes::LDI,     "LDI", "" },
 				{ 0xA1, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xA2, 0, &opcodes::INI,     "INI", "" },
 				{ 0xA3, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -232,7 +239,7 @@ namespace emu
 				{ 0xC8, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xC9, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xCA, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xCB, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xCB, 1, &opcodes::Prefix_CB,	"", "" },
 				{ 0xCC, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xCD, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xCE, 0, &opcodes::Unknown, "UNKNOWN", "" },
@@ -251,7 +258,7 @@ namespace emu
 				{ 0xDA, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xDB, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xDC, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xDD, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xDD, 1, &opcodes::Prefix_DD,	"", "" },
 				{ 0xDE, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xDF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
@@ -285,7 +292,7 @@ namespace emu
 				{ 0xFA, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xFB, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xFC, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xFD, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0xFD, 1, &opcodes::Prefix_FD,	"", "" },
 				{ 0xFE, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xFF, 0, &opcodes::Unknown, "UNKNOWN", "" },
 			};

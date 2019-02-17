@@ -1,23 +1,33 @@
 #pragma once
 
-#include "Opcode.h"
+#include "OpcodeTable.h"
+
+//Prefix tables
+#include "OpcodeTableCB.h"
+#include "OpcodeTableDD.h"
+#include "OpcodeTableED.h"
+#include "OpcodeTableFD.h"
+
+//Prefix handlers
+#include "../prefix_cb.h"
+#include "../prefix_dd.h"
+#include "../prefix_ed.h"
+#include "../prefix_fd.h"
 
 //All opcode handlers
-#include "opcodes/arithmetic.h"
-#include "opcodes/bitwise.h"
-#include "opcodes/comparison.h"
-#include "opcodes/exchange.h"
-#include "opcodes/halt.h"
-#include "opcodes/incdec.h"
-#include "opcodes/interrupts.h"
-#include "opcodes/ports.h"
-#include "opcodes/jump.h"
-#include "opcodes/load.h"
-#include "opcodes/nop.h"
-#include "opcodes/prefix.h"
-#include "opcodes/routines.h"
-#include "opcodes/stack.h"
-
+#include "../arithmetic.h"
+#include "../bitwise.h"
+#include "../comparison.h"
+#include "../exchange.h"
+#include "../halt.h"
+#include "../incdec.h"
+#include "../interrupts.h"
+#include "../ports.h"
+#include "../jump.h"
+#include "../load.h"
+#include "../nop.h"
+#include "../routines.h"
+#include "../stack.h"
 
 namespace emu
 {
@@ -25,11 +35,11 @@ namespace emu
 	{
 		namespace z80
 		{
-			static const Opcode OpcodeTable[] =
+			const Opcode OpcodeTable[Z80_MAX_OPCODE_TABLE_SIZE] =
 			{
 				{ 0x00, 0, &opcodes::NOP,		"NOP", "" },
 				{ 0x01, 2, &opcodes::LD_r16_n16,"LD", "BC, ##" },
-				{ 0x02, 0, &opcodes::Unknown,	"UNKNOWN", "" },
+				{ 0x02, 0, &opcodes::LD_dBC_A,	"LD", "(BC), A" },
 				{ 0x03, 0, &opcodes::INC_r16,	"INC", "BC" },
 				{ 0x04, 0, &opcodes::INC_r8,	"INC", "B" },
 				{ 0x05, 0, &opcodes::DEC_r8,	"DEC", "B" },
@@ -37,7 +47,7 @@ namespace emu
 				{ 0x07, 0, &opcodes::RLCA,		"RLCA", "" },
 				{ 0x08, 0, &opcodes::EX_AF_AFa,	"EX", "AF, AF'" },
 				{ 0x09, 0, &opcodes::ADD_HL_r16,"ADD", "HL, BC" },
-				{ 0x0A, 0, &opcodes::Unknown,	"UNKNOWN", "" },
+				{ 0x0A, 0, &opcodes::LD_A_dBC,	"LD", "A, (BC)" },
 				{ 0x0B, 0, &opcodes::DEC_r16,	"DEC", "BC" },
 				{ 0x0C, 0, &opcodes::INC_r8,	"INC", "C" },
 				{ 0x0D, 0, &opcodes::DEC_r8,	"DEC", "C" },

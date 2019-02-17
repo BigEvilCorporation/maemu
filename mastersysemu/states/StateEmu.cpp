@@ -2,6 +2,8 @@
 
 #include "emu/cpu/vdp/Constants.h"
 
+#include <ion/core/utils/STL.h>
+
 namespace app
 {
 	static const int g_top = 128;

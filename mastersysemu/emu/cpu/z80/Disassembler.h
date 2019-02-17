@@ -1,11 +1,6 @@
 #pragma once
 
-#include "opcodes/OpcodeTable.h"
-#include "opcodes/OpcodeTableCB.h"
-#include "opcodes/OpcodeTableDD.h"
-#include "opcodes/OpcodeTableED.h"
-#include "opcodes/OpcodeTableFD.h"
-
+#include "Opcode.h"
 #include "../../memory/MemoryController.h"
 
 #include <string>

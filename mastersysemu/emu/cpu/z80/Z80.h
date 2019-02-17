@@ -2,7 +2,7 @@
 
 #include "Constants.h"
 #include "Registers.h"
-#include "opcodes/OpcodeTable.h"
+#include "opcodes/tables/OpcodeTable.h"
 #include "Bus.h"
 
 namespace emu

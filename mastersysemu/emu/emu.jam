@@ -18,11 +18,17 @@ local SRC =
 	cpu/z80/Z80.cpp
 	cpu/z80/Z80.h
 
-	cpu/z80/opcodes/OpcodeTable.h
-	cpu/z80/opcodes/OpcodeTableCB.h
-	cpu/z80/opcodes/OpcodeTableDD.h
-	cpu/z80/opcodes/OpcodeTableED.h
-	cpu/z80/opcodes/OpcodeTableFD.h
+	# Opcode and redirect tables
+	cpu/z80/opcodes/tables/OpcodeTable.cpp
+	cpu/z80/opcodes/tables/OpcodeTable.h
+	cpu/z80/opcodes/tables/OpcodeTableCB.cpp
+	cpu/z80/opcodes/tables/OpcodeTableCB.h
+	cpu/z80/opcodes/tables/OpcodeTableDD.cpp
+	cpu/z80/opcodes/tables/OpcodeTableDD.h
+	cpu/z80/opcodes/tables/OpcodeTableED.cpp
+	cpu/z80/opcodes/tables/OpcodeTableED.h
+	cpu/z80/opcodes/tables/OpcodeTableFD.cpp
+	cpu/z80/opcodes/tables/OpcodeTableFD.h
 
 	# Z80 opcodes
 	cpu/z80/opcodes/arithmetic.h
@@ -36,7 +42,10 @@ local SRC =
 	cpu/z80/opcodes/jump.h
 	cpu/z80/opcodes/load.h
 	cpu/z80/opcodes/nop.h
-	cpu/z80/opcodes/prefix.h
+	cpu/z80/opcodes/prefix_cb.h
+	cpu/z80/opcodes/prefix_dd.h
+	cpu/z80/opcodes/prefix_ed.h
+	cpu/z80/opcodes/prefix_fd.h
 	cpu/z80/opcodes/routines.h
 	cpu/z80/opcodes/stack.h
 

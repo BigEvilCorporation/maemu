@@ -1,5 +1,16 @@
 #include "Disassembler.h"
 
+#include "opcodes/tables/OpcodeTable.h"
+#include "opcodes/tables/OpcodeTableCB.h"
+#include "opcodes/tables/OpcodeTableDD.h"
+#include "opcodes/tables/OpcodeTableED.h"
+#include "opcodes/tables/OpcodeTableFD.h"
+
+#include "opcodes/prefix_cb.h"
+#include "opcodes/prefix_dd.h"
+#include "opcodes/prefix_ed.h"
+#include "opcodes/prefix_fd.h"
+
 #include <ion/core/utils/STL.h>
 
 #include <sstream>

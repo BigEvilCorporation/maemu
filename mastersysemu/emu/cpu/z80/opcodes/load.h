@@ -10,15 +10,15 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static const int REGISTER_DECODE_LD_8_REG1_SHIFT = 0x3;
-				static const int REGISTER_DECODE_LD_8_REG2_SHIFT = 0x0;
-				static const int REGISTER_DECODE_LD_16_REG1_SHIFT = 0x4;
+				static const int REGISTER_DECODE_LD_8_REG_SRC_SHIFT = 0x0;
+				static const int REGISTER_DECODE_LD_8_REG_DST_SHIFT = 0x3;
+				static const int REGISTER_DECODE_LD_16_REG_SRC_SHIFT = 0x4;
 
 				//Load 8-bit register from 8-bit literal
 				static u16 LD_r8_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
 
 					//Load param
 					reg = params[0];
@@ -30,8 +30,8 @@ namespace emu
 				static u16 LD_r8_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine regs
-					u8& reg1 = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
-					u8& reg2 = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG2_SHIFT);
+					u8& reg1 = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+					u8& reg2 = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 
 					//Load
 					reg1 = reg2;
@@ -43,6 +43,14 @@ namespace emu
 				static u16 LD_r8_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					ion::debug::Log("LD_r8_IX() - not implemented");
+					regs.internal.err = 1;
+					return 0;
+				}
+
+				//Load 8-bit register from IYH/IYL
+				static u16 LD_r8_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					ion::debug::Log("LD_r8_IY() - not implemented");
 					regs.internal.err = 1;
 					return 0;
 				}
@@ -103,7 +111,7 @@ namespace emu
 				static u16 LD_r16_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG1_SHIFT);
+					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
 
 					//Load 16-bit param
 					reg = (params[1] << 8) | params[0];
@@ -129,7 +137,7 @@ namespace emu
 				static u16 LD_r16_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG1_SHIFT);
+					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
 
 					//Get address
 					u16 address = (params[1] << 8) | params[0];
@@ -190,6 +198,15 @@ namespace emu
 					return 0;
 				}
 
+				//Load address in BC from A
+				static u16 LD_dBC_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load A into (BC)
+					bus.memoryController.WriteMemory(regs.main.bc, regs.main.a);
+
+					return 0;
+				}
+
 				//Load address in HL from 8-bit literal
 				static u16 LD_dHL_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -203,10 +220,34 @@ namespace emu
 				static u16 LD_dHL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG2_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 
 					//Load reg into (HL)
 					bus.memoryController.WriteMemory(regs.main.hl, reg);
+
+					return 0;
+				}
+
+				//Load 8-bit register from address in (IX + offset)
+				static u16 LD_r8_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+
+					//Load (IX + offset) into reg
+					reg = bus.memoryController.ReadMemory(regs.ix + params[0]);
+
+					return 0;
+				}
+
+				//Load 8-bit register from address in (IY + offset)
+				static u16 LD_r8_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+
+					//Load (IY + offset) into reg
+					reg = bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					return 0;
 				}
@@ -215,7 +256,7 @@ namespace emu
 				static u16 LD_dIX_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 
 					//Load reg into (IX + offset)
 					bus.memoryController.WriteMemory(regs.ix + params[0], reg);
@@ -227,7 +268,7 @@ namespace emu
 				static u16 LD_dIY_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 
 					//Load reg into (IY + offset)
 					bus.memoryController.WriteMemory(regs.iy + params[0], reg);
@@ -257,7 +298,7 @@ namespace emu
 				static u16 LD_r8_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG1_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
 
 					//Load param from value at (HL)
 					reg = bus.memoryController.ReadMemory(regs.main.hl);
@@ -298,6 +339,15 @@ namespace emu
 					return 0;
 				}
 
+				//Load A from address in (BC)
+				static u16 LD_A_dBC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load A from address in BC
+					regs.main.a = bus.memoryController.ReadMemory(regs.main.bc);
+
+					return 0;
+				}
+
 				//Load address in (DE) from A
 				static u16 LD_dDE_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -311,7 +361,7 @@ namespace emu
 				static u16 LD_n16_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG1_SHIFT);
+					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
 
 					//Get address
 					u16 address = (params[1] << 8) | params[0];
@@ -362,7 +412,7 @@ namespace emu
 					return 0;
 				}
 
-				//Load address at (DE) from address at (HL), dec both regs and dec BC
+				//Load address at (DE) from address at (HL), dec DE and HL, dec BC
 				static u16 LDD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Copy from (HL) to (DE)
@@ -378,7 +428,23 @@ namespace emu
 					return 0;
 				}
 
-				//Load address at (DE) from address at (HL), dec both regs, loop until BC == 0
+				//Load address at (DE) from address at (HL), inc DE and HL, dec BC
+				static u16 LDI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy from (HL) to (DE)
+					bus.memoryController.WriteMemory(regs.main.de, bus.memoryController.ReadMemory(regs.main.hl));
+
+					//Increment addresses
+					regs.main.hl++;
+					regs.main.de++;
+
+					//Decrement counter
+					regs.main.bc--;
+
+					return 0;
+				}
+
+				//Load address at (DE) from address at (HL), dec DE and HL, dec BC, loop until BC == 0
 				static u16 LDDR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Copy from (HL) to (DE)
@@ -401,7 +467,7 @@ namespace emu
 					return 0;
 				}
 
-				//Load address at (DE) from address at (HL), inc both regs, loop until BC == 0
+				//Load address at (DE) from address at (HL), inc DE and HL, dec BC, loop until BC == 0
 				static u16 LDIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Copy from (HL) to (DE)
