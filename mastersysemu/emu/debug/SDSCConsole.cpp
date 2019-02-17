@@ -95,11 +95,6 @@ namespace emu
 
 		void SDSCConsole::WriteData(u16 address, u8 value)
 		{
-			if (value < 10)
-			{
-				value += '0';
-			}
-
 			m_buffer.push_back(value);
 
 			/*

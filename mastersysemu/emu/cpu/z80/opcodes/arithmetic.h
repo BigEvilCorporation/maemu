@@ -17,7 +17,7 @@ namespace emu
 				static u16 ADD_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Add param to A
-					regs.main.hl += params[0];
+					regs.main.a += params[0];
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
