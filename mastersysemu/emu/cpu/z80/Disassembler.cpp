@@ -5,6 +5,8 @@
 #include "opcodes/tables/OpcodeTableDD.h"
 #include "opcodes/tables/OpcodeTableED.h"
 #include "opcodes/tables/OpcodeTableFD.h"
+#include "opcodes/tables/OpcodeTableDDCB.h"
+#include "opcodes/tables/OpcodeTableFDCB.h"
 
 #include "opcodes/prefix_cb.h"
 #include "opcodes/prefix_dd.h"
@@ -31,30 +33,43 @@ namespace emu
 					{
 						prefix = 0;
 
-						if (instruction.opcode->handler == opcodes::Prefix_CB)
+						if (instruction.opcodeIdx == 0xCB)
 						{
-							prefix = 0xCB;
+							if (instruction.prefix == 0xDD)
+							{
+								instruction.opcode = &OpcodeTableDDCB[instruction.opcodeIdx];
+							}
+							else if (instruction.prefix == 0xFD)
+							{
+								instruction.opcode = &OpcodeTableFDCB[instruction.opcodeIdx];
+							}
+							else
+							{
+								instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+							}
+
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
-							instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+							
 						}
-						else if (instruction.opcode->handler == opcodes::Prefix_DD)
+						else if (instruction.opcodeIdx == 0xDD)
 						{
-							prefix = 0xDD;
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
 						}
-						else if (instruction.opcode->handler == opcodes::Prefix_ED)
+						else if (instruction.opcodeIdx == 0xED)
 						{
-							prefix = 0xED;
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
 						}
-						else if (instruction.opcode->handler == opcodes::Prefix_FD)
+						else if (instruction.opcodeIdx == 0xFD)
 						{
-							prefix = 0xFD;
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
@@ -71,30 +86,42 @@ namespace emu
 					{
 						prefix = 0;
 
-						if (instruction.opcode->handler == opcodes::Prefix_CB)
+						if (instruction.opcodeIdx == 0xCB)
 						{
-							prefix = 0xCB;
+							if (instruction.prefix == 0xDD)
+							{
+								instruction.opcode = &OpcodeTableDDCB[instruction.opcodeIdx];
+							}
+							else if (instruction.prefix == 0xFD)
+							{
+								instruction.opcode = &OpcodeTableFDCB[instruction.opcodeIdx];
+							}
+							else
+							{
+								instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+							}
+
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
-							instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
 						}
-						else if (instruction.opcode->handler == opcodes::Prefix_DD)
+						else if (instruction.opcodeIdx == 0xDD)
 						{
-							prefix = 0xDD;
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
 							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
 						}
-						else if (instruction.opcode->handler == opcodes::Prefix_ED)
+						else if (instruction.opcodeIdx == 0xED)
 						{
-							prefix = 0xED;
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
 							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
 						}
-						else if (instruction.opcode->handler == opcodes::Prefix_FD)
+						else if (instruction.opcodeIdx == 0xFD)
 						{
-							prefix = 0xFD;
+							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
 							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];

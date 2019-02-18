@@ -38,7 +38,7 @@ namespace app
 		m_gui = new ion::gui::GUI(ion::Vector2i(1024, 768));
 
 		//Initialise emulator
-		if (!m_masterSystem.LoadROM("roms/zexall_sdsc.sms"))
+		if (!m_masterSystem.LoadROM("roms/zexdoc_sdsc.sms"))
 		{
 			//Error
 		}

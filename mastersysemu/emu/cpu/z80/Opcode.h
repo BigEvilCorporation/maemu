@@ -55,7 +55,11 @@ namespace emu
 				REGISTER_DECODE_8_D = 0x02,
 				REGISTER_DECODE_8_E = 0x03,
 				REGISTER_DECODE_8_H = 0x04,
-				REGISTER_DECODE_8_L = 0x05
+				REGISTER_DECODE_8_IXH = 0x04,
+				REGISTER_DECODE_8_IYH = 0x04,
+				REGISTER_DECODE_8_L = 0x05,
+				REGISTER_DECODE_8_IXL = 0x05,
+				REGISTER_DECODE_8_IYL = 0x05
 			};
 
 			enum RegisterDecode_16Bit
@@ -115,6 +119,84 @@ namespace emu
 				if (!reg)
 				{
 					ion::debug::Error("DecodeReg8() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
+			static u8& DecodeReg8_IX(Registers& regs, u8 opcode, u8 shift)
+			{
+				u8* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_8_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_8_A):
+					reg = &regs.main.a;
+					break;
+				case (REGISTER_DECODE_8_B):
+					reg = &regs.main.b;
+					break;
+				case (REGISTER_DECODE_8_C):
+					reg = &regs.main.c;
+					break;
+				case (REGISTER_DECODE_8_D):
+					reg = &regs.main.d;
+					break;
+				case (REGISTER_DECODE_8_E):
+					reg = &regs.main.e;
+					break;
+				case (REGISTER_DECODE_8_IXH):
+					reg = &regs.ixh;
+					break;
+				case (REGISTER_DECODE_8_IXL):
+					reg = &regs.ixl;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg8_IX() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
+			static u8& DecodeReg8_IY(Registers& regs, u8 opcode, u8 shift)
+			{
+				u8* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_8_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_8_A):
+					reg = &regs.main.a;
+					break;
+				case (REGISTER_DECODE_8_B):
+					reg = &regs.main.b;
+					break;
+				case (REGISTER_DECODE_8_C):
+					reg = &regs.main.c;
+					break;
+				case (REGISTER_DECODE_8_D):
+					reg = &regs.main.d;
+					break;
+				case (REGISTER_DECODE_8_E):
+					reg = &regs.main.e;
+					break;
+				case (REGISTER_DECODE_8_IYH):
+					reg = &regs.iyh;
+					break;
+				case (REGISTER_DECODE_8_IYL):
+					reg = &regs.iyl;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg8_IY() - Could not decode register");
 				}
 
 				return *reg;

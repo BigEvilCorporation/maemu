@@ -44,6 +44,18 @@ namespace emu
 					return 0;
 				}
 
+				//Push IX to stack
+				static u16 PUSH_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Decrement stack and push register
+					regs.sp--;
+					bus.memoryController.WriteMemory(regs.sp, regs.ix >> 8);
+					regs.sp--;
+					bus.memoryController.WriteMemory(regs.sp, regs.ix & 0xFF);
+
+					return 0;
+				}
+
 				//Pop IX from stack
 				static u16 POP_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -54,6 +66,18 @@ namespace emu
 					regs.sp++;
 
 					regs.ix = (hi << 8) | lo;
+
+					return 0;
+				}
+
+				//Push IY to stack
+				static u16 PUSH_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Decrement stack and push register
+					regs.sp--;
+					bus.memoryController.WriteMemory(regs.sp, regs.iy >> 8);
+					regs.sp--;
+					bus.memoryController.WriteMemory(regs.sp, regs.iy & 0xFF);
 
 					return 0;
 				}

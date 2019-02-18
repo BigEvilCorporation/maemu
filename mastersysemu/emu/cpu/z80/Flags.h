@@ -81,6 +81,23 @@ namespace emu
 					flags &= ~FLAG_S;
 			}
 
+			static void ComputeFlagsZPS(u16 diff, u8& flags)
+			{
+				//Zero flag if 0
+				if ((diff & 0xFF) == 0)
+					flags |= FLAG_Z;
+				else
+					flags &= ~FLAG_Z;
+
+				//TODO: P flag
+
+				//Sign flag if bit 7 (signed overflow)
+				if (diff & 0x80)
+					flags |= FLAG_S;
+				else
+					flags &= ~FLAG_S;
+			}
+
 			static void ComputeFlagsZS(u16 diff, u8& flags)
 			{
 				//Zero flag if 0

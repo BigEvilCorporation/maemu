@@ -8,7 +8,7 @@ namespace emu
 	{
 		namespace z80
 		{
-			extern const Opcode OpcodeTableCB[Z80_MAX_OPCODE_TABLE_SIZE];
+			extern const Opcode OpcodeTableDDCB[Z80_MAX_OPCODE_TABLE_SIZE];
 		}
 	}
 }

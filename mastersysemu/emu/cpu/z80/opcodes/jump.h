@@ -49,10 +49,37 @@ namespace emu
 					return 0;
 				}
 
+				//Jump to address in (HL)
+				static u16 JP_HL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Jump to (HL)
+					regs.pc = regs.main.hl;
+
+					return 0;
+				}
+
+				//Jump to address in (IX)
+				static u16 JP_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Jump to (IX)
+					regs.pc = regs.ix;
+
+					return 0;
+				}
+
+				//Jump to address in (IY)
+				static u16 JP_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Jump to (IY)
+					regs.pc = regs.iy;
+
+					return 0;
+				}
+
 				//Jump if Z set (to 8-bit relative offset)
 				static u16 JR_Z_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//If Z reset
+					//If Z set
 					if (regs.main.f & FLAG_Z)
 					{
 						//Jump
@@ -67,6 +94,32 @@ namespace emu
 				{
 					//If Z reset
 					if ((regs.main.f & FLAG_Z) == 0)
+					{
+						//Jump
+						regs.pc += (s8)params[0];
+					}
+
+					return 0;
+				}
+
+				//Jump if C set (to 8-bit relative offset)
+				static u16 JR_C_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//If C set
+					if (regs.main.f & FLAG_C)
+					{
+						//Jump
+						regs.pc += (s8)params[0];
+					}
+
+					return 0;
+				}
+
+				//Jump if C not set (to 8-bit relative offset)
+				static u16 JR_NC_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//If C reset
+					if ((regs.main.f & FLAG_C) == 0)
 					{
 						//Jump
 						regs.pc += (s8)params[0];

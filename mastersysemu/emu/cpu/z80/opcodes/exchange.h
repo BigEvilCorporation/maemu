@@ -47,6 +47,45 @@ namespace emu
 
 					return 0;
 				}
+
+				//Exchange value at address in (SP) with HL
+				static u16 EX_dSP_HL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					u8 tempLo = bus.memoryController.ReadMemory(regs.sp);
+					u8 tempHi = bus.memoryController.ReadMemory(regs.sp + 1);
+					bus.memoryController.WriteMemory(regs.sp, regs.main.l);
+					bus.memoryController.WriteMemory(regs.sp, regs.main.h);
+					regs.main.l = tempLo;
+					regs.main.h = tempHi;
+
+					return 0;
+				}
+
+				//Exchange value at address in (SP) with IX
+				static u16 EX_dSP_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					u8 tempLo = bus.memoryController.ReadMemory(regs.sp);
+					u8 tempHi = bus.memoryController.ReadMemory(regs.sp + 1);
+					bus.memoryController.WriteMemory(regs.sp, regs.ixl);
+					bus.memoryController.WriteMemory(regs.sp, regs.ixh);
+					regs.ixl = tempLo;
+					regs.ixh = tempHi;
+
+					return 0;
+				}
+
+				//Exchange value at address in (SP) with IY
+				static u16 EX_dSP_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					u8 tempLo = bus.memoryController.ReadMemory(regs.sp);
+					u8 tempHi = bus.memoryController.ReadMemory(regs.sp + 1);
+					bus.memoryController.WriteMemory(regs.sp, regs.iyl);
+					bus.memoryController.WriteMemory(regs.sp, regs.iyh);
+					regs.iyl = tempLo;
+					regs.iyh = tempHi;
+
+					return 0;
+				}
 			}
 		}
 	}

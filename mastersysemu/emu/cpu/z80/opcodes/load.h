@@ -198,6 +198,14 @@ namespace emu
 					return 0;
 				}
 
+				//Load SP from HL
+				static u16 LD_SP_HL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					regs.sp = regs.main.hl;
+
+					return 0;
+				}
+
 				//Load address in BC from A
 				static u16 LD_dBC_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -224,6 +232,32 @@ namespace emu
 
 					//Load reg into (HL)
 					bus.memoryController.WriteMemory(regs.main.hl, reg);
+
+					return 0;
+				}
+
+				//Load 8-bit register from IXH/IXL
+				static u16 LD_r8_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine regs
+					u8& reg1 = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+					u8& reg2 = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+
+					//Load IXH/IXL into reg
+					reg1 = reg2;
+
+					return 0;
+				}
+
+				//Load 8-bit register from IYH/IYL
+				static u16 LD_r8_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine regs
+					u8& reg1 = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+					u8& reg2 = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+
+					//Load IYH/IYL into reg
+					reg1 = reg2;
 
 					return 0;
 				}

@@ -14,11 +14,26 @@ namespace emu
 			{
 				static u16 Prefix_CB(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//CB prefix
-					regs.internal.prefix1 = 0xCB;
+					const Opcode* opcodeTable = nullptr;
+
+					if (regs.internal.prefix1 == 0)
+					{
+						opcodeTable = OpcodeTableCB;
+						regs.internal.prefix1 = 0xCB;
+					}
+					else if (regs.internal.prefix1 == 0xDD)
+					{
+						opcodeTable = OpcodeTableDDCB;
+						regs.internal.prefix2 = 0xCB;
+					}
+					else if (regs.internal.prefix1 == 0xFD)
+					{
+						opcodeTable = OpcodeTableFDCB;
+						regs.internal.prefix2 = 0xCB;
+					}
 
 					//Opcode in first param
-					const Opcode& redirect = OpcodeTableCB[params[0]];
+					const Opcode& redirect = opcodeTable[params[0]];
 
 					//Read remaining params
 					OpcodeParams redirectParams;

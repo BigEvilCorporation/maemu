@@ -1,5 +1,4 @@
-#ifndef OPCODETABLE_ED_H
-#define OPCODETABLE_ED_H
+#pragma once
 
 #include "../../Opcode.h"
 
@@ -13,5 +12,3 @@ namespace emu
 		}
 	}
 }
-
-#endif // OPCODETABLE_ED_H

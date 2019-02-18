@@ -29,12 +29,17 @@ local SRC =
 	cpu/z80/opcodes/tables/OpcodeTableED.h
 	cpu/z80/opcodes/tables/OpcodeTableFD.cpp
 	cpu/z80/opcodes/tables/OpcodeTableFD.h
+	cpu/z80/opcodes/tables/OpcodeTableDDCB.cpp
+	cpu/z80/opcodes/tables/OpcodeTableDDCB.h
+	cpu/z80/opcodes/tables/OpcodeTableFDCB.cpp
+	cpu/z80/opcodes/tables/OpcodeTableFDCB.h
 
 	# Z80 opcodes
 	cpu/z80/opcodes/arithmetic.h
 	cpu/z80/opcodes/bitwise.h
 	cpu/z80/opcodes/comparison.h
 	cpu/z80/opcodes/exchange.h
+	cpu/z80/opcodes/flags.h
 	cpu/z80/opcodes/halt.h
 	cpu/z80/opcodes/incdec.h
 	cpu/z80/opcodes/interrupts.h

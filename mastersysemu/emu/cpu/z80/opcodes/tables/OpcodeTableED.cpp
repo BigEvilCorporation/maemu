@@ -4,6 +4,8 @@
 #include "OpcodeTableDD.h"
 #include "OpcodeTableCB.h"
 #include "OpcodeTableFD.h"
+#include "OpcodeTableDDCB.h"
+#include "OpcodeTableFDCB.h"
 
 //Re-redirect prefix handlers
 #include "../prefix_dd.h"
