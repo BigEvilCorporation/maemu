@@ -38,6 +38,10 @@ namespace emu
 					//Read remaining params
 					OpcodeParams redirectParams;
 
+#if defined DEBUG
+					redirectParams.count = redirect.paramBytes;
+#endif
+
 					for (int i = 0; i < redirect.paramBytes; i++)
 					{
 						redirectParams[i] = bus.memoryController.ReadMemory(regs.pc++);

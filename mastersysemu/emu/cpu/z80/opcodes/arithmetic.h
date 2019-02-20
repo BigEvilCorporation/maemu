@@ -13,6 +13,18 @@ namespace emu
 				static const int REGISTER_DECODE_ARITH_REG8_SHIFT = 0x3;
 				static const int REGISTER_DECODE_ARITH_REG16_SHIFT = 0x4;
 
+				//Negate A
+				static u16 NEG(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Negate A
+					regs.main.a = -regs.main.a;
+
+					//Determine flags
+					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
 				//Add 8-bit literal to A
 				static u16 ADD_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -120,6 +132,24 @@ namespace emu
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Add 16-bit register (plus the C flag) to HL
+				static u16 ADC_HL_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get C flag
+					u16 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
+
+					//Determine reg
+					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
+
+					//Add reg + C flag to HL
+					regs.main.hl += (reg + carry);
+
+					//Determine flags
+					ComputeFlagsZCS(regs.main.hl, regs.main.f);
 
 					return 0;
 				}
@@ -376,6 +406,24 @@ namespace emu
 					return 0;
 				}
 
+				//Subtract 16-bit register (plus the C flag) from HL
+				static u16 SBC_HL_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get C flag
+					u16 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
+
+					//Determine reg
+					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
+
+					//Subtract reg + C flag from HL
+					regs.main.hl -= (reg + carry);
+
+					//Determine flags
+					ComputeFlagsZCS(regs.main.hl, regs.main.f);
+
+					return 0;
+				}
+
 				//Subtract IXH/IXL (plus the C flag) from A
 				static u16 SBC_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -386,7 +434,7 @@ namespace emu
 					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract reg + C flag from A
-					regs.main.a += (reg + carry);
+					regs.main.a -= (reg + carry);
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -404,7 +452,7 @@ namespace emu
 					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract reg + C flag from A
-					regs.main.a += (reg + carry);
+					regs.main.a -= (reg + carry);
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -419,7 +467,7 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract param + C flag from A
-					regs.main.a += (params[0] + carry);
+					regs.main.a -= (params[0] + carry);
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -434,7 +482,7 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract (HL) + C flag from A
-					regs.main.a += (bus.memoryController.ReadMemory(regs.main.hl) + carry);
+					regs.main.a -= (bus.memoryController.ReadMemory(regs.main.hl) + carry);
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -449,7 +497,7 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract (IX+offset) + C flag from A
-					regs.main.a += (bus.memoryController.ReadMemory(regs.ix + params[0]) + carry);
+					regs.main.a -= (bus.memoryController.ReadMemory(regs.ix + params[0]) + carry);
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -464,7 +512,7 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract (IY+offset) + C flag from A
-					regs.main.a += (bus.memoryController.ReadMemory(regs.iy + params[0]) + carry);
+					regs.main.a -= (bus.memoryController.ReadMemory(regs.iy + params[0]) + carry);
 
 					//Determine flags
 					ComputeFlagsZCS(regs.main.a, regs.main.f);
@@ -495,6 +543,48 @@ namespace emu
 						SetFlagC(0, regs.main.f);
 					}
 
+					ComputeFlagsZPS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate three nybbles - lower A and value at (HL) - to the left
+				static u16 RLD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Read value in (HL)
+					u8 lowerByte = bus.memoryController.ReadMemory(regs.main.hl);
+
+					//Shift A and lo nybble into byte
+					u8 lowerByteShifted = (regs.main.a & 0x0F) | (lowerByte << 4);
+
+					//Lower byte back to (HL)
+					bus.memoryController.WriteMemory(regs.main.hl, lowerByteShifted);
+
+					//Original hi nybble to A
+					regs.main.a = (regs.main.a & 0xF0) | ((lowerByte & 0xF0) >> 4);
+
+					//Set flags
+					ComputeFlagsZPS(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate three nybbles - lower A and value at (HL) - to the right
+				static u16 RRD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Read value in (HL)
+					u8 lowerByte = bus.memoryController.ReadMemory(regs.main.hl);
+
+					//Shift A and hi nybble into byte
+					u8 lowerByteShifted = ((regs.main.a & 0x0F) << 4) | (lowerByte >> 4);
+
+					//Lower byte back to (HL)
+					bus.memoryController.WriteMemory(regs.main.hl, lowerByteShifted);
+
+					//Original low nybble to A
+					regs.main.a = (regs.main.a & 0xF0) | (lowerByte & 0x0F);
+
+					//Set flags
 					ComputeFlagsZPS(regs.main.a, regs.main.f);
 
 					return 0;

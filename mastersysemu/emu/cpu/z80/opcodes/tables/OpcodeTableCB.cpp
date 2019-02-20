@@ -24,14 +24,14 @@ namespace emu
 		{
 			const Opcode OpcodeTableCB[Z80_MAX_OPCODE_TABLE_SIZE] =
 			{
-				{ 0x00, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x01, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x02, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x03, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x04, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x05, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x00, 0, &opcodes::RLC,			"RLC", "B" },
+				{ 0x01, 0, &opcodes::RLC,			"RLC", "C" },
+				{ 0x02, 0, &opcodes::RLC,			"RLC", "D" },
+				{ 0x03, 0, &opcodes::RLC,			"RLC", "E" },
+				{ 0x04, 0, &opcodes::RLC,			"RLC", "H" },
+				{ 0x05, 0, &opcodes::RLC,			"RLC", "L" },
 				{ 0x06, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x07, 0, &opcodes::Unknown, "UNKNOWN", "" },
+				{ 0x07, 0, &opcodes::RLC,			"RLC", "A" },
 				{ 0x08, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x09, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x0A, 0, &opcodes::Unknown, "UNKNOWN", "" },

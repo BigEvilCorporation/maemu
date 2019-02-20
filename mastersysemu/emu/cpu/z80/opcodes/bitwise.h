@@ -134,9 +134,29 @@ namespace emu
 					//Back to A
 					regs.main.a = (shift & 0xff);
 
-					//Copy bit 7 to bit 0 and C flag
+					//Copy bit 7 (sign) to bit 0 and C flag
 					u8 carry = (shift >> 8);
 					regs.main.a = (regs.main.a & 0xFE) | carry;
+					SetFlagC(carry, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate an 8-bit register to the left
+				static u16 RLC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+
+					//Shift left 16-bit
+					u16 shift = ((u16)reg << 1);
+
+					//Back to reg
+					reg = (shift & 0xff);
+
+					//Copy bit 7 (sign) to bit 0 and C flag
+					u8 carry = (shift >> 8);
+					reg = (reg & 0xFE) | carry;
 					SetFlagC(carry, regs.main.f);
 
 					return 0;

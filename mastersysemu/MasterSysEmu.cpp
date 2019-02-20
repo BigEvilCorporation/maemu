@@ -105,6 +105,10 @@ namespace app
 
 		m_viewport->SetClearColour(ion::Colour(0.0f, 0.0f, 0.0f, 1.0f));
 		m_camera->SetPosition(ion::Vector3(-(float)m_window->GetClientAreaWidth() / 2.0f, -(float)m_window->GetClientAreaHeight() / 2.0f, 0.1f));
+		
+
+		//Disable vsync by default
+		m_renderer->EnableVSync(false);
 
 		return true;
 	}

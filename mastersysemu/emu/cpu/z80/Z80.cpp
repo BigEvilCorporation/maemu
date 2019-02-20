@@ -79,6 +79,10 @@ namespace emu
 					//Read params
 					OpcodeParams params;
 
+#if defined DEBUG
+					params.count = opcode.paramBytes;
+#endif
+
 					for (int i = 0; i < opcode.paramBytes; i++)
 					{
 						params[i] = m_bus.memoryController.ReadMemory(m_regs.pc++);

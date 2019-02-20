@@ -47,6 +47,20 @@ namespace emu
 					regs.internal.im = Z80_INT_MODE2;
 					return 0;
 				}
+
+				//Return from interrupt
+				static u16 RETI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//TODO
+					return 0;
+				}
+
+				//Return from non-maskable interrupt
+				static u16 RETN(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//TODO
+					return 0;
+				}
 			}
 		}
 	}

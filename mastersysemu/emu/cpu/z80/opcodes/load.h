@@ -95,6 +95,15 @@ namespace emu
 					return 0;
 				}
 
+				//Load I from A
+				static u16 LD_I_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//I = A
+					regs.i = regs.main.a;
+
+					return 0;
+				}
+
 				//Load A from R
 				static u16 LD_A_R(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -107,9 +116,23 @@ namespace emu
 					return 0;
 				}
 
+				//Load R from A
+				static u16 LD_R_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//R = A
+					regs.r = regs.main.a;
+
+					return 0;
+				}
+
 				//Load 16-bit register from 16-bit literal
 				static u16 LD_r16_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					if ((((opcode.opcode >> REGISTER_DECODE_LD_16_REG_SRC_SHIFT) & REGISTER_DECODE_16_MASK) == REGISTER_DECODE_16_DE) && params[0] == 3)
+					{
+						bool breakMe = true;
+					}
+
 					//Determine reg
 					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
 
@@ -122,13 +145,17 @@ namespace emu
 				//Load HL from value at 16-bit literal address
 				static u16 LD_HL_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					if (regs.pc >= 0xC400)
+					{
+						bool breakMe = true;
+					}
+
 					//Get address
 					u16 address = (params[1] << 8) | params[0];
 
 					//Read value at address
-					u8 lo = bus.memoryController.ReadMemory(address);
-					u8 hi = bus.memoryController.ReadMemory(address + 1);
-					regs.main.hl = (hi << 8) | lo;
+					regs.main.l = bus.memoryController.ReadMemory(address);
+					regs.main.h = bus.memoryController.ReadMemory(address + 1);
 
 					return 0;
 				}

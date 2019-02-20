@@ -34,7 +34,33 @@ namespace emu
 
 			struct Opcode;
 
+#if defined DEBUG
+			class OpcodeParams
+			{
+			public:
+				OpcodeParams() : count(0) {}
+
+				u8& operator[](int index)
+				{
+					ion::debug::Assert(index >= 0 && index < count, "OpcodeParams::[]() - Out of bounds - is param count correct in opcode table?");
+					return m_params[index];
+				}
+
+				const u8& operator[](int index) const
+				{
+					ion::debug::Assert(index >= 0 && index < count, "OpcodeParams::[]() - Out of bounds - is param count correct in opcode table?");
+					return m_params[index];
+				}
+
+				u8 count;
+
+			private:
+				ion::FixedArray<u8, Z80_MAX_OPCODE_PARAMS> m_params;
+			};
+#else
 			typedef ion::FixedArray<u8, Z80_MAX_OPCODE_PARAMS> OpcodeParams;
+#endif
+
 			typedef u16(*OpcodeHandler)(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus);
 
 			struct Opcode

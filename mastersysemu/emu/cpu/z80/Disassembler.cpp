@@ -150,6 +150,11 @@ namespace emu
 						HandleRedirect(address, instruction, rom);
 
 						//Output params
+
+#if defined DEBUG
+						instruction.params.count = instruction.opcode->paramBytes;
+#endif
+
 						for (int i = 0; i < instruction.opcode->paramBytes; i++)
 						{
 							instruction.params[i] = rom[address++];
