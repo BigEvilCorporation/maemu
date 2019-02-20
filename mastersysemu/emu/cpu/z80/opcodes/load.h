@@ -128,11 +128,6 @@ namespace emu
 				//Load 16-bit register from 16-bit literal
 				static u16 LD_r16_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					if ((((opcode.opcode >> REGISTER_DECODE_LD_16_REG_SRC_SHIFT) & REGISTER_DECODE_16_MASK) == REGISTER_DECODE_16_DE) && params[0] == 3)
-					{
-						bool breakMe = true;
-					}
-
 					//Determine reg
 					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
 
@@ -145,11 +140,6 @@ namespace emu
 				//Load HL from value at 16-bit literal address
 				static u16 LD_HL_dn16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					if (regs.pc >= 0xC400)
-					{
-						bool breakMe = true;
-					}
-
 					//Get address
 					u16 address = (params[1] << 8) | params[0];
 

@@ -275,7 +275,7 @@ namespace emu
 				{ 0xE2, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE3, 0, &opcodes::EX_dSP_IY, "EX", "(SP), IY" },
 				{ 0xE4, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0xE5, 0, &opcodes::PUSH_IX, "PUSH", "IY" },
+				{ 0xE5, 0, &opcodes::PUSH_IY, "PUSH", "IY" },
 				{ 0xE6, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE7, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0xE8, 0, &opcodes::Unknown, "UNKNOWN", "" },
