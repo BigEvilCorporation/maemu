@@ -30,6 +30,19 @@ namespace emu
 				FLAG_INDEX_S,		//Sign
 			};
 
+			static bool CheckParity(u8 value)
+			{
+				value ^= value >> 4;
+				value ^= value >> 2;
+				value ^= value >> 1;
+				return (~value) & 1;
+			}
+
+			static void SetFlag(u8 flag, bool value, u8& flags)
+			{
+				flags ^= (-(value ? 1 : 0) ^ flags) & flag;
+			}
+
 			static void SetFlagZ(u8 value, u8& flags)
 			{
 				flags ^= (-value ^ flags) & (1 << FLAG_INDEX_Z);
@@ -89,13 +102,32 @@ namespace emu
 				else
 					flags &= ~FLAG_Z;
 
-				//TODO: P flag
+				//Parity flag if even bits set
+				if(CheckParity((u8)diff))
+					flags |= FLAG_PV;
+				else
+					flags &= ~FLAG_PV;
 
 				//Sign flag if bit 7 (signed overflow)
 				if (diff & 0x80)
 					flags |= FLAG_S;
 				else
 					flags &= ~FLAG_S;
+			}
+
+			static void ComputeFlagsZP(u16 diff, u8& flags)
+			{
+				//Zero flag if 0
+				if ((diff & 0xFF) == 0)
+					flags |= FLAG_Z;
+				else
+					flags &= ~FLAG_Z;
+
+				//Parity flag if even bits set
+				if (CheckParity((u8)diff))
+					flags |= FLAG_PV;
+				else
+					flags &= ~FLAG_PV;
 			}
 
 			static void ComputeFlagsZS(u16 diff, u8& flags)

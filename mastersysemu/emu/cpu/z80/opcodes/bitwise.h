@@ -56,16 +56,15 @@ namespace emu
 					//Shift left
 					reg <<= 1;
 
-					//Set Z/S flags
-					ComputeFlagsZS(reg, regs.main.f);
+					//Set Z, P, S flags
+					ComputeFlagsZPS(reg, regs.main.f);
+
+					//Reset H and N
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
-
-				//Arithmetic shift an 8-bit register to the right (preserving sign bit)
-				//static u16 SRA_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				//{
-				//}
 
 				//Non-arithmetic shift an 8-bit register to the right
 				static u16 SRL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -79,8 +78,13 @@ namespace emu
 					//Shift right
 					reg >>= 1;
 
-					//Set Z/S flags
-					ComputeFlagsZS(reg, regs.main.f);
+					//Set Z, P, flags
+					ComputeFlagsZP(reg, regs.main.f);
+
+					//Reset S, H, N
+					SetFlag(FLAG_S, false, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -97,11 +101,15 @@ namespace emu
 					//Shift left
 					value <<= 1;
 
-					//Set Z/S flags
-					ComputeFlagsZS(value, regs.main.f);
-
 					//Store value
 					bus.memoryController.WriteMemory(regs.ix + params[0], value);
+
+					//Set Z, P, S flags
+					ComputeFlagsZPS(value, regs.main.f);
+
+					//Reset H and N
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -118,26 +126,30 @@ namespace emu
 					//Shift left
 					value <<= 1;
 
-					//Set Z/S flags
-					ComputeFlagsZS(value, regs.main.f);
-
 					//Store value
 					bus.memoryController.WriteMemory(regs.iy + params[0], value);
+
+					//Set Z, P, S flags
+					ComputeFlagsZPS(value, regs.main.f);
+
+					//Reset H and N
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 				}
 
 				//Rotate A to the left
 				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Shift left 16-bit
-					u16 shift = ((u16)regs.main.a << 1);
+					//Copy bit 7 (sign)
+					u8 bit7 = (regs.main.a >> 7);
 
-					//Back to A
-					regs.main.a = (shift & 0xff);
+					//Rotate left
+					regs.main.a = (regs.main.a << 1) | bit7;
 
-					//Copy bit 7 (sign) to bit 0 and C flag
-					u8 carry = (shift >> 8);
-					regs.main.a = (regs.main.a & 0xFE) | carry;
-					SetFlagC(carry, regs.main.f);
+					//Set flags
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -148,16 +160,17 @@ namespace emu
 					//Determine reg
 					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
 
-					//Shift left 16-bit
-					u16 shift = ((u16)reg << 1);
+					//Copy bit 7 (sign)
+					u8 bit7 = (reg >> 7);
 
-					//Back to reg
-					reg = (shift & 0xff);
+					//Rotate left
+					reg = (reg << 1) | bit7;
 
-					//Copy bit 7 (sign) to bit 0 and C flag
-					u8 carry = (shift >> 8);
-					reg = (reg & 0xFE) | carry;
-					SetFlagC(carry, regs.main.f);
+					//Set flags
+					ComputeFlagsZPS(reg, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -165,14 +178,16 @@ namespace emu
 				//Rotate A to the right
 				static u16 RRCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Take bit 0
+					//Copy bit 0
 					u8 bit0 = (regs.main.a & 0x1);
 
-					//Shift right, copy bit 0 to bit 7
+					//Rotate right
 					regs.main.a = (regs.main.a >> 1) | (bit0 << 7);
 
-					//Copy bit 0 to C flag
-					SetFlagC(bit0, regs.main.f);
+					//Set flags
+					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -180,21 +195,17 @@ namespace emu
 				//Rotate A to the left (incl. carry flag)
 				static u16 RLA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Take C flag
+					//Copy C flag and bit 7
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
+					u8 bit7 = (regs.main.a >> 7);
 
-					//Shift left 16-bit
-					u16 shift = ((u16)regs.main.a << 1);
+					//Rotate left
+					regs.main.a = (regs.main.a << 1) | carry;
 
-					//Back to A
-					regs.main.a = (shift & 0xff);
-
-					//Prev C flag to bit 0
-					regs.main.a = (regs.main.a & 0xFE) | carry;
-
-					//Copy bit 7 to C flag
-					carry = (shift >> 8);
-					SetFlagC(carry, regs.main.f);
+					//Set flags
+					SetFlagC(bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -202,17 +213,44 @@ namespace emu
 				//Rotate A to the right (incl. carry flag)
 				static u16 RRA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Take C flag
+					//Take C flag and bit 0
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
-
-					//Take bit 0
 					u8 bit0 = (regs.main.a & 0x1);
 
-					//Shift right, copy C flag to bit 7
+					//Rotate right
 					regs.main.a = (regs.main.a >> 1) | (carry << 7);
 
-					//Copy bit 0 to C flag
-					SetFlagC(bit0, regs.main.f);
+					//Set flags
+					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate value at address in (IX+offset) to the left
+				static u16 RLC_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IX+offset)
+					u16 address = regs.ix + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Copy bit 7 (sign)
+					u8 bit7 = (value >> 7);
+
+					//Rotate left
+					value = (value << 1) | bit7;
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					//Set flags
+					ComputeFlagsZPS(value, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -223,26 +261,53 @@ namespace emu
 					//Get address (IX+offset)
 					u16 address = regs.ix + params[0];
 
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+
+					//Read value
+					reg = bus.memoryController.ReadMemory(address);
+
+					//Copy bit 7 (sign)
+					u8 bit7 = (reg >> 7);
+
+					//Rotate left
+					reg = (reg << 1) | bit7;
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, reg);
+
+					//Set flags
+					ComputeFlagsZPS(reg, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate value at address in (IY+offset) to the left
+				static u16 RLC_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IY+offset)
+					u16 address = regs.iy + params[0];
+
 					//Read value
 					u8 value = bus.memoryController.ReadMemory(address);
 
-					//Shift left 16-bit
-					u16 shift = ((u16)value << 1);
+					//Copy bit 7 (sign)
+					u8 bit7 = (value >> 7);
 
-					//Byte back to value
-					value = (shift & 0xff);
-
-					//Copy bit 7 to bit 0 and C flag
-					u8 carry = (shift >> 8);
-					value = (value & 0xFE) | carry;
-					SetFlagC(carry, regs.main.f);
+					//Rotate left
+					value = (value << 1) | bit7;
 
 					//Store value in memory
 					bus.memoryController.WriteMemory(address, value);
 
-					//Determine register for copy
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
-					reg = value;
+					//Set flags
+					ComputeFlagsZPS(value, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
@@ -253,26 +318,26 @@ namespace emu
 					//Get address (IY+offset)
 					u16 address = regs.iy + params[0];
 
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+
 					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
+					reg = bus.memoryController.ReadMemory(address);
 
-					//Shift left 16-bit
-					u16 shift = ((u16)value << 1);
+					//Copy bit 7 (sign)
+					u8 bit7 = (reg >> 7);
 
-					//Byte back to value
-					value = (shift & 0xff);
-
-					//Copy bit 7 to bit 0 and C flag
-					u8 carry = (shift >> 8);
-					value = (value & 0xFE) | carry;
-					SetFlagC(carry, regs.main.f);
+					//Rotate left
+					reg = (reg << 1) | bit7;
 
 					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
+					bus.memoryController.WriteMemory(address, reg);
 
-					//Determine register for copy
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
-					reg = value;
+					//Set flags
+					ComputeFlagsZPS(reg, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}

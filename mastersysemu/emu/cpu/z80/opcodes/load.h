@@ -199,8 +199,8 @@ namespace emu
 				static u16 LD_IX_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Load param into IX
-					regs.ixh = params[0];
-					regs.ixl = params[1];
+					regs.ixl = params[0];
+					regs.ixh = params[1];
 
 					return 0;
 				}
@@ -209,8 +209,8 @@ namespace emu
 				static u16 LD_IY_n16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Load param into IY
-					regs.iyh = params[0];
-					regs.iyl = params[1];
+					regs.iyl = params[0];
+					regs.iyh = params[1];
 
 					return 0;
 				}
@@ -476,6 +476,11 @@ namespace emu
 					//Decrement counter
 					regs.main.bc--;
 
+					//Set flags
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
+
 					return 0;
 				}
 
@@ -491,6 +496,11 @@ namespace emu
 
 					//Decrement counter
 					regs.main.bc--;
+
+					//Set flags
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
 
 					return 0;
 				}
@@ -515,6 +525,11 @@ namespace emu
 						regs.pc -= 2;
 					}
 
+					//Set flags
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
+
 					return 0;
 				}
 
@@ -537,6 +552,11 @@ namespace emu
 						//This instruction + prefix = 2 bytes
 						regs.pc -= 2;
 					}
+
+					//Set flags
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
 
 					return 0;
 				}
