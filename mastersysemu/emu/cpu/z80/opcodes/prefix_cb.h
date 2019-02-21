@@ -16,6 +16,8 @@ namespace emu
 				{
 					const Opcode* opcodeTable = nullptr;
 
+					bool paramBeforeOpcode = false;
+
 					if (regs.internal.prefix1 == 0)
 					{
 						opcodeTable = OpcodeTableCB;
@@ -25,30 +27,59 @@ namespace emu
 					{
 						opcodeTable = OpcodeTableDDCB;
 						regs.internal.prefix2 = 0xCB;
+
+						//For DDCB table, param is first, opcode is second
+						paramBeforeOpcode = true;
 					}
 					else if (regs.internal.prefix1 == 0xFD)
 					{
 						opcodeTable = OpcodeTableFDCB;
 						regs.internal.prefix2 = 0xCB;
+
+						//For FDCB table, param is first, opcode is second
+						paramBeforeOpcode = true;
 					}
 
-					//Opcode in first param
-					const Opcode& redirect = opcodeTable[params[0]];
+					if (paramBeforeOpcode)
+					{
+						//Opcode is yet to come
+						const Opcode& redirect = opcodeTable[bus.memoryController.ReadMemory(regs.pc++)];
 
-					//Read remaining params
-					OpcodeParams redirectParams;
+						//Read remaining params
+						OpcodeParams redirectParams;
 
 #if defined DEBUG
-					redirectParams.count = redirect.paramBytes;
+						redirectParams.count = redirect.paramBytes;
 #endif
 
-					for (int i = 0; i < redirect.paramBytes; i++)
-					{
-						redirectParams[i] = bus.memoryController.ReadMemory(regs.pc++);
-					}
+						for (int i = 0; i < redirect.paramBytes; i++)
+						{
+							redirectParams[i] = params[0];
+						}
 
-					//Execute
-					return redirect.handler(redirect, redirectParams, regs, bus);
+						//Execute
+						return redirect.handler(redirect, redirectParams, regs, bus);
+					}
+					else
+					{
+						//Opcode in first param
+						const Opcode& redirect = opcodeTable[params[0]];
+
+						//Read remaining params
+						OpcodeParams redirectParams;
+
+#if defined DEBUG
+						redirectParams.count = redirect.paramBytes;
+#endif
+
+						for (int i = 0; i < redirect.paramBytes; i++)
+						{
+							redirectParams[i] = bus.memoryController.ReadMemory(regs.pc++);
+						}
+
+						//Execute
+						return redirect.handler(redirect, redirectParams, regs, bus);
+					}
 				}
 			}
 		}

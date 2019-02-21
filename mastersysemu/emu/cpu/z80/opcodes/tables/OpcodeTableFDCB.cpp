@@ -12,14 +12,14 @@ namespace emu
 		{
 			const Opcode OpcodeTableFDCB[Z80_MAX_OPCODE_TABLE_SIZE] =
 			{
-				{ 0x00, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->B" },
-				{ 0x01, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->C" },
-				{ 0x02, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->D" },
-				{ 0x03, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->E" },
-				{ 0x04, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->H" },
-				{ 0x05, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->L" },
-				{ 0x06, 0, &opcodes::Unknown, "UNKNOWN", "" },
-				{ 0x07, 1, &opcodes::RLC_dIY_r8, "RLC", "(IY+#)->A" },
+				{ 0x00, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->B" },
+				{ 0x01, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->C" },
+				{ 0x02, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->D" },
+				{ 0x03, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->E" },
+				{ 0x04, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->H" },
+				{ 0x05, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->L" },
+				{ 0x06, 1, &opcodes::RLC_dIY,		"RLC", "(IY+#)" },
+				{ 0x07, 1, &opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->A" },
 				{ 0x08, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x09, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x0A, 0, &opcodes::Unknown, "UNKNOWN", "" },
