@@ -25,8 +25,154 @@ namespace emu
 					//Determine reg
 					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SET_8_REG_SHIFT);
 
-					//Bit in first param
-					reg |= (1 << params[0]);
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Set bit
+					reg |= (1 << bitIdx);
+
+					return 0;
+				}
+
+				//Set specified bit at address in (HL)
+				static u16 SET_b_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (HL)
+					u16 address = regs.main.hl;
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Set bit
+					value |= (1 << bitIdx);
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					return 0;
+				}
+
+				//Set specified bit at address in (IX+offset)
+				static u16 SET_b_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IX+offset)
+					u16 address = regs.ix + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Set bit
+					value |= (1 << bitIdx);
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					return 0;
+				}
+
+				//Set specified bit at address in (IY+offset)
+				static u16 SET_b_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IY+offset)
+					u16 address = regs.iy + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Set bit
+					value |= (1 << bitIdx);
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					return 0;
+				}
+
+				//Reset specified bit in an 8-bit register
+				static u16 RES_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Determine reg
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SET_8_REG_SHIFT);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Clear bit
+					reg &= ~(1 << bitIdx);
+
+					return 0;
+				}
+
+				//Reset specified bit at address in (HL)
+				static u16 RES_b_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (HL)
+					u16 address = regs.main.hl;
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Clear bit
+					value &= ~(1 << bitIdx);
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					return 0;
+				}
+
+				//Reset specified bit at address in (IX+offset)
+				static u16 RES_b_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IX+offset)
+					u16 address = regs.ix + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Clear bit
+					value &= ~(1 << bitIdx);
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					return 0;
+				}
+
+				//Reset specified bit at address in (IY+offset)
+				static u16 RES_b_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IY+offset)
+					u16 address = regs.iy + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Clear bit
+					value &= ~(1 << bitIdx);
+
+					//Store value in memory
+					bus.memoryController.WriteMemory(address, value);
+
+					return 0;
 				}
 
 				//Test specified bit on an 8-bit register
@@ -40,6 +186,69 @@ namespace emu
 
 					//Set Z flag to bit
 					SetFlagZ((reg >> bitIdx) & 1, regs.main.f);
+
+					return 0;
+				}
+
+				//Test specified bit at address in (HL)
+				static u16 BIT_b_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (HL)
+					u16 address = regs.main.hl;
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Store value
+					bus.memoryController.WriteMemory(address, value);
+
+					//Set Z flag to bit
+					SetFlagZ((value >> bitIdx) & 1, regs.main.f);
+
+					return 0;
+				}
+
+				//Test specified bit at address in (IX + offset)
+				static u16 BIT_b_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IX + offset)
+					u16 address = regs.ix + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Store value
+					bus.memoryController.WriteMemory(address, value);
+
+					//Set Z flag to bit
+					SetFlagZ((value >> bitIdx) & 1, regs.main.f);
+
+					return 0;
+				}
+
+				//Test specified bit at address in (IY + offset)
+				static u16 BIT_b_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Get address (IY + offset)
+					u16 address = regs.iy + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
+
+					//Determine bit
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+
+					//Store value
+					bus.memoryController.WriteMemory(address, value);
+
+					//Set Z flag to bit
+					SetFlagZ((value >> bitIdx) & 1, regs.main.f);
 
 					return 0;
 				}

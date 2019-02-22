@@ -25,9 +25,10 @@ namespace emu
 		{
 			namespace disassembler
 			{
-				void HandleRedirect(u16& address, Instruction& instruction, const std::vector<u8>& rom)
+				bool HandleRedirect(u16& address, Instruction& instruction, const std::vector<u8>& rom)
 				{
 					u8 prefix = 0;
+					bool paramFirst = false;
 
 					do
 					{
@@ -38,10 +39,12 @@ namespace emu
 							if (instruction.prefix == 0xDD)
 							{
 								instruction.opcode = &OpcodeTableDDCB[instruction.opcodeIdx];
+								paramFirst = true;
 							}
 							else if (instruction.prefix == 0xFD)
 							{
 								instruction.opcode = &OpcodeTableFDCB[instruction.opcodeIdx];
+								paramFirst = true;
 							}
 							else
 							{
@@ -76,11 +79,14 @@ namespace emu
 						}
 
 					} while (prefix != 0);
+
+					return paramFirst;
 				}
 
-				void HandleRedirect(u16& address, Instruction& instruction, memory::Controller& memoryController)
+				bool HandleRedirect(u16& address, Instruction& instruction, memory::Controller& memoryController)
 				{
 					u8 prefix = 0;
+					bool paramFirst = false;
 
 					do
 					{
@@ -91,10 +97,12 @@ namespace emu
 							if (instruction.prefix == 0xDD)
 							{
 								instruction.opcode = &OpcodeTableDDCB[instruction.opcodeIdx];
+								paramFirst = true;
 							}
 							else if (instruction.prefix == 0xFD)
 							{
 								instruction.opcode = &OpcodeTableFDCB[instruction.opcodeIdx];
+								paramFirst = true;
 							}
 							else
 							{
@@ -128,6 +136,8 @@ namespace emu
 						}
 
 					} while (prefix != 0);
+
+					return paramFirst;
 				}
 
 				void Disassemble(const std::vector<u8>& rom, u16 size, std::vector<Instruction>& disassembly)
@@ -147,17 +157,36 @@ namespace emu
 						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
 
 						//Handle redirects
-						HandleRedirect(address, instruction, rom);
-
-						//Output params
-
-#if defined DEBUG
-						instruction.params.count = instruction.opcode->paramBytes;
-#endif
-
-						for (int i = 0; i < instruction.opcode->paramBytes; i++)
+						if (HandleRedirect(address, instruction, rom))
 						{
-							instruction.params[i] = rom[address++];
+							//Param first, read opcode
+							instruction.opcode = &OpcodeTable[rom[address++]];
+
+							#if defined DEBUG
+							instruction.params.count = instruction.opcode->paramBytes;
+							#endif
+
+							//Original opcode is actually first param
+							instruction.params[0] = instruction.opcodeIdx;
+
+							//Read remaining params
+							for (int i = 0; i < instruction.opcode->paramBytes - 1; i++)
+							{
+								instruction.params[i] = rom[address++];
+							}
+						}
+						else
+						{
+							//Opcode first
+							#if defined DEBUG
+							instruction.params.count = instruction.opcode->paramBytes;
+							#endif
+
+							//Read params
+							for (int i = 0; i < instruction.opcode->paramBytes; i++)
+							{
+								instruction.params[i] = rom[address++];
+							}
 						}
 
 						disassembly.push_back(instruction);
@@ -179,12 +208,36 @@ namespace emu
 						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
 
 						//Handle redirects
-						HandleRedirect(address, instruction, memoryController);
-
-						//Output params
-						for (int i = 0; i < instruction.opcode->paramBytes; i++)
+						if (HandleRedirect(address, instruction, memoryController))
 						{
-							instruction.params[i] = memoryController.ReadMemory(address++);
+							//Param first, read opcode
+							instruction.opcode = &OpcodeTable[memoryController.ReadMemory(address++)];
+
+							#if defined DEBUG
+							instruction.params.count = instruction.opcode->paramBytes;
+							#endif
+
+							//Original opcode is actually first param
+							instruction.params[0] = instruction.opcodeIdx;
+
+							//Read remaining params
+							for (int i = 0; i < instruction.opcode->paramBytes - 1; i++)
+							{
+								instruction.params[i] = memoryController.ReadMemory(address++);
+							}
+						}
+						else
+						{
+							//Opcode first
+							#if defined DEBUG
+							instruction.params.count = instruction.opcode->paramBytes;
+							#endif
+
+							//Read params
+							for (int i = 0; i < instruction.opcode->paramBytes; i++)
+							{
+								instruction.params[i] = memoryController.ReadMemory(address++);
+							}
 						}
 
 						disassembly.push_back(instruction);
