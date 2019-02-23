@@ -278,8 +278,11 @@ namespace emu
 				//Arithmetic shift value at address in (HL) to the left
 				static u16 SLA_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read value at (HL)
-					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+					//Get address (HL)
+					u16 address = regs.main.hl;
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
 
 					//Copy top bit to C flag
 					SetFlagC(value >> 7, regs.main.f);
@@ -288,7 +291,7 @@ namespace emu
 					value <<= 1;
 
 					//Store value
-					bus.memoryController.WriteMemory(regs.ix + params[0], value);
+					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
 					ComputeFlagsZPS(value, regs.main.f);
@@ -303,8 +306,11 @@ namespace emu
 				//Arithmetic shift value at address in (IX+offset) to the left
 				static u16 SLA_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read value at (IX + offset)
-					u8 value = bus.memoryController.ReadMemory(regs.ix + params[0]);
+					//Get address (IX + offset)
+					u16 address = regs.ix + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
 
 					//Copy top bit to C flag
 					SetFlagC(value >> 7, regs.main.f);
@@ -313,7 +319,7 @@ namespace emu
 					value <<= 1;
 
 					//Store value
-					bus.memoryController.WriteMemory(regs.ix + params[0], value);
+					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
 					ComputeFlagsZPS(value, regs.main.f);
@@ -328,8 +334,11 @@ namespace emu
 				//Arithmetic shift value at address in (IY+offset) to the left
 				static u16 SLA_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read value at (IY + offset)
-					u8 value = bus.memoryController.ReadMemory(regs.iy + params[0]);
+					//Get address (IY + offset)
+					u16 address = regs.iy + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
 
 					//Copy top bit to C flag
 					SetFlagC(value >> 7, regs.main.f);
@@ -338,7 +347,7 @@ namespace emu
 					value <<= 1;
 
 					//Store value
-					bus.memoryController.WriteMemory(regs.iy + params[0], value);
+					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
 					ComputeFlagsZPS(value, regs.main.f);
@@ -375,8 +384,11 @@ namespace emu
 				//Arithmetic shift value at address in (HL) to the left, leaving 1 in bottom bit
 				static u16 SLL_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read value at (HL)
-					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+					//Get address (HL)
+					u16 address = regs.main.hl;
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
 
 					//Copy top bit to C flag
 					SetFlagC(value >> 7, regs.main.f);
@@ -385,7 +397,7 @@ namespace emu
 					value = (value << 1) | 0x1;
 
 					//Store value
-					bus.memoryController.WriteMemory(regs.ix + params[0], value);
+					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
 					ComputeFlagsZPS(value, regs.main.f);
@@ -400,8 +412,11 @@ namespace emu
 				//Arithmetic shift value at address in (IX+offset) to the left, leaving 1 in bottom bit
 				static u16 SLL_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read value at (IX + offset)
-					u8 value = bus.memoryController.ReadMemory(regs.ix + params[0]);
+					//Get address (IX + offset)
+					u16 address = regs.ix + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
 
 					//Copy top bit to C flag
 					SetFlagC(value >> 7, regs.main.f);
@@ -410,7 +425,7 @@ namespace emu
 					value = (value << 1) | 0x1;
 
 					//Store value
-					bus.memoryController.WriteMemory(regs.ix + params[0], value);
+					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
 					ComputeFlagsZPS(value, regs.main.f);
@@ -425,8 +440,11 @@ namespace emu
 				//Arithmetic shift value at address in (IY+offset) to the left, leaving 1 in bottom bit
 				static u16 SLL_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read value at (IY + offset)
-					u8 value = bus.memoryController.ReadMemory(regs.iy + params[0]);
+					//Get address (IY + offset)
+					u16 address = regs.iy + params[0];
+
+					//Read value
+					u8 value = bus.memoryController.ReadMemory(address);
 
 					//Copy top bit to C flag
 					SetFlagC(value >> 7, regs.main.f);
@@ -435,7 +453,7 @@ namespace emu
 					value = (value << 1) | 0x1;
 
 					//Store value
-					bus.memoryController.WriteMemory(regs.iy + params[0], value);
+					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
 					ComputeFlagsZPS(value, regs.main.f);
