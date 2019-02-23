@@ -25,7 +25,7 @@ namespace emu
 		{
 			namespace disassembler
 			{
-				bool HandleRedirect(u16& address, Instruction& instruction, const std::vector<u8>& rom)
+				bool HandleRedirect(u16& address, Instruction& instruction, const Opcode*& opcodeTable, const std::vector<u8>& rom)
 				{
 					u8 prefix = 0;
 					bool paramFirst = false;
@@ -38,27 +38,30 @@ namespace emu
 						{
 							if (instruction.prefix == 0xDD)
 							{
-								instruction.opcode = &OpcodeTableDDCB[instruction.opcodeIdx];
+								opcodeTable = OpcodeTableDDCB;
 								paramFirst = true;
 							}
 							else if (instruction.prefix == 0xFD)
 							{
-								instruction.opcode = &OpcodeTableFDCB[instruction.opcodeIdx];
+								opcodeTable = OpcodeTableFDCB;
 								paramFirst = true;
 							}
 							else
 							{
-								instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+								opcodeTable = OpcodeTableCB;
+								
 							}
 
 							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
 							
 						}
 						else if (instruction.opcodeIdx == 0xDD)
 						{
 							prefix = instruction.opcodeIdx;
+							opcodeTable = OpcodeTableDD;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
@@ -66,6 +69,7 @@ namespace emu
 						else if (instruction.opcodeIdx == 0xED)
 						{
 							prefix = instruction.opcodeIdx;
+							opcodeTable = OpcodeTableED;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
@@ -73,6 +77,7 @@ namespace emu
 						else if (instruction.opcodeIdx == 0xFD)
 						{
 							prefix = instruction.opcodeIdx;
+							opcodeTable = OpcodeTableFD;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = rom[address++];
 							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
@@ -83,7 +88,7 @@ namespace emu
 					return paramFirst;
 				}
 
-				bool HandleRedirect(u16& address, Instruction& instruction, memory::Controller& memoryController)
+				bool HandleRedirect(u16& address, Instruction& instruction, const Opcode*& opcodeTable, memory::Controller& memoryController)
 				{
 					u8 prefix = 0;
 					bool paramFirst = false;
@@ -96,43 +101,49 @@ namespace emu
 						{
 							if (instruction.prefix == 0xDD)
 							{
-								instruction.opcode = &OpcodeTableDDCB[instruction.opcodeIdx];
+								opcodeTable = OpcodeTableDDCB;
 								paramFirst = true;
 							}
 							else if (instruction.prefix == 0xFD)
 							{
-								instruction.opcode = &OpcodeTableFDCB[instruction.opcodeIdx];
+								opcodeTable = OpcodeTableFDCB;
 								paramFirst = true;
 							}
 							else
 							{
-								instruction.opcode = &OpcodeTableCB[instruction.opcodeIdx];
+								opcodeTable = OpcodeTableCB;
+
 							}
 
 							prefix = instruction.opcodeIdx;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
+
 						}
 						else if (instruction.opcodeIdx == 0xDD)
 						{
 							prefix = instruction.opcodeIdx;
+							opcodeTable = OpcodeTableDD;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
-							instruction.opcode = &OpcodeTableDD[instruction.opcodeIdx];
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
 						}
 						else if (instruction.opcodeIdx == 0xED)
 						{
 							prefix = instruction.opcodeIdx;
+							opcodeTable = OpcodeTableED;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
-							instruction.opcode = &OpcodeTableED[instruction.opcodeIdx];
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
 						}
 						else if (instruction.opcodeIdx == 0xFD)
 						{
 							prefix = instruction.opcodeIdx;
+							opcodeTable = OpcodeTableFD;
 							instruction.prefix = (instruction.prefix << 8) | prefix;
 							instruction.opcodeIdx = memoryController.ReadMemory(address++);
-							instruction.opcode = &OpcodeTableFD[instruction.opcodeIdx];
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
 						}
 
 					} while (prefix != 0);
@@ -157,17 +168,20 @@ namespace emu
 						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
 
 						//Handle redirects
-						if (HandleRedirect(address, instruction, rom))
+						const Opcode* opcodeTable = OpcodeTable;
+						if (HandleRedirect(address, instruction, opcodeTable, rom))
 						{
 							//Param first, read opcode
-							instruction.opcode = &OpcodeTable[rom[address++]];
-
+							u8 param1 = instruction.opcodeIdx;
+							instruction.opcodeIdx = rom[address++];
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
+							
 							#if defined DEBUG
 							instruction.params.count = instruction.opcode->paramBytes;
 							#endif
 
 							//Original opcode is actually first param
-							instruction.params[0] = instruction.opcodeIdx;
+							instruction.params[0] = param1;
 
 							//Read remaining params
 							for (int i = 0; i < instruction.opcode->paramBytes - 1; i++)
@@ -208,17 +222,20 @@ namespace emu
 						instruction.opcode = &OpcodeTable[instruction.opcodeIdx];
 
 						//Handle redirects
-						if (HandleRedirect(address, instruction, memoryController))
+						const Opcode* opcodeTable = OpcodeTable;
+						if (HandleRedirect(address, instruction, opcodeTable, memoryController))
 						{
 							//Param first, read opcode
-							instruction.opcode = &OpcodeTable[memoryController.ReadMemory(address++)];
+							u8 param1 = instruction.opcodeIdx;
+							instruction.opcodeIdx = memoryController.ReadMemory(address++);
+							instruction.opcode = &opcodeTable[instruction.opcodeIdx];
 
 							#if defined DEBUG
 							instruction.params.count = instruction.opcode->paramBytes;
 							#endif
 
 							//Original opcode is actually first param
-							instruction.params[0] = instruction.opcodeIdx;
+							instruction.params[0] = param1;
 
 							//Read remaining params
 							for (int i = 0; i < instruction.opcode->paramBytes - 1; i++)
