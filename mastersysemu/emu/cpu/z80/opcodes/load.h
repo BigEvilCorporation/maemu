@@ -14,74 +14,138 @@ namespace emu
 				static const int REGISTER_DECODE_LD_8_REG_DST_SHIFT = 0x3;
 				static const int REGISTER_DECODE_LD_16_REG_SRC_SHIFT = 0x4;
 
-				//Load 8-bit register from 8-bit literal
-				static u16 LD_r8_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+				typedef u8(*LoadFunc)(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus);
+				typedef void(*StoreFunc)(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value);
+				
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// 8-bit LOADS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-					//Load param
-					reg = params[0];
+				//Load from 8-bit constant
+				static u8 LD_Load_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return params[0];
+				}
+
+				//Load from 8-bit register
+				static u8 LD_Load_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+				}
+
+				//Load from 8-bit register (incl. IXH/IXL)
+				static u8 LD_Load_rIXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+				}
+
+				//Load from 8-bit register (incl. IYH/IYL)
+				static u8 LD_Load_rIYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+				}
+
+				//Load A
+				static u8 LD_Load_rA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return regs.main.a;
+				}
+
+				//Load I
+				static u8 LD_Load_rI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return regs.i;
+				}
+
+				//Load R
+				static u8 LD_Load_rR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return regs.r;
+				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// 8-bit STORES
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Store to 8-bit register
+				static void LD_Store_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT) = value;
+				}
+
+				//Store to 8-bit register (incl. IXH/IXL)
+				static void LD_Store_rIXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT) = value;
+				}
+
+				//Store to 8-bit register (incl. IYH/IYL)
+				static void LD_Store_rIYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT) = value;
+				}
+
+				//Store to A
+				static void LD_Store_rIA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					regs.main.a = value;
+				}
+
+				//Store to I
+				static void LD_Store_rI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					regs.i = value;
+				}
+
+				//Store to R
+				static void LD_Store_rR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					regs.r = value;
+				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// 16-bit LOADS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// 16-bit STORES
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// OPERATION TEMPLATES
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Load 8-bit source to 8-bit destination
+				template <LoadFunc LOAD_8_T, StoreFunc STORE_8_T>
+				u16 LD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load value
+					STORE_8_T(opcode, params, regs, bus, LOAD_8_T(opcode, params, regs, bus));
 
 					return 0;
 				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// OPERATIONS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Load 8-bit register from 8-bit literal
+				#define LD_r8_n8 LD<opcodes::LD_Load_n8, opcodes::LD_Store_r8>
 
 				//Load 8-bit register from another 8-bit register
-				static u16 LD_r8_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine regs
-					u8& reg1 = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
-					u8& reg2 = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+				#define LD_r8_r8 LD<opcodes::LD_Load_r8, opcodes::LD_Store_r8>
 
-					//Load
-					reg1 = reg2;
+				//Load IXH/IXL from 8-bit literal
+				#define LD_IXHL_n8 LD<opcodes::LD_Load_n8, opcodes::LD_Store_rIXHL>
 
-					return 0;
-				}
+				//Load IYH/IYL from 8-bit literal
+				#define LD_IYHL_n8 LD<opcodes::LD_Load_n8, opcodes::LD_Store_rIYHL>
 
-				//Load 8-bit register from IXH/IXL
-				static u16 LD_r8_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					ion::debug::Log("LD_r8_IX() - not implemented");
-					regs.internal.err = 1;
-					return 0;
-				}
+				//Load I from A
+				#define LD_I_A LD<opcodes::LD_Load_rA, opcodes::LD_Store_rI>
 
-				//Load 8-bit register from IYH/IYL
-				static u16 LD_r8_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					ion::debug::Log("LD_r8_IY() - not implemented");
-					regs.internal.err = 1;
-					return 0;
-				}
-
-				//Load IXH from 8-bit literal
-				static u16 LD_IXH_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					regs.ixh = params[0];
-					return 0;
-				}
-
-				//Load IXL from 8-bit literal
-				static u16 LD_IXL_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					regs.ixl = params[0];
-					return 0;
-				}
-
-				//Load IYH from 8-bit literal
-				static u16 LD_IYH_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					regs.iyh = params[0];
-					return 0;
-				}
-
-				//Load IYL from 8-bit literal
-				static u16 LD_IYL_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					regs.iyl = params[0];
-					return 0;
-				}
+				//Load R from A
+				#define LD_R_A LD<opcodes::LD_Load_rA, opcodes::LD_Store_rR>
 
 				//Load A from I
 				static u16 LD_A_I(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -95,15 +159,6 @@ namespace emu
 					return 0;
 				}
 
-				//Load I from A
-				static u16 LD_I_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//I = A
-					regs.i = regs.main.a;
-
-					return 0;
-				}
-
 				//Load A from R
 				static u16 LD_A_R(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -112,15 +167,6 @@ namespace emu
 
 					//Set flags ZS flags based on R
 					ComputeFlagsZS(regs.r, regs.main.f);
-
-					return 0;
-				}
-
-				//Load R from A
-				static u16 LD_R_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//R = A
-					regs.r = regs.main.a;
 
 					return 0;
 				}

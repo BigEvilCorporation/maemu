@@ -72,7 +72,7 @@ namespace emu
 				{ 0x23, 0, &opcodes::INC_IY,  "INC", "IY" },
 				{ 0x24, 0, &opcodes::INC_IYHL, "INC", "IYH" },
 				{ 0x25, 0, &opcodes::DEC_IYHL, "DEC", "IYH" },
-				{ 0x26, 1, &opcodes::LD_IYH_n8, "LD", "IYH, #" },
+				{ 0x26, 1, &opcodes::LD_IYHL_n8, "LD", "IYH, #" },
 				{ 0x27, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x28, 0, &opcodes::Unknown, "UNKNOWN", "" },
 				{ 0x29, 0, &opcodes::ADD_IY_r16, "ADD", "IY, IX" },
@@ -80,7 +80,7 @@ namespace emu
 				{ 0x2B, 0, &opcodes::DEC_IY,  "DEC", "IY" },
 				{ 0x2C, 0, &opcodes::INC_IYHL, "INC", "IYL" },
 				{ 0x2D, 0, &opcodes::DEC_IYHL, "DEC", "IYL" },
-				{ 0x2E, 1, &opcodes::LD_IYL_n8, "LD", "IYL, #" },
+				{ 0x2E, 1, &opcodes::LD_IYHL_n8, "LD", "IYL, #" },
 				{ 0x2F, 0, &opcodes::Unknown, "UNKNOWN", "" },
 
 				{ 0x30, 0, &opcodes::Unknown, "UNKNOWN", "" },
