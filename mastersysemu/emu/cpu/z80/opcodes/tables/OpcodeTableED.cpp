@@ -103,7 +103,7 @@ namespace emu
 				{ 0x44, 0, &opcodes::NEG,			"NEG", "A" },
 				{ 0x45, 0, &opcodes::RETN,			"RETN", "" },
 				{ 0x46, 0, &opcodes::IM_0,			"IM", "0" },
-				{ 0x47, 0, &opcodes::LD_I_A,		"LD", "I, A" },
+				{ 0x47, 0, opcodes::LD_I_A,		"LD", "I, A" },
 				{ 0x48, 0, &opcodes::IN_r8_C,		"IN", "C, (C)" },
 				{ 0x49, 0, &opcodes::OUT_C_r8,		"OUT", "(C), C" },
 				{ 0x4A, 0, &opcodes::ADC_HL_r16,	"ADC", "HL, BC" },
@@ -111,7 +111,7 @@ namespace emu
 				{ 0x4C, 0, &opcodes::NEG,			"NEG", "A" },
 				{ 0x4D, 0, &opcodes::RETI,			"RETI", "" },
 				{ 0x4E, 0, &opcodes::IM_0,			"IM", "0" },
-				{ 0x4F, 0, &opcodes::LD_R_A,		"LD", "R, A" },
+				{ 0x4F, 0, opcodes::LD_R_A,		"LD", "R, A" },
 
 				{ 0x50, 0, &opcodes::IN_r8_C,		"IN", "D, (C)" },
 				{ 0x51, 0, &opcodes::OUT_C_r8,		"OUT", "(C), D" },

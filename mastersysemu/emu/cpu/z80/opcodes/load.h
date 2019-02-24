@@ -18,47 +18,47 @@ namespace emu
 				typedef void(*StoreFunc)(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value);
 				
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				// 8-bit LOADS
+				// 8-bit FETCHES
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//Load from 8-bit constant
-				static u8 LD_Load_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return params[0];
 				}
 
 				//Load from 8-bit register
-				static u8 LD_Load_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 				}
 
 				//Load from 8-bit register (incl. IXH/IXL)
-				static u8 LD_Load_rIXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_rIXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 				}
 
 				//Load from 8-bit register (incl. IYH/IYL)
-				static u8 LD_Load_rIYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_rIYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 				}
 
 				//Load A
-				static u8 LD_Load_rA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_rA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return regs.main.a;
 				}
 
 				//Load I
-				static u8 LD_Load_rI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_rI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return regs.i;
 				}
 
 				//Load R
-				static u8 LD_Load_rR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				static u8 LD_Fetch_rR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return regs.r;
 				}
@@ -104,7 +104,7 @@ namespace emu
 				}
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				// 16-bit LOADS
+				// 16-bit FETCHES
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -130,22 +130,22 @@ namespace emu
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//Load 8-bit register from 8-bit literal
-				#define LD_r8_n8 LD<opcodes::LD_Load_n8, opcodes::LD_Store_r8>
+				static auto LD_r8_n8 = LD<LD_Fetch_n8, LD_Store_r8>;
 
 				//Load 8-bit register from another 8-bit register
-				#define LD_r8_r8 LD<opcodes::LD_Load_r8, opcodes::LD_Store_r8>
+				static auto LD_r8_r8 = LD<LD_Fetch_r8, LD_Store_r8>;
 
 				//Load IXH/IXL from 8-bit literal
-				#define LD_IXHL_n8 LD<opcodes::LD_Load_n8, opcodes::LD_Store_rIXHL>
+				static auto LD_IXHL_n8 = LD<LD_Fetch_n8, LD_Store_rIXHL>;
 
 				//Load IYH/IYL from 8-bit literal
-				#define LD_IYHL_n8 LD<opcodes::LD_Load_n8, opcodes::LD_Store_rIYHL>
+				static auto LD_IYHL_n8 = LD<LD_Fetch_n8, LD_Store_rIYHL>;
 
 				//Load I from A
-				#define LD_I_A LD<opcodes::LD_Load_rA, opcodes::LD_Store_rI>
+				static auto LD_I_A = LD<LD_Fetch_rA, LD_Store_rI>;
 
 				//Load R from A
-				#define LD_R_A LD<opcodes::LD_Load_rA, opcodes::LD_Store_rR>
+				static auto LD_R_A = LD<LD_Fetch_rA, LD_Store_rI>;
 
 				//Load A from I
 				static u16 LD_A_I(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
