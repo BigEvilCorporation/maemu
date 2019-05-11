@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Opcode.h"
+#include "load.h"
 
 namespace emu
 {
@@ -10,254 +11,116 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static const int REGISTER_DECODE_BIT_8_REG_SHIFT = 0x0;
-				static const int REGISTER_DECODE_SET_8_REG_SHIFT = 0x0;
-				static const int REGISTER_DECODE_SHIFT_8_REG_SHIFT = 0x0;
-				static const int REGISTER_DECODE_OR_8_REG_SHIFT = 0x0;
-				static const int REGISTER_DECODE_AND_8_REG_SHIFT = 0x0;
+				static const int REGISTER_DECODE_SHIFT_SHIFT = 0x0;
+				static const int REGISTER_DECODE_OR_SHIFT = 0x0;
+				static const int REGISTER_DECODE_AND_SHIFT = 0x0;
 
 				static const int REGISTER_DECODE_BIT_MASK = 0x07;
 				static const int REGISTER_DECODE_BIT_SHIFT = 0x03;
 
-				//Set specified bit in an 8-bit register
-				static u16 SET_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				typedef u8(*ModifierFunc8)(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value);
+				typedef void(*TestFunc8)(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value);
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// MODIFIERS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Set bit specified in 8-bit literal
+				static u8 BW_Set_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SET_8_REG_SHIFT);
-
-					//Determine bit
 					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+					return value | (1 << bitIdx);
+				}
 
-					//Set bit
-					reg |= (1 << bitIdx);
+				//Reset bit specified in 8-bit literal
+				static u8 BW_Reset_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+					return value & ~(1 << bitIdx);
+				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// TESTS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Test bit specified in 8-bit literal, set Z flag
+				static void BW_Bit_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
+					SetFlagZ(((value >> bitIdx) & 1) ^ 1, regs.main.f);
+					SetFlagH(1, regs.main.f);
+					SetFlagN(0, regs.main.f);
+				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// OPERATION TEMPLATES
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Load, modify, store 8-bit value
+				template <LoadFunc8 LOAD_8_T, StoreFunc8 STORE_8_T, ModifierFunc8 MODIFY_8_T>
+				u16 MODIFY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load, modify, store value
+					STORE_8_T(opcode, params, regs, bus, MODIFY_8_T(opcode, params, regs, bus, LOAD_8_T(opcode, params, regs, bus)));
 
 					return 0;
 				}
+
+				//Load and test value
+				template <LoadFunc8 LOAD_8_T, TestFunc8 TEST_8_T>
+				u16 TEST(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load and test value
+					TEST_8_T(opcode, params, regs, bus, LOAD_8_T(opcode, params, regs, bus));
+
+					return 0;
+				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// BIT OPERATIONS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Set specified bit in an 8-bit register
+				static auto SET_b_r8 = MODIFY<LD_Fetch_r8, LD_Store_r8, BW_Set_n8>;
 
 				//Set specified bit at address in (HL)
-				static u16 SET_b_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (HL)
-					u16 address = regs.main.hl;
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Set bit
-					value |= (1 << bitIdx);
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					return 0;
-				}
+				static auto SET_b_dHL = MODIFY<LD_Fetch_dHL, LD_Store_dHL, BW_Set_n8>;
 
 				//Set specified bit at address in (IX+offset)
-				static u16 SET_b_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IX+offset)
-					u16 address = regs.ix + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Set bit
-					value |= (1 << bitIdx);
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					return 0;
-				}
+				static auto SET_b_dIX = MODIFY<LD_Fetch_dIXoff, LD_Store_dIXoff, BW_Set_n8>;
 
 				//Set specified bit at address in (IY+offset)
-				static u16 SET_b_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IY+offset)
-					u16 address = regs.iy + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Set bit
-					value |= (1 << bitIdx);
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					return 0;
-				}
+				static auto SET_b_dIY = MODIFY<LD_Fetch_dIYoff, LD_Store_dIYoff, BW_Set_n8>;
 
 				//Reset specified bit in an 8-bit register
-				static u16 RES_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SET_8_REG_SHIFT);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Clear bit
-					reg &= ~(1 << bitIdx);
-
-					return 0;
-				}
+				static auto RES_b_r8 = MODIFY<LD_Fetch_r8, LD_Store_r8, BW_Reset_n8>;
 
 				//Reset specified bit at address in (HL)
-				static u16 RES_b_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (HL)
-					u16 address = regs.main.hl;
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Clear bit
-					value &= ~(1 << bitIdx);
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					return 0;
-				}
+				static auto RES_b_dHL = MODIFY<LD_Fetch_dHL, LD_Store_dHL, BW_Reset_n8>;
 
 				//Reset specified bit at address in (IX+offset)
-				static u16 RES_b_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IX+offset)
-					u16 address = regs.ix + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Clear bit
-					value &= ~(1 << bitIdx);
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					return 0;
-				}
+				static auto RES_b_dIX = MODIFY<LD_Fetch_dIXoff, LD_Store_dIXoff, BW_Reset_n8>;
 
 				//Reset specified bit at address in (IY+offset)
-				static u16 RES_b_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IY+offset)
-					u16 address = regs.iy + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Clear bit
-					value &= ~(1 << bitIdx);
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					return 0;
-				}
+				static auto RES_b_dIY = MODIFY<LD_Fetch_dIYoff, LD_Store_dIYoff, BW_Reset_n8>;
 
 				//Test specified bit on an 8-bit register
-				static u16 BIT_b_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_BIT_8_REG_SHIFT);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Set Z flag to bit
-					SetFlagZ((reg >> bitIdx) & 1, regs.main.f);
-
-					return 0;
-				}
+				static auto BIT_b_r8 = TEST<LD_Fetch_r8, BW_Bit_n8>;
 
 				//Test specified bit at address in (HL)
-				static u16 BIT_b_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (HL)
-					u16 address = regs.main.hl;
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Store value
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set Z flag to bit
-					SetFlagZ((value >> bitIdx) & 1, regs.main.f);
-
-					return 0;
-				}
+				static auto BIT_b_dHL = TEST<LD_Fetch_dHL, BW_Bit_n8>;
 
 				//Test specified bit at address in (IX + offset)
-				static u16 BIT_b_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IX + offset)
-					u16 address = regs.ix + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Store value
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set Z flag to bit
-					SetFlagZ((value >> bitIdx) & 1, regs.main.f);
-
-					return 0;
-				}
+				static auto BIT_b_dIX = TEST<LD_Fetch_dIXoff, BW_Bit_n8>;
 
 				//Test specified bit at address in (IY + offset)
-				static u16 BIT_b_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IY + offset)
-					u16 address = regs.iy + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Determine bit
-					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-
-					//Store value
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set Z flag to bit
-					SetFlagZ((value >> bitIdx) & 1, regs.main.f);
-
-					return 0;
-				}
+				static auto BIT_b_dIY = TEST<LD_Fetch_dIYoff, BW_Bit_n8>;
 
 				//Arithmetic shift an 8-bit register to the left
 				static u16 SLA_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy top bit to C flag
 					SetFlagC(reg >> 7, regs.main.f);
@@ -363,7 +226,7 @@ namespace emu
 				static u16 SLL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy top bit to C flag
 					SetFlagC(reg >> 7, regs.main.f);
@@ -469,7 +332,7 @@ namespace emu
 				static u16 SRA_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy bit 0 to C flag
 					SetFlagC(reg & 1, regs.main.f);
@@ -575,7 +438,7 @@ namespace emu
 				static u16 SRL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy bottom bit to C flag
 					SetFlagC(reg & 1, regs.main.f);
@@ -702,7 +565,7 @@ namespace emu
 				static u16 RLC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy bit 7 (sign)
 					u8 bit7 = (reg >> 7);
@@ -780,7 +643,7 @@ namespace emu
 					u16 address = regs.ix + params[0];
 
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Read value
 					reg = bus.memoryController.ReadMemory(address);
@@ -837,7 +700,7 @@ namespace emu
 					u16 address = regs.iy + params[0];
 
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Read value
 					reg = bus.memoryController.ReadMemory(address);
@@ -882,7 +745,7 @@ namespace emu
 				static u16 RL_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy C flag and bit 7
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
@@ -1001,7 +864,7 @@ namespace emu
 				static u16 RRC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
 
 					//Copy bit 0
 					u8 bit0 = (reg & 0x1);
@@ -1121,7 +984,7 @@ namespace emu
 				static u16 RR_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Take C flag and bit 0
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
@@ -1223,7 +1086,7 @@ namespace emu
 				static u16 OR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//OR A with reg
 					regs.main.a |= reg;
@@ -1238,7 +1101,7 @@ namespace emu
 				static u16 OR_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//OR A with reg
 					regs.main.a |= reg;
@@ -1253,7 +1116,7 @@ namespace emu
 				static u16 OR_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//OR A with reg
 					regs.main.a |= reg;
@@ -1316,7 +1179,7 @@ namespace emu
 				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_AND_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
 
 					//AND A with reg
 					regs.main.a &= reg;
@@ -1331,7 +1194,7 @@ namespace emu
 				static u16 AND_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_AND_8_REG_SHIFT);
+					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
 
 					//AND A with reg
 					regs.main.a &= reg;
@@ -1346,7 +1209,7 @@ namespace emu
 				static u16 AND_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_AND_8_REG_SHIFT);
+					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
 
 					//AND A with reg
 					regs.main.a &= reg;
@@ -1409,7 +1272,7 @@ namespace emu
 				static u16 XOR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//XOR A with reg
 					regs.main.a ^= reg;
@@ -1424,7 +1287,7 @@ namespace emu
 				static u16 XOR_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//XOR A with reg
 					regs.main.a ^= reg;
@@ -1439,7 +1302,7 @@ namespace emu
 				static u16 XOR_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_8_REG_SHIFT);
+					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//XOR A with reg
 					regs.main.a ^= reg;

@@ -53,6 +53,16 @@ namespace emu
 				flags ^= (-value ^ flags) & (1 << FLAG_INDEX_C);
 			}
 
+			static void SetFlagH(u8 value, u8& flags)
+			{
+				flags ^= (-value ^ flags) & (1 << FLAG_INDEX_H);
+			}
+
+			static void SetFlagN(u8 value, u8& flags)
+			{
+				flags ^= (-value ^ flags) & (1 << FLAG_INDEX_N);
+			}
+
 			static bool CheckFlagsZ(u8& flags)
 			{
 				return (flags & FLAG_Z) != 0;
