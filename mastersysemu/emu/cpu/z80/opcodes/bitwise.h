@@ -758,6 +758,7 @@ namespace emu
 					reg = (reg << 1) | carry;
 
 					//Set flags
+					ComputeFlagsZPS(reg, regs.main.f);
 					SetFlagC(bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -785,6 +786,7 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
+					ComputeFlagsZPS(value, regs.main.f);
 					SetFlagC(bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -999,6 +1001,7 @@ namespace emu
 					reg = (reg >> 1) | (carry << 7);
 
 					//Set flags
+					ComputeFlagsZPS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1026,6 +1029,7 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
+					ComputeFlagsZPS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
