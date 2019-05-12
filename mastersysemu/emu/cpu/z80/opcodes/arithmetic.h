@@ -565,6 +565,8 @@ namespace emu
 
 					//Set flags
 					ComputeFlagsZPS(regs.main.a, regs.main.f);
+					SetFlagH(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -586,6 +588,8 @@ namespace emu
 
 					//Set flags
 					ComputeFlagsZPS(regs.main.a, regs.main.f);
+					SetFlagH(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
