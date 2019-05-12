@@ -16,11 +16,17 @@ namespace emu
 				//Negate A
 				static u16 NEG(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					u8 originalA = regs.main.a;
+
 					//Negate A
 					regs.main.a = -regs.main.a;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagsZS(regs.main.a, regs.main.f);
+					ComputeFlagH(0, originalA, regs.main.a, regs.main.f);
+					SetFlagP((originalA == 0x80) ? 1 : 0, regs.main.f);
+					SetFlagC((originalA != 0) ? 1 : 0, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
