@@ -84,7 +84,7 @@ namespace emu
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//Set specified bit in an 8-bit register
-				static auto SET_b_r8 = MODIFY<LD_Fetch_r8, LD_Store_r8, BW_Set_n8>;
+				static auto SET_b_r8 = MODIFY<LD_Fetch_r8, LD_Store_SRC_r8, BW_Set_n8>;
 
 				//Set specified bit at address in (HL)
 				static auto SET_b_dHL = MODIFY<LD_Fetch_dHL, LD_Store_dHL, BW_Set_n8>;
@@ -96,7 +96,7 @@ namespace emu
 				static auto SET_b_dIY = MODIFY<LD_Fetch_dIYoff, LD_Store_dIYoff, BW_Set_n8>;
 
 				//Reset specified bit in an 8-bit register
-				static auto RES_b_r8 = MODIFY<LD_Fetch_r8, LD_Store_r8, BW_Reset_n8>;
+				static auto RES_b_r8 = MODIFY<LD_Fetch_r8, LD_Store_SRC_r8, BW_Reset_n8>;
 
 				//Reset specified bit at address in (HL)
 				static auto RES_b_dHL = MODIFY<LD_Fetch_dHL, LD_Store_dHL, BW_Reset_n8>;

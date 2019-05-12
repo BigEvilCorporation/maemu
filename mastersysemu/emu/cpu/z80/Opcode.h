@@ -29,7 +29,7 @@ namespace emu
 			// a   : alt register
 			//
 			// e.g.:
-			//   LD<LD_Fetch_n8, LD_Store_r8>  : Load 8-bit register from 8-bit literal
+			//   LD<LD_Fetch_n8, LD_Store_DST_r8>  : Load 8-bit register from 8-bit literal
 			//   LD_dHL_r8 : Load address at HL from 8-bit register
 
 			struct Opcode;

@@ -114,8 +114,14 @@ namespace emu
 				// 8-bit STORES
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-				//Store to 8-bit register
-				static void LD_Store_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				//Store to source 8-bit register
+				static void LD_Store_SRC_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
+				{
+					DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT) = value;
+				}
+
+				//Store to destination 8-bit register
+				static void LD_Store_DST_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
 				{
 					DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT) = value;
 				}
@@ -305,13 +311,13 @@ namespace emu
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 				//Load 8-bit register from 8-bit literal
-				static auto LD_r8_n8 = LD<LD_Fetch_n8, LD_Store_r8>;
+				static auto LD_r8_n8 = LD<LD_Fetch_n8, LD_Store_DST_r8>;
 
 				//Load 16-bit register from 16-bit literal
 				static auto LD_r16_n16 = LD<LD_Fetch_n16, LD_Store_r16>;
 
 				//Load 8-bit register from another 8-bit register
-				static auto LD_r8_r8 = LD<LD_Fetch_r8, LD_Store_r8>;
+				static auto LD_r8_r8 = LD<LD_Fetch_r8, LD_Store_DST_r8>;
 
 				//Load IXH/IXL from 8-bit literal
 				static auto LD_IXHL_n8 = LD<LD_Fetch_n8, LD_Store_rIXHL>;
@@ -320,10 +326,10 @@ namespace emu
 				static auto LD_IYHL_n8 = LD<LD_Fetch_n8, LD_Store_rIYHL>;
 
 				//Load 8-bit register from IXH/IXL
-				static auto LD_r8_IXHL = LD<LD_Fetch_rIXHL, LD_Store_r8>;
+				static auto LD_r8_IXHL = LD<LD_Fetch_rIXHL, LD_Store_rIXHL>;
 
 				//Load 8-bit register from IYH/IYL
-				static auto LD_r8_IYHL = LD<LD_Fetch_rIYHL, LD_Store_r8>;
+				static auto LD_r8_IYHL = LD<LD_Fetch_rIYHL, LD_Store_rIYHL>;
 
 				//Load I from A
 				static auto LD_I_A = LD<LD_Fetch_rA, LD_Store_rI>;
@@ -365,7 +371,7 @@ namespace emu
 				static auto LD_dHL_r8 = LD<LD_Fetch_r8, LD_Store_dHL>;
 
 				//Load 8-bit register from value at address in HL
-				static auto LD_r8_dHL = LD<LD_Fetch_dHL, LD_Store_r8>;
+				static auto LD_r8_dHL = LD<LD_Fetch_dHL, LD_Store_DST_r8>;
 
 				//Load A from value at literal address
 				static auto LD_A_d16 = LD<LD_Fetch_n8_dn16, LD_Store_rA>;
@@ -395,10 +401,10 @@ namespace emu
 				static auto LD_n16_IY = LD<LD_Fetch_rIY, LD_Store_dn16>;
 
 				//Load 8-bit register from address in (IX + offset)
-				static auto LD_r8_dIX = LD<LD_Fetch_dIXoff, LD_Store_r8>;
+				static auto LD_r8_dIX = LD<LD_Fetch_dIXoff, LD_Store_DST_r8>;
 
 				//Load 8-bit register from address in (IY + offset)
-				static auto LD_r8_dIY = LD<LD_Fetch_dIYoff, LD_Store_r8>;
+				static auto LD_r8_dIY = LD<LD_Fetch_dIYoff, LD_Store_DST_r8>;
 
 				//Load address in (IX + offset) from 8-bit register
 				static auto LD_dIX_r8 = LD<LD_Fetch_r8, LD_Store_dIXoff>;
