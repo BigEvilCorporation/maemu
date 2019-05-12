@@ -47,7 +47,10 @@ namespace emu
 				static void BW_Bit_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus, u8 value)
 				{
 					u8 bitIdx = (opcode.opcode >> REGISTER_DECODE_BIT_SHIFT) & REGISTER_DECODE_BIT_MASK;
-					SetFlagZ(((value >> bitIdx) & 1) ^ 1, regs.main.f);
+					u8 result = ((value >> bitIdx) & 1);
+					SetFlagZ(result ^ 1, regs.main.f);
+					SetFlagP(result ^ 1, regs.main.f);
+					SetFlagS((bitIdx == 7 && result) ? 1 : 0, regs.main.f);
 					SetFlagH(1, regs.main.f);
 					SetFlagN(0, regs.main.f);
 				}
@@ -809,7 +812,8 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					SetFlagC(bit7 != 0, regs.main.f);
+					ComputeFlagsZPS(value, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
@@ -836,7 +840,8 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					SetFlagC(bit7 != 0, regs.main.f);
+					ComputeFlagsZPS(value, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
@@ -1048,6 +1053,7 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
+					ComputeFlagsZPS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1075,6 +1081,7 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
+					ComputeFlagsZPS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
