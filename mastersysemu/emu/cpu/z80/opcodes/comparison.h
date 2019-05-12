@@ -105,80 +105,98 @@ namespace emu
 					return 0;
 				}
 
-				//Comapre A with value at address in (HL), then increment HL and decrement BC
+				//Compare A with value at address in (HL), then increment HL and decrement BC
 				static u16 CPI(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Compare A with value at address in (HL)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.main.hl));
+					//Read value at address in (HL)
+					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+
+					//Compare A with value
+					u16 diff = (regs.main.a - value);
 
 					//Increment HL, decrement BC
 					regs.main.hl++;
 					regs.main.bc--;
 
 					//Set flags
-					ComputeFlagsZPS(diff, regs.main.f);
+					ComputeFlagH(regs.main.a, value, diff, regs.main.f);
+					ComputeFlagsZS(diff, regs.main.f);
+					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
 
-				//Comapre A with value at address in (HL), then increment HL and decrement BC while BC!=0 and A!=(HL)
+				//Compare A with value at address in (HL), then increment HL and decrement BC while BC!=0 and A!=(HL)
 				static u16 CPIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Compare A with value at address in (HL)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.main.hl));
-
-					//Increment HL, decrement BC
-					regs.main.hl++;
-					regs.main.bc--;
-
-					//Set flags
-					ComputeFlagsZPS(diff, regs.main.f);
-
-					//If BC!=0 and A!=(HL)
-					if (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f))
+					do
 					{
-						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
-						regs.pc -= 2;
-					}
+						//Read value at address in (HL)
+						u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+
+						//Compare A with value
+						u16 diff = (regs.main.a - value);
+
+						//Increment HL, decrement BC
+						regs.main.hl++;
+						regs.main.bc--;
+
+						//Set flags
+						ComputeFlagH(regs.main.a, value, diff, regs.main.f);
+						ComputeFlagsZS(diff, regs.main.f);
+						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+						SetFlagN(1, regs.main.f);
+
+					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
 
 					return 0;
 				}
 
-				//Comapre A with value at address in (HL), then decrement HL and BC
+				//Compare A with value at address in (HL), then decrement HL and BC
 				static u16 CPD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Compare A with value at address in (HL)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.main.hl));
+					//Read value at address in (HL)
+					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+
+					//Compare A with value
+					u16 diff = (regs.main.a - value);
 
 					//Decrement HL and BC
 					regs.main.hl--;
 					regs.main.bc--;
 
 					//Set flags
-					ComputeFlagsZPS(diff, regs.main.f);
+					ComputeFlagH(regs.main.a, value, diff, regs.main.f);
+					ComputeFlagsZS(diff, regs.main.f);
+					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
 
-				//Comapre A with value at address in (HL), then decrement HL and BC while BC!=0 and A!=(HL)
+				//Compare A with value at address in (HL), then decrement HL and BC while BC!=0 and A!=(HL)
 				static u16 CPDR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Compare A with value at address in (HL)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.main.hl));
-
-					//Decrement HL and BC
-					regs.main.hl--;
-					regs.main.bc--;
-
-					//Set flags
-					ComputeFlagsZPS(diff, regs.main.f);
-
-					//If BC!=0 and A!=(HL)
-					if (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f))
+					do
 					{
-						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
-						regs.pc -= 2;
-					}
+						//Read value at address in (HL)
+						u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+
+						//Compare A with value
+						u16 diff = (regs.main.a - value);
+
+						//Decrement HL and BC
+						regs.main.hl--;
+						regs.main.bc--;
+
+						//Set flags
+						ComputeFlagH(regs.main.a, value, diff, regs.main.f);
+						ComputeFlagsZS(diff, regs.main.f);
+						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+						SetFlagN(1, regs.main.f);
+
+					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
 
 					return 0;
 				}

@@ -93,6 +93,15 @@ namespace emu
 				return (flags & FLAG_PV) != 0;
 			}
 
+			static void ComputeFlagH(u8 val1, u8 val2, u8 diff, u8& flags)
+			{
+				//If bit 3 carried to bit 4
+				if (((val1^val2^diff)&FLAG_H) != 0)
+ 					flags |= FLAG_H;
+				else
+					flags &= ~FLAG_H;
+			}
+
 			static void ComputeFlagsHPV_Inc(u8 prevValue, u8 newValue, u8& flags)
 			{
 				//If bit 3 carried to bit 4
