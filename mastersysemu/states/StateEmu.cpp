@@ -40,7 +40,7 @@ namespace app
 		//Initialise emulator
 		if (!m_masterSystem.LoadROM("roms/zexdoc_sdsc.sms"))
 		{
-			//Error
+			ion::debug::Error("Could not load ROM");
 		}
 
 		//Disassemble

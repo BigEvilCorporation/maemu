@@ -6,6 +6,25 @@ namespace emu
 {
 	MasterSystem::MasterSystem()
 	{
+		m_Z80 = nullptr;
+		m_VDP = nullptr;
+		m_busZ80 = nullptr;
+		m_busVDP = nullptr;
+		m_memoryControllerZ80 = nullptr;
+		m_memoryControllerVRAM = nullptr;
+		m_memoryControllerCRAM = nullptr;
+		m_rom = nullptr;
+		m_ram = nullptr;
+		m_vram = nullptr;
+		m_cram = nullptr;
+		m_portController = nullptr;
+		m_joypad = nullptr;
+		m_console = nullptr;
+		m_romSize = 0;
+		m_cycleCount = 0;
+		m_cyclesToNextScanline = 0;
+		m_scanline = 0;
+
 		//Construct the system
 		BuildSystem();
 

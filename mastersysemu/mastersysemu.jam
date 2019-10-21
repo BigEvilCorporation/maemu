@@ -1,19 +1,20 @@
 SubDir bigevilcorp mastersysemu ;
 
+ion_renderer_api ?= opengl ;
 ion_renderer_opts ?= fixed ;
-ion_audio_engine ?= sdl2 ;
-ion_online_engine ?= none ;
+ion_renderer_shader_language ?= glsl ;
+ion_services_engine ?= none ;
 
-ApplyIonCompiler mastersysemu ;
-ApplyIonDefines mastersysemu ;
-ApplyIonIncludes mastersysemu ;
-ApplyIonCore mastersysemu ;
-ApplyIonIo mastersysemu ;
-ApplyIonInput mastersysemu ;
-ApplyIonAudio mastersysemu ;
-ApplyIonRenderer mastersysemu : opengl ;
-ApplyIonGui mastersysemu ;
-ApplyIonGameKit mastersysemu ;
+if ( ( win32 in $(PLATFORM) ) | ( win64 in $(PLATFORM) ) )
+{
+	ion_audio_engine ?= xaudio2 ;
+}
+else
+{
+	ion_audio_engine ?= sdl2 ;
+}
+
+ApplyIonEngine mastersysemu ;
 
 SubInclude bigevilcorp mastersysemu emu : emu ;
 C.LinkLibraries mastersysemu : emu ;

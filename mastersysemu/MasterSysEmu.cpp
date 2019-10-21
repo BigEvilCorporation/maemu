@@ -11,41 +11,26 @@
 #include "mastersysemu.h"
 
 #include <ion/core/time/Time.h>
+#include <ion/engine/Engine.h>
 
 namespace app
 {
-	MasterSystemEmu::MasterSystemEmu() : ion::framework::Application("MasterSystemEmu")
+	MasterSystemEmu::MasterSystemEmu()
+		: ion::framework::Application("MasterSystemEmu")
 	{
-		m_renderer = nullptr;
-		m_window = nullptr;
-		m_viewport = nullptr;
 		m_camera = nullptr;
-		m_keyboard = nullptr;
-		m_mouse = nullptr;
-		m_gamepad = nullptr;
-		m_resourceManager = nullptr;
-
 		m_stateEmu = nullptr;
 	}
 
 	bool MasterSystemEmu::Initialise()
 	{
-		//Create filesystem
-		m_fileSystem = new ion::io::FileSystem();
-
-		//Create resource manager
-		m_resourceManager = new ion::io::ResourceManager();
-		m_resourceManager->SetResourceDirectory<ion::render::Texture>("textures", ".ion.texture");
+		//Set resource directories
+		ion::engine.io.resourceManager->SetResourceDirectory<ion::render::Texture>("textures", ".ion.texture");
+		ion::engine.io.resourceManager->SetResourceDirectory<ion::render::Shader>("shaders", ".ion.shader");
 
 		if (!InitialiseRenderer())
 		{
 			ion::debug::Log("Failed to intialise renderer - please check your graphics device drivers");
-			return false;
-		}
-
-		if (!InitialiseInput())
-		{
-			ion::debug::Log("Failed to intialise input system - please check your device drivers");
 			return false;
 		}
 
@@ -60,102 +45,42 @@ namespace app
 	void MasterSystemEmu::Shutdown()
 	{
 		ShutdownGameStates();
-		ShutdownInput();
-		ShutdownRenderer();
-
-		delete m_resourceManager;
-		delete m_fileSystem;
 	}
 
 	bool MasterSystemEmu::Update(float deltaTime)
 	{
-		//Update input
-		bool inputQuit = !UpdateInput(deltaTime);
-
-		//Update window
-		bool windowQuit = !m_window->Update();
+		//Update engine
+		bool engineRunning = ion::engine.Update(deltaTime);
 
 		//Update game state
-		bool gameStateQuit = !UpdateGameStates(deltaTime);
+		bool gameStateRunning = UpdateGameStates(deltaTime);
 
-		return !windowQuit && !inputQuit && !gameStateQuit;
+		return engineRunning && gameStateRunning;
 	}
 
 	void MasterSystemEmu::Render()
 	{
-		m_renderer->BeginFrame(*m_viewport, m_window->GetDeviceContext());
+		ion::engine.render.renderer->BeginFrame(*ion::engine.render.viewport, ion::engine.render.window->GetDeviceContext());
 
-		m_renderer->ClearColour();
-		m_renderer->ClearDepth();
+		ion::engine.render.renderer->ClearColour();
+		ion::engine.render.renderer->ClearDepth();
 
 		//Render current state
-		m_stateManager.Render(*m_renderer, *m_camera, *m_viewport);
+		m_stateManager.Render(*ion::engine.render.renderer, *m_camera, *ion::engine.render.viewport);
 
-		m_renderer->SwapBuffers();
-		m_renderer->EndFrame();
+		ion::engine.render.renderer->SwapBuffers();
+		ion::engine.render.renderer->EndFrame();
 	}
 
 	bool MasterSystemEmu::InitialiseRenderer()
 	{
-		//Initialise windowed (will go fullscreen when settings applied)
-		m_window = ion::render::Window::Create("Master System Emu", 1024, 768, false);
-		m_renderer = ion::render::Renderer::Create(m_window->GetDeviceContext());
-		m_viewport = new ion::render::Viewport(m_window->GetClientAreaWidth(), m_window->GetClientAreaHeight(), ion::render::Viewport::eOrtho2DAbsolute);
 		m_camera = new ion::render::Camera();
 
-		m_viewport->SetClearColour(ion::Colour(0.0f, 0.0f, 0.0f, 1.0f));
-		m_camera->SetPosition(ion::Vector3(-(float)m_window->GetClientAreaWidth() / 2.0f, -(float)m_window->GetClientAreaHeight() / 2.0f, 0.1f));
+		ion::engine.render.viewport->SetClearColour(ion::Colour(0.0f, 0.0f, 0.0f, 1.0f));
+		ion::engine.render.camera->SetPosition(ion::Vector3(-(float)ion::engine.render.window->GetClientAreaWidth() / 2.0f, -(float)ion::engine.render.window->GetClientAreaHeight() / 2.0f, 0.1f));
 		
-
 		//Disable vsync by default
-		m_renderer->EnableVSync(false);
-
-		return true;
-	}
-
-	void MasterSystemEmu::ShutdownRenderer()
-	{
-		//Exit fullscreen mode
-		m_window->SetFullscreen(false, 0);
-
-		if (m_camera)
-			delete m_camera;
-
-		if (m_viewport)
-			delete m_viewport;
-
-		if (m_renderer)
-			delete m_renderer;
-
-		if (m_window)
-			delete m_window;
-	}
-
-	bool MasterSystemEmu::InitialiseInput()
-	{
-		m_keyboard = new ion::input::Keyboard();
-		m_mouse = new ion::input::Mouse();
-		m_gamepad = new ion::input::Gamepad();
-		return true;
-	}
-
-	void MasterSystemEmu::ShutdownInput()
-	{
-		if (m_gamepad)
-			delete m_gamepad;
-
-		if (m_mouse)
-			delete m_mouse;
-
-		if (m_keyboard)
-			delete m_keyboard;
-	}
-
-	bool MasterSystemEmu::UpdateInput(float deltaTime)
-	{
-		m_keyboard->Update();
-		m_mouse->Update();
-		m_gamepad->Update();
+		ion::engine.render.renderer->EnableVSync(false);
 
 		return true;
 	}
@@ -163,7 +88,7 @@ namespace app
 	bool MasterSystemEmu::InitialiseGameStates()
 	{
 		//Create states
-		m_stateEmu = new StateEmu(m_stateManager, *m_resourceManager, *m_window);
+		m_stateEmu = new StateEmu(m_stateManager, *ion::engine.io.resourceManager, *ion::engine.render.window);
 
 		//Push first state
 		m_stateManager.PushState(*m_stateEmu);
@@ -178,6 +103,6 @@ namespace app
 
 	bool MasterSystemEmu::UpdateGameStates(float deltaTime)
 	{
-		return m_stateManager.Update(deltaTime, m_keyboard, m_mouse, m_gamepad);
+		return m_stateManager.Update(deltaTime, ion::engine.input.keyboard, ion::engine.input.mouse, ion::engine.input.gamepad);
 	}
 }
