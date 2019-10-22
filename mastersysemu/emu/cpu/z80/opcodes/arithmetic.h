@@ -24,7 +24,7 @@ namespace emu
 					//Determine flags (as if subtraction from 0)
 					ComputeFlagZ(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagH(0, regs.main.a, regs.main.f);
+					ComputeFlagH(prev, regs.main.a, regs.main.f);
 					SetFlagP((prev == 0x80) ? 1 : 0, regs.main.f);
 					SetFlagC((prev != 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
