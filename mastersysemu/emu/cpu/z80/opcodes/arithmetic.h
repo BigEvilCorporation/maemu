@@ -16,16 +16,17 @@ namespace emu
 				//Negate A
 				static u16 NEG(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					u8 originalA = regs.main.a;
+					u8 prev = regs.main.a;
 
 					//Negate A
 					regs.main.a = -regs.main.a;
 
-					//Determine flags
-					ComputeFlagsZS(regs.main.a, regs.main.f);
-					ComputeFlagH(0, originalA, regs.main.a, regs.main.f);
-					SetFlagP((originalA == 0x80) ? 1 : 0, regs.main.f);
-					SetFlagC((originalA != 0) ? 1 : 0, regs.main.f);
+					//Determine flags (as if subtraction from 0)
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagH(0, regs.main.a, regs.main.f);
+					SetFlagP((prev == 0x80) ? 1 : 0, regs.main.f);
+					SetFlagC((prev != 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -38,7 +39,9 @@ namespace emu
 					regs.main.a += params[0];
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -53,7 +56,9 @@ namespace emu
 					regs.main.a += reg;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -68,7 +73,9 @@ namespace emu
 					regs.main.a += reg;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -83,7 +90,9 @@ namespace emu
 					regs.main.a += reg;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -95,7 +104,9 @@ namespace emu
 					regs.main.a += bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -107,7 +118,9 @@ namespace emu
 					regs.main.a += bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -119,7 +132,9 @@ namespace emu
 					regs.main.a += bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -137,7 +152,9 @@ namespace emu
 					regs.main.a += reg + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -155,7 +172,9 @@ namespace emu
 					regs.main.hl += (reg + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.hl, regs.main.f);
+					ComputeFlagZ(regs.main.hl, regs.main.f);
+					ComputeFlagC(regs.main.hl, regs.main.f);
+					ComputeFlagS(regs.main.hl, regs.main.f);
 
 					return 0;
 				}
@@ -173,7 +192,9 @@ namespace emu
 					regs.main.a += reg + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -191,7 +212,9 @@ namespace emu
 					regs.main.a += reg + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -206,7 +229,9 @@ namespace emu
 					regs.main.a += params[0] + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -221,7 +246,9 @@ namespace emu
 					regs.main.a += bus.memoryController.ReadMemory(regs.main.hl) + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -236,7 +263,9 @@ namespace emu
 					regs.main.a += bus.memoryController.ReadMemory(regs.ix + params[0]) + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -251,10 +280,14 @@ namespace emu
 					regs.main.a += bus.memoryController.ReadMemory(regs.iy + params[0]) + carry;
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
+
+#pragma optimize("",off)
 
 				//Add 16-bit register to HL
 				static u16 ADD_HL_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -262,11 +295,15 @@ namespace emu
 					//Determine reg
 					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
+					u16 original = regs.main.hl;
+
 					//Add to HL
 					regs.main.hl += reg;
 
 					//Determine C/H flags
-					ComputeFlagsHC(regs.main.hl, regs.main.f);
+					ComputeFlagC_16(regs.main.hl, regs.main.f);
+					ComputeFlagH_16(original, reg, regs.main.hl, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -277,11 +314,15 @@ namespace emu
 					//Determine reg
 					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
+					u16 original = regs.ix;
+
 					//Add to IX
 					regs.ix += reg;
 
 					//Determine C/H flags
-					ComputeFlagsHC(regs.ix, regs.main.f);
+					ComputeFlagC_16(regs.ix, regs.main.f);
+					ComputeFlagH_16(original, reg, regs.ix, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -292,14 +333,20 @@ namespace emu
 					//Determine reg
 					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
+					u16 original = regs.iy;
+
 					//Add to IX
 					regs.iy += reg;
 
 					//Determine C/H flags
-					ComputeFlagsHC(regs.iy, regs.main.f);
+					ComputeFlagC_16(regs.i, regs.main.f);
+					ComputeFlagH_16(original, reg, regs.iy, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
+
+#pragma optimize("",on)
 
 				//Subtract 8-bit literal from A
 				static u16 SUB_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -308,7 +355,9 @@ namespace emu
 					regs.main.a -= params[0];
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -323,7 +372,9 @@ namespace emu
 					regs.main.a -= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -338,7 +389,9 @@ namespace emu
 					regs.main.a -= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -353,7 +406,9 @@ namespace emu
 					regs.main.a -= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -365,7 +420,9 @@ namespace emu
 					regs.main.a -= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -377,7 +434,9 @@ namespace emu
 					regs.main.a -= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -389,7 +448,9 @@ namespace emu
 					regs.main.a -= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -407,7 +468,9 @@ namespace emu
 					regs.main.a += (reg + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -425,7 +488,9 @@ namespace emu
 					regs.main.hl -= (reg + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.hl, regs.main.f);
+					ComputeFlagZ(regs.main.hl, regs.main.f);
+					ComputeFlagC(regs.main.hl, regs.main.f);
+					ComputeFlagS(regs.main.hl, regs.main.f);
 
 					return 0;
 				}
@@ -443,7 +508,9 @@ namespace emu
 					regs.main.a -= (reg + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -461,7 +528,9 @@ namespace emu
 					regs.main.a -= (reg + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -476,7 +545,9 @@ namespace emu
 					regs.main.a -= (params[0] + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -491,7 +562,9 @@ namespace emu
 					regs.main.a -= (bus.memoryController.ReadMemory(regs.main.hl) + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -506,7 +579,9 @@ namespace emu
 					regs.main.a -= (bus.memoryController.ReadMemory(regs.ix + params[0]) + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -521,7 +596,9 @@ namespace emu
 					regs.main.a -= (bus.memoryController.ReadMemory(regs.iy + params[0]) + carry);
 
 					//Determine flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -549,7 +626,9 @@ namespace emu
 						SetFlagC(0, regs.main.f);
 					}
 
-					ComputeFlagsZPS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -570,7 +649,9 @@ namespace emu
 					regs.main.a = (regs.main.a & 0xF0) | ((lowerByte & 0xF0) >> 4);
 
 					//Set flags
-					ComputeFlagsZPS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 					SetFlagH(0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
@@ -593,7 +674,9 @@ namespace emu
 					regs.main.a = (regs.main.a & 0xF0) | (lowerByte & 0x0F);
 
 					//Set flags
-					ComputeFlagsZPS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 					SetFlagH(0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 

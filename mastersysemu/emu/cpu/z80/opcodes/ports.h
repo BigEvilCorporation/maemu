@@ -61,7 +61,8 @@ namespace emu
 					reg = bus.portController.Read(regs.main.c);
 
 					//Check flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
 
 					return 0;
 				}
@@ -89,7 +90,7 @@ namespace emu
 					regs.main.b--;
 
 					//Set Z flag based on B
-					ComputeFlagsZ(regs.main.b, regs.main.f);
+					ComputeFlagZ(regs.main.b, regs.main.f);
 
 					return 0;
 				}
@@ -108,7 +109,7 @@ namespace emu
 					regs.main.b--;
 
 					//Set Z flag based on B
-					ComputeFlagsZ(regs.main.b, regs.main.f);
+					ComputeFlagZ(regs.main.b, regs.main.f);
 
 					return 0;
 				}
@@ -127,7 +128,7 @@ namespace emu
 					regs.main.b--;
 
 					//Set Z flag based on B
-					ComputeFlagsZ(regs.main.b, regs.main.f);
+					ComputeFlagZ(regs.main.b, regs.main.f);
 
 					//If B != 0
 					if (regs.main.b != 0)
@@ -153,7 +154,7 @@ namespace emu
 					regs.main.b--;
 
 					//Set Z flag based on B
-					ComputeFlagsZ(regs.main.b, regs.main.f);
+					ComputeFlagZ(regs.main.b, regs.main.f);
 
 					//If B != 0
 					if (regs.main.b != 0)

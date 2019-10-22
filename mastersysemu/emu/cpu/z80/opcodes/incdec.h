@@ -24,8 +24,10 @@ namespace emu
 					reg++;
 
 					//Set flags
-					ComputeFlagsHPV_Inc(prev, reg, regs.main.f);
-					ComputeFlagsZS(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagH(prev, reg, regs.main.f);
+					ComputeFlagV(prev, reg, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
@@ -42,8 +44,10 @@ namespace emu
 					reg++;
 
 					//Set flags
-					ComputeFlagsHPV_Inc(prev, reg, regs.main.f);
-					ComputeFlagsZS(reg, regs.main.f);
+					ComputeFlagH(prev, reg, regs.main.f);
+					ComputeFlagV(prev, reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
@@ -61,8 +65,10 @@ namespace emu
 					bus.memoryController.WriteMemory(regs.main.hl, value);
 
 					//Set flags
-					ComputeFlagsHPV_Inc(prev, value, regs.main.f);
-					ComputeFlagsZS(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
@@ -83,8 +89,10 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsHPV_Inc(prev, value, regs.main.f);
-					ComputeFlagsZS(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
@@ -105,8 +113,10 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsHPV_Inc(prev, value, regs.main.f);
-					ComputeFlagsZS(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
@@ -123,8 +133,10 @@ namespace emu
 					reg--;
 
 					//Set flags
-					ComputeFlagsHPV_Dec(prev, reg, regs.main.f);
-					ComputeFlagsZS(reg, regs.main.f);
+					ComputeFlagH(prev, reg, regs.main.f);
+					ComputeFlagV(prev, reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_N, true, regs.main.f);
 
 					return 0;
@@ -141,8 +153,10 @@ namespace emu
 					reg--;
 
 					//Set flags
-					ComputeFlagsHPV_Dec(prev, reg, regs.main.f);
-					ComputeFlagsZS(reg, regs.main.f);
+					ComputeFlagH(prev, reg, regs.main.f);
+					ComputeFlagV(prev, reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_N, true, regs.main.f);
 
 					return 0;
@@ -160,8 +174,10 @@ namespace emu
 					bus.memoryController.WriteMemory(regs.main.hl, value);
 
 					//Set flags
-					ComputeFlagsHPV_Dec(prev, value, regs.main.f);
-					ComputeFlagsZS(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, true, regs.main.f);
 
 					return 0;
@@ -182,8 +198,10 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsHPV_Dec(prev, value, regs.main.f);
-					ComputeFlagsZS(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, true, regs.main.f);
 
 					return 0;
@@ -204,8 +222,10 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsHPV_Dec(prev, value, regs.main.f);
-					ComputeFlagsZS(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, true, regs.main.f);
 
 					return 0;

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ion/maths/Maths.h>
+
 namespace emu
 {
 	namespace cpu
@@ -93,95 +95,44 @@ namespace emu
 				return (flags & FLAG_PV) != 0;
 			}
 
-			static void ComputeFlagH(u8 val1, u8 val2, u8 diff, u8& flags)
-			{
-				//If bit 3 carried to bit 4
-				if (((val1^val2^diff)&FLAG_H) != 0)
- 					flags |= FLAG_H;
-				else
-					flags &= ~FLAG_H;
-			}
-
-			static void ComputeFlagsHPV_Inc(u8 prevValue, u8 newValue, u8& flags)
-			{
-				//If bit 3 carried to bit 4
-				if ((prevValue & (1 << 4)) != (newValue & (1 << 4)))
-					flags |= FLAG_H;
-				else
-					flags &= ~FLAG_H;
-
-				//If prev value was 0x7F
-				if (prevValue == 0x7F)
-					flags |= FLAG_PV;
-				else
-					flags &= ~FLAG_PV;
-			}
-
-			static void ComputeFlagsHPV_Dec(u8 prevValue, u8 newValue, u8& flags)
-			{
-				//If bit 4 carried to bit 3
-				if ((prevValue & (1 << 4)) != (newValue & (1 << 4)))
-					flags |= FLAG_H;
-				else
-					flags &= ~FLAG_H;
-
-				//If prev value was 0x80
-				if (prevValue == 0x80)
-					flags |= FLAG_PV;
-				else
-					flags &= ~FLAG_PV;
-			}
-
-			static void ComputeFlagsZCS(u16 diff, u8& flags)
+			static void ComputeFlagZ(u16 diff, u8& flags)
 			{
 				//Zero flag if 0
 				if ((diff & 0xFF) == 0)
 					flags |= FLAG_Z;
 				else
 					flags &= ~FLAG_Z;
+			}
 
+			static void ComputeFlagS(u16 diff, u8& flags)
+			{
+				//Sign flag if bit 7 (signed overflow)
+				if (diff & 0x80)
+					flags |= FLAG_S;
+				else
+					flags &= ~FLAG_S;
+			}
+
+			static void ComputeFlagC(u16 diff, u8& flags)
+			{
 				//Carry flag if bit 8 (unsigned overflow)
 				if (diff & 0x100)
 					flags |= FLAG_C;
 				else
 					flags &= ~FLAG_C;
-
-				//Sign flag if bit 7 (signed overflow)
-				if (diff & 0x80)
-					flags |= FLAG_S;
-				else
-					flags &= ~FLAG_S;
 			}
 
-			static void ComputeFlagsZPS(u16 diff, u8& flags)
+			static void ComputeFlagH(u8 prev, u8 diff, u8& flags)
 			{
-				//Zero flag if 0
-				if ((diff & 0xFF) == 0)
-					flags |= FLAG_Z;
+				//Half-carry flag if bit 4 borrowed
+				if((prev & 0x10) != (diff & 0x10))
+					flags |= FLAG_H;
 				else
-					flags &= ~FLAG_Z;
-
-				//Parity flag if even bits set
-				if(CheckParity((u8)diff))
-					flags |= FLAG_PV;
-				else
-					flags &= ~FLAG_PV;
-
-				//Sign flag if bit 7 (signed overflow)
-				if (diff & 0x80)
-					flags |= FLAG_S;
-				else
-					flags &= ~FLAG_S;
+					flags &= ~FLAG_H;
 			}
 
-			static void ComputeFlagsZP(u16 diff, u8& flags)
+			static void ComputeFlagP(u8 diff, u8& flags)
 			{
-				//Zero flag if 0
-				if ((diff & 0xFF) == 0)
-					flags |= FLAG_Z;
-				else
-					flags &= ~FLAG_Z;
-
 				//Parity flag if even bits set
 				if (CheckParity((u8)diff))
 					flags |= FLAG_PV;
@@ -189,39 +140,46 @@ namespace emu
 					flags &= ~FLAG_PV;
 			}
 
-			static void ComputeFlagsZS(u16 diff, u8& flags)
+			static void ComputeFlagV(u8 val1, u8 val2, u8& flags)
 			{
-				//Zero flag if 0
-				if ((diff & 0xFF) == 0)
-					flags |= FLAG_Z;
+				if (val2 > val1)
+				{
+					//Overflow if prev value was 0x7F
+					if (val1 == 0x7F)
+						flags |= FLAG_PV;
+					else
+						flags &= ~FLAG_PV;
+				}
+				else if (val2 < val1)
+				{
+					//Overflow if prev value was 0x80
+					if (val1 == 0x80)
+						flags |= FLAG_PV;
+					else
+						flags &= ~FLAG_PV;
+				}
 				else
-					flags &= ~FLAG_Z;
-
-				//Sign flag if bit 7 (signed overflow)
-				if (diff & 0x80)
-					flags |= FLAG_S;
-				else
-					flags &= ~FLAG_S;
+				{
+					flags &= ~FLAG_PV;
+				}
 			}
 
-			static void ComputeFlagsZ(u16 diff, u8& flags)
-			{
-				//Zero flag if 0
-				if ((diff & 0xFF) == 0)
-					flags |= FLAG_Z;
-				else
-					flags &= ~FLAG_Z;
-			}
-
-			static void ComputeFlagsHC(u32 diff, u8& flags)
+			static void ComputeFlagC_16(u32 diff, u8& flags)
 			{
 				//Carry flag if bit 16 (unsigned overflow)
 				if (diff & 0x10000)
 					flags |= FLAG_C;
 				else
 					flags &= ~FLAG_C;
+			}
 
-				//TODO: H flag (carry from bit 3 to 4)
+			static void ComputeFlagH_16(u16 val1, u16 val2, u16 diff, u8& flags)
+			{
+				//H flag if carry from bit 11
+				if ((((val1^val2^diff) >> 8) & FLAG_H) != 0)
+					flags |= FLAG_H;
+				else
+					flags &= ~FLAG_H;
 			}
 		}
 	}

@@ -132,7 +132,9 @@ namespace emu
 					reg <<= 1;
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -160,7 +162,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -188,7 +192,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -216,7 +222,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -238,7 +246,9 @@ namespace emu
 					reg = (reg << 1) | 0x1;
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -266,7 +276,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -294,7 +306,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -322,7 +336,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -344,7 +360,9 @@ namespace emu
 					reg = (reg >> 1) | (reg & 0x80);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -372,7 +390,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -400,7 +420,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -428,7 +450,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, S flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 
 					//Reset H and N
 					SetFlag(FLAG_H, false, regs.main.f);
@@ -450,7 +474,8 @@ namespace emu
 					reg >>= 1;
 
 					//Set Z, P, flags
-					ComputeFlagsZP(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
 
 					//Reset S, H, N
 					SetFlag(FLAG_S, false, regs.main.f);
@@ -479,7 +504,8 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, flags
-					ComputeFlagsZP(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
 
 					//Reset S, H, N
 					SetFlag(FLAG_S, false, regs.main.f);
@@ -508,7 +534,8 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, flags
-					ComputeFlagsZP(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
 
 					//Reset S, H, N
 					SetFlag(FLAG_S, false, regs.main.f);
@@ -537,7 +564,8 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set Z, P, flags
-					ComputeFlagsZP(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
 
 					//Reset S, H, N
 					SetFlag(FLAG_S, false, regs.main.f);
@@ -577,7 +605,9 @@ namespace emu
 					reg = (reg << 1) | bit7;
 
 					//Set flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -604,7 +634,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -631,7 +663,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -661,7 +695,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, reg);
 
 					//Set flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -688,7 +724,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -718,7 +756,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, reg);
 
 					//Set flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -758,7 +798,9 @@ namespace emu
 					reg = (reg << 1) | carry;
 
 					//Set flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlagC(bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -786,7 +828,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlagC(bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -814,7 +858,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -842,7 +888,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -880,7 +928,9 @@ namespace emu
 					reg = (reg >> 1) | (bit0 << 7);
 
 					//Set flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -907,7 +957,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -934,7 +986,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -961,7 +1015,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1001,7 +1057,9 @@ namespace emu
 					reg = (reg >> 1) | (carry << 7);
 
 					//Set flags
-					ComputeFlagsZPS(reg, regs.main.f);
+					ComputeFlagZ(reg, regs.main.f);
+					ComputeFlagP(reg, regs.main.f);
+					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1029,7 +1087,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1057,7 +1117,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1085,7 +1147,9 @@ namespace emu
 					bus.memoryController.WriteMemory(address, value);
 
 					//Set flags
-					ComputeFlagsZPS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
@@ -1103,7 +1167,9 @@ namespace emu
 					regs.main.a |= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1118,7 +1184,9 @@ namespace emu
 					regs.main.a |= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1133,7 +1201,9 @@ namespace emu
 					regs.main.a |= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1145,7 +1215,9 @@ namespace emu
 					regs.main.a |= params[0];
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1157,7 +1229,9 @@ namespace emu
 					regs.main.a |= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1169,7 +1243,9 @@ namespace emu
 					regs.main.a |= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1181,7 +1257,9 @@ namespace emu
 					regs.main.a |= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1196,7 +1274,9 @@ namespace emu
 					regs.main.a &= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1211,7 +1291,9 @@ namespace emu
 					regs.main.a &= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1226,7 +1308,9 @@ namespace emu
 					regs.main.a &= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1238,7 +1322,9 @@ namespace emu
 					regs.main.a &= params[0];
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1250,7 +1336,9 @@ namespace emu
 					regs.main.a &= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1262,7 +1350,9 @@ namespace emu
 					regs.main.a &= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1274,7 +1364,9 @@ namespace emu
 					regs.main.a &= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1289,7 +1381,9 @@ namespace emu
 					regs.main.a ^= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1304,7 +1398,9 @@ namespace emu
 					regs.main.a ^= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1319,7 +1415,9 @@ namespace emu
 					regs.main.a ^= reg;
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1331,7 +1429,9 @@ namespace emu
 					regs.main.a ^= params[0];
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1343,7 +1443,9 @@ namespace emu
 					regs.main.a ^= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1355,7 +1457,9 @@ namespace emu
 					regs.main.a ^= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1367,7 +1471,9 @@ namespace emu
 					regs.main.a ^= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(regs.main.a, regs.main.f);
+					ComputeFlagZ(regs.main.a, regs.main.f);
+					ComputeFlagC(regs.main.a, regs.main.f);
+					ComputeFlagS(regs.main.a, regs.main.f);
 
 					return 0;
 				}

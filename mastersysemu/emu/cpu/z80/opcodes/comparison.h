@@ -22,7 +22,9 @@ namespace emu
 					u16 diff = (regs.main.a - reg);
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -37,7 +39,9 @@ namespace emu
 					u16 diff = (regs.main.a - reg);
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -52,7 +56,9 @@ namespace emu
 					u16 diff = (regs.main.a - reg);
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -64,7 +70,9 @@ namespace emu
 					u16 diff = (regs.main.a - params[0]);
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -76,7 +84,9 @@ namespace emu
 					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.main.hl));
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -88,7 +98,9 @@ namespace emu
 					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.ix + params[0]));
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -100,7 +112,9 @@ namespace emu
 					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.iy + params[0]));
 
 					//Set flags
-					ComputeFlagsZCS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagC(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 
 					return 0;
 				}
@@ -119,9 +133,10 @@ namespace emu
 					regs.main.bc--;
 
 					//Set flags
-					ComputeFlagH(regs.main.a, value, diff, regs.main.f);
-					ComputeFlagsZS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+					SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -143,9 +158,10 @@ namespace emu
 						regs.main.bc--;
 
 						//Set flags
-						ComputeFlagH(regs.main.a, value, diff, regs.main.f);
-						ComputeFlagsZS(diff, regs.main.f);
+						ComputeFlagZ(diff, regs.main.f);
+						ComputeFlagS(diff, regs.main.f);
 						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+						SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
 					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
@@ -167,9 +183,10 @@ namespace emu
 					regs.main.bc--;
 
 					//Set flags
-					ComputeFlagH(regs.main.a, value, diff, regs.main.f);
-					ComputeFlagsZS(diff, regs.main.f);
+					ComputeFlagZ(diff, regs.main.f);
+					ComputeFlagS(diff, regs.main.f);
 					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+					SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -191,9 +208,10 @@ namespace emu
 						regs.main.bc--;
 
 						//Set flags
-						ComputeFlagH(regs.main.a, value, diff, regs.main.f);
-						ComputeFlagsZS(diff, regs.main.f);
+						ComputeFlagZ(diff, regs.main.f);
+						ComputeFlagS(diff, regs.main.f);
 						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
+						SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
 					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
