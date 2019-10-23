@@ -94,6 +94,8 @@ namespace emu
 				REGISTER_DECODE_16_BC = 0x00,
 				REGISTER_DECODE_16_DE = 0x01,
 				REGISTER_DECODE_16_HL = 0x02,
+				REGISTER_DECODE_16_IX = 0x02,
+				REGISTER_DECODE_16_IY = 0x02,
 				REGISTER_DECODE_16_SP = 0x03,
 				REGISTER_DECODE_16_AF = 0x03,
 			};
@@ -244,6 +246,66 @@ namespace emu
 					break;
 				case (REGISTER_DECODE_16_HL):
 					reg = &regs.main.hl;
+					break;
+				case (REGISTER_DECODE_16_SP):
+					reg = &regs.sp;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg16() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
+			static u16& DecodeReg16_IX(Registers& regs, u8 opcode, u8 shift)
+			{
+				u16* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_16_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_16_BC):
+					reg = &regs.main.bc;
+					break;
+				case (REGISTER_DECODE_16_DE):
+					reg = &regs.main.de;
+					break;
+				case (REGISTER_DECODE_16_IX):
+					reg = &regs.ix;
+					break;
+				case (REGISTER_DECODE_16_SP):
+					reg = &regs.sp;
+					break;
+				}
+
+				if (!reg)
+				{
+					ion::debug::Error("DecodeReg16() - Could not decode register");
+				}
+
+				return *reg;
+			}
+
+			static u16& DecodeReg16_IY(Registers& regs, u8 opcode, u8 shift)
+			{
+				u16* reg = nullptr;
+
+				u8 regType = (opcode >> shift) & REGISTER_DECODE_16_MASK;
+
+				switch (regType)
+				{
+				case (REGISTER_DECODE_16_BC):
+					reg = &regs.main.bc;
+					break;
+				case (REGISTER_DECODE_16_DE):
+					reg = &regs.main.de;
+					break;
+				case (REGISTER_DECODE_16_IY):
+					reg = &regs.iy;
 					break;
 				case (REGISTER_DECODE_16_SP):
 					reg = &regs.sp;

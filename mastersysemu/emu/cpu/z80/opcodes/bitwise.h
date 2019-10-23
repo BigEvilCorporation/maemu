@@ -1168,8 +1168,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1185,8 +1187,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1202,8 +1206,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1216,8 +1222,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1230,8 +1238,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1244,8 +1254,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1258,8 +1270,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1275,8 +1289,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1292,8 +1308,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1309,8 +1327,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1323,8 +1343,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1337,8 +1359,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1351,8 +1375,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1365,8 +1391,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1382,8 +1410,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1399,8 +1429,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1416,8 +1448,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1430,8 +1464,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1444,8 +1480,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1458,8 +1496,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1472,8 +1512,10 @@ namespace emu
 
 					//Set flags
 					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(regs.main.a, regs.main.f);
 					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlagP(regs.main.a, regs.main.f);
+					SetFlagC(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -1482,6 +1524,7 @@ namespace emu
 				static u16 CPL_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					regs.main.a = ~regs.main.a;
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}

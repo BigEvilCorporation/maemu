@@ -136,7 +136,7 @@ namespace emu
 					ComputeFlagZ(diff, regs.main.f);
 					ComputeFlagS(diff, regs.main.f);
 					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-					SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
+					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -161,7 +161,7 @@ namespace emu
 						ComputeFlagZ(diff, regs.main.f);
 						ComputeFlagS(diff, regs.main.f);
 						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-						SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
+						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
 					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
@@ -186,7 +186,7 @@ namespace emu
 					ComputeFlagZ(diff, regs.main.f);
 					ComputeFlagS(diff, regs.main.f);
 					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-					SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
+					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -211,7 +211,7 @@ namespace emu
 						ComputeFlagZ(diff, regs.main.f);
 						ComputeFlagS(diff, regs.main.f);
 						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-						SetFlagH(((regs.main.a & 0xF) - (value & 0xF)) & 0x10, regs.main.f);
+						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
 					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));

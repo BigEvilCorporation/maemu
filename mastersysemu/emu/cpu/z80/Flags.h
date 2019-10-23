@@ -172,15 +172,6 @@ namespace emu
 				else
 					flags &= ~FLAG_C;
 			}
-
-			static void ComputeFlagH_16(u16 val1, u16 val2, u16 diff, u8& flags)
-			{
-				//H flag if carry from bit 11
-				if ((((val1^val2^diff) >> 8) & FLAG_H) != 0)
-					flags |= FLAG_H;
-				else
-					flags &= ~FLAG_H;
-			}
 		}
 	}
 }
