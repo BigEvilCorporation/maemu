@@ -62,6 +62,10 @@ namespace app
 		ion::render::Quad* m_renderPrimitive;
 		static const ion::render::TexCoord s_texCoords[4];
 
+#if defined ION_RENDERER_SHADER
+		ion::io::ResourceHandle<ion::render::Shader> m_shaderFlatTextured;
+#endif
+
 		//The machine
 		emu::MasterSystem m_masterSystem;
 

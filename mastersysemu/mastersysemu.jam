@@ -1,7 +1,7 @@
 SubDir bigevilcorp mastersysemu ;
 
 ion_renderer_api ?= opengl ;
-ion_renderer_opts ?= fixed ;
+ion_renderer_opts ?= shader ;
 ion_renderer_shader_language ?= glsl ;
 ion_services_engine ?= none ;
 

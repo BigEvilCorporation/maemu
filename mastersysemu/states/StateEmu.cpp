@@ -6,21 +6,12 @@
 
 namespace app
 {
-	static const int g_top = 128;
-	static const int g_bottom = 128 + 224;
-	static const int g_left = 128;
-	static const int g_right = 128 + (40 * 8);
-	static const float g_borderTop = (1.0f / emu::cpu::vdp::VDP_SCANLINES_PAL) * (float)g_top;
-	static const float g_borderBottom = (1.0f / emu::cpu::vdp::VDP_SCANLINES_PAL) * (float)(emu::cpu::vdp::VDP_SCANLINES_PAL - g_bottom);
-	static const float g_borderLeft = (1.0f / emu::cpu::vdp::VDP_SCREEN_WIDTH) * (float)g_left;
-	static const float g_borderRight = (1.0f / emu::cpu::vdp::VDP_SCREEN_WIDTH) * (float)(emu::cpu::vdp::VDP_SCREEN_WIDTH - g_right);
-
 	const ion::render::TexCoord StateEmu::s_texCoords[4] =
 	{
-		ion::Vector2(g_borderLeft, g_borderTop),
-		ion::Vector2(g_borderLeft, 1.0f - g_borderBottom),
-		ion::Vector2(1.0f - g_borderRight, 1.0f - g_borderBottom),
-		ion::Vector2(1.0f - g_borderRight, g_borderTop)
+		ion::Vector2(0.0f, 0.0f),
+		ion::Vector2(0.0f, 1.0f),
+		ion::Vector2(1.0f, 1.0f),
+		ion::Vector2(1.0f, 0.0f)
 	};
 
 	StateEmu::StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window)
@@ -72,7 +63,7 @@ namespace app
 		ion::Vector2i renderBufferSize(emu::cpu::vdp::VDP_SCREEN_WIDTH, emu::cpu::vdp::VDP_SCANLINES_PAL);
 
 		m_renderPrimitive = new ion::render::Quad(ion::render::Quad::xy, ion::Vector2(m_window.GetClientAreaWidth() / 2.0f, m_window.GetClientAreaHeight() / 2.0f));
-		//m_renderPrimitive->SetTexCoords(s_texCoords);
+		m_renderPrimitive->SetTexCoords(s_texCoords);
 
 		m_renderTexture = ion::render::Texture::Create(renderBufferSize.x, renderBufferSize.y, ion::render::Texture::Format::BGRA, ion::render::Texture::Format::BGRA, ion::render::Texture::BitsPerPixel::BPP24, false, false, NULL);
 
@@ -85,6 +76,16 @@ namespace app
 		m_renderTexture->SetMinifyFilter(ion::render::Texture::Filter::Linear);
 		m_renderTexture->SetMagnifyFilter(ion::render::Texture::Filter::Linear);
 		m_renderTexture->SetWrapping(ion::render::Texture::Wrapping::Clamp);
+
+		//Load shader
+#if defined ION_RENDERER_SHADER
+		m_shaderFlatTextured = m_resourceManager.GetResource<ion::render::Shader>("flattextured",
+			[this](ion::render::Shader& shader)
+			{
+				m_gui->SetShader(&shader);
+				m_renderMaterial->SetShader(&shader);
+			});
+#endif
 	}
 
 	void StateEmu::OnLeaveState()
@@ -94,6 +95,10 @@ namespace app
 
 		delete m_gui;
 		m_gui = nullptr;
+
+#if defined ION_RENDERER_SHADER
+		m_shaderFlatTextured.Clear();
+#endif
 	}
 
 	void StateEmu::OnPauseState()
@@ -195,7 +200,7 @@ namespace app
 
 		//Bind material and draw quad
 		ion::Matrix4 emuMatrix;
-		emuMatrix.SetTranslation(ion::Vector3(0.0f, 0.0f, 1.0f));
+		emuMatrix.SetTranslation(ion::Vector3(m_window.GetClientAreaWidth() / 2.0f, m_window.GetClientAreaHeight() / 2.0f, 1.0f));
 		m_renderMaterial->Bind(emuMatrix, camera.GetTransform().GetInverse(), renderer.GetProjectionMatrix());
 		renderer.SetAlphaBlending(ion::render::Renderer::eNoBlend);
 		renderer.DrawVertexBuffer(m_renderPrimitive->GetVertexBuffer(), m_renderPrimitive->GetIndexBuffer());
