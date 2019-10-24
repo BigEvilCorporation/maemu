@@ -1221,11 +1221,7 @@ namespace emu
 					regs.main.a |= params[0];
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1342,11 +1338,7 @@ namespace emu
 					regs.main.a &= params[0];
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1463,11 +1455,7 @@ namespace emu
 					regs.main.a ^= params[0];
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}

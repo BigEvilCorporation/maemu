@@ -66,13 +66,11 @@ namespace emu
 				//Compare A with 8-bit literal
 				static u16 CP_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Compare A with param
-					u16 diff = (regs.main.a - params[0]);
+					//Subtract literal from A
+					u16 result = regs.main.a - params[0];
 
-					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					//Determine flags
+					ComputeFlags_ArithmeticSUB(regs.main.a, params[0], result, regs.main.f);
 
 					return 0;
 				}
@@ -136,7 +134,7 @@ namespace emu
 					ComputeFlagZ(diff, regs.main.f);
 					ComputeFlagS(diff, regs.main.f);
 					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -161,7 +159,7 @@ namespace emu
 						ComputeFlagZ(diff, regs.main.f);
 						ComputeFlagS(diff, regs.main.f);
 						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
 					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
@@ -186,7 +184,7 @@ namespace emu
 					ComputeFlagZ(diff, regs.main.f);
 					ComputeFlagS(diff, regs.main.f);
 					SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;
@@ -211,7 +209,7 @@ namespace emu
 						ComputeFlagZ(diff, regs.main.f);
 						ComputeFlagS(diff, regs.main.f);
 						SetFlagP((regs.main.bc != 0) ? 1 : 0, regs.main.f);
-						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
 					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));

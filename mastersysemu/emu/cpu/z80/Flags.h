@@ -140,20 +140,20 @@ namespace emu
 					flags &= ~FLAG_PV;
 			}
 
-			static void ComputeFlagV(u8 val1, u8 val2, u8& flags)
+			static void ComputeFlagV(u8 prev, u8 diff, u8& flags)
 			{
-				if (val2 > val1)
+				if (diff > prev)
 				{
 					//Overflow if prev value was 0x7F
-					if (val1 == 0x7F)
+					if (prev == 0x7F)
 						flags |= FLAG_PV;
 					else
 						flags &= ~FLAG_PV;
 				}
-				else if (val2 < val1)
+				else if (diff < prev)
 				{
 					//Overflow if prev value was 0x80
-					if (val1 == 0x80)
+					if (prev == 0x80)
 						flags |= FLAG_PV;
 					else
 						flags &= ~FLAG_PV;
@@ -162,6 +162,56 @@ namespace emu
 				{
 					flags &= ~FLAG_PV;
 				}
+			}
+
+			static void ComputeFlags_ArithmeticADD(u8 prev, u8 value, u16 result, u8& flags)
+			{
+				ComputeFlagZ(result, flags);
+				ComputeFlagS(result, flags);
+				ComputeFlagC(result, flags);
+				SetFlagP(((prev & 0x80) == (value & 0x80) && (result & 0x80) != (prev & 0x80)) ? 1 : 0, flags);
+				SetFlagH(((prev ^ value ^ result) & FLAG_H) ? 1 : 0, flags);
+				SetFlagN(0, flags);
+			}
+
+			static void ComputeFlags_ArithmeticSUB(u8 prev, u8 value, u16 result, u8& flags)
+			{
+				ComputeFlagZ(result, flags);
+				ComputeFlagS(result, flags);
+				ComputeFlagC(result, flags);
+				SetFlagP(((prev & 0x80) != (value & 0x80) && (result & 0x80) != (prev & 0x80)) ? 1 : 0, flags);
+				SetFlagH(((prev ^ value ^ result) & FLAG_H) ? 1 : 0, flags);
+				SetFlagN(1, flags);
+			}
+
+			static void ComputeFlags_AND(u8 result, u8& flags)
+			{
+				ComputeFlagZ(result, flags);
+				ComputeFlagS(result, flags);
+				ComputeFlagP(result, flags);
+				SetFlagH(1, flags);
+				SetFlagC(0, flags);
+				SetFlagN(0, flags);
+			}
+
+			static void ComputeFlags_OR(u8 result, u8& flags)
+			{
+				ComputeFlagZ(result, flags);
+				ComputeFlagS(result, flags);
+				ComputeFlagP(result, flags);
+				SetFlagH(0, flags);
+				SetFlagC(0, flags);
+				SetFlagN(0, flags);
+			}
+
+			static void ComputeFlags_XOR(u8 result, u8& flags)
+			{
+				ComputeFlagZ(result, flags);
+				ComputeFlagS(result, flags);
+				ComputeFlagP(result, flags);
+				SetFlagH(0, flags);
+				SetFlagC(0, flags);
+				SetFlagN(0, flags);
 			}
 
 			static void ComputeFlagC_16(u32 diff, u8& flags)
