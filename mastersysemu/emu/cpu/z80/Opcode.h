@@ -320,7 +320,7 @@ namespace emu
 				return *reg;
 			}
 
-			static u16& DecodeReg16Stack(Registers& regs, u8 opcode, u8 shift)
+			static u16& DecodeReg16_Stack(Registers& regs, u8 opcode, u8 shift)
 			{
 				u16* reg = nullptr;
 
@@ -344,7 +344,7 @@ namespace emu
 
 				if (!reg)
 				{
-					ion::debug::Error("DecodeReg16Stack() - Could not decode register");
+					ion::debug::Error("DecodeReg16_Stack() - Could not decode register");
 				}
 
 				return *reg;

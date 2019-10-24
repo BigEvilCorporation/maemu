@@ -375,7 +375,7 @@ namespace emu
 				static u16 ADD_IX_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u16& reg = DecodeReg16_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
+					u16 reg = DecodeReg16_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
 					//Add to IX
 					u16 prev = regs.ix;

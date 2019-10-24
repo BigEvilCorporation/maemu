@@ -16,7 +16,7 @@ namespace emu
 				static u16 PUSH_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u16& reg = DecodeReg16Stack(regs, opcode.opcode, REGISTER_DECODE_STACK_16_REG_SHIFT);
+					u16& reg = DecodeReg16_Stack(regs, opcode.opcode, REGISTER_DECODE_STACK_16_REG_SHIFT);
 
 					//Decrement stack and push register
 					regs.sp--;
@@ -31,7 +31,7 @@ namespace emu
 				static u16 POP_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u16& reg = DecodeReg16Stack(regs, opcode.opcode, REGISTER_DECODE_STACK_16_REG_SHIFT);
+					u16& reg = DecodeReg16_Stack(regs, opcode.opcode, REGISTER_DECODE_STACK_16_REG_SHIFT);
 
 					//Pop register and increment stack
 					u8 lo = bus.memoryController.ReadMemory(regs.sp);
