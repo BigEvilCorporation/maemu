@@ -60,9 +60,12 @@ namespace emu
 					//Read port in param 1 to reg
 					reg = bus.portController.Read(regs.main.c);
 
-					//Check flags
+					//Set flags
+					ComputeFlagS(reg, regs.main.f);
 					ComputeFlagZ(reg, regs.main.f);
 					ComputeFlagP(reg, regs.main.f);
+					SetFlagH(0, regs.main.f);
+					SetFlagN(0, regs.main.f);
 
 					return 0;
 				}
@@ -89,8 +92,9 @@ namespace emu
 					regs.main.hl++;
 					regs.main.b--;
 
-					//Set Z flag based on B
+					//Set flags
 					ComputeFlagZ(regs.main.b, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
@@ -108,8 +112,9 @@ namespace emu
 					regs.main.hl--;
 					regs.main.b--;
 
-					//Set Z flag based on B
+					//Set flags
 					ComputeFlagZ(regs.main.b, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
@@ -127,15 +132,16 @@ namespace emu
 					regs.main.hl++;
 					regs.main.b--;
 
-					//Set Z flag based on B
-					ComputeFlagZ(regs.main.b, regs.main.f);
-
 					//If B != 0
 					if (regs.main.b != 0)
 					{
 						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
 						regs.pc -= 2;
 					}
+
+					//Set flags
+					SetFlagZ(1, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
@@ -153,15 +159,16 @@ namespace emu
 					regs.main.hl--;
 					regs.main.b--;
 
-					//Set Z flag based on B
-					ComputeFlagZ(regs.main.b, regs.main.f);
-
 					//If B != 0
 					if (regs.main.b != 0)
 					{
 						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
 						regs.pc -= 2;
 					}
+
+					//Set flags
+					SetFlagZ(1, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
@@ -178,6 +185,10 @@ namespace emu
 					//Decrement B
 					regs.main.b--;
 
+					//Set flags
+					ComputeFlagZ(regs.main.b, regs.main.f);
+					SetFlagN(1, regs.main.f);
+
 					return 0;
 				}
 
@@ -190,6 +201,10 @@ namespace emu
 					//Decrement HL and B
 					regs.main.hl--;
 					regs.main.b--;
+
+					//Set flags
+					ComputeFlagZ(regs.main.b, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
@@ -213,6 +228,10 @@ namespace emu
 						regs.pc -= 2;
 					}
 
+					//Set flags
+					SetFlagZ(1, regs.main.f);
+					SetFlagN(1, regs.main.f);
+
 					return 0;
 				}
 
@@ -232,6 +251,10 @@ namespace emu
 						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
 						regs.pc -= 2;
 					}
+
+					//Set flags
+					SetFlagZ(1, regs.main.f);
+					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}

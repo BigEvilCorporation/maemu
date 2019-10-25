@@ -16,15 +16,13 @@ namespace emu
 				static u16 CP_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_CP_8_REG_SHIFT);
+					u8 reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_CP_8_REG_SHIFT);
 
 					//Compare A with reg
-					u16 diff = (regs.main.a - reg);
+					u16 result = (regs.main.a - reg);
 
 					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
 
 					return 0;
 				}
@@ -33,15 +31,13 @@ namespace emu
 				static u16 CP_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_CP_8_REG_SHIFT);
+					u8 reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_CP_8_REG_SHIFT);
 
 					//Compare A with reg
-					u16 diff = (regs.main.a - reg);
+					u16 result = (regs.main.a - reg);
 
 					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
 
 					return 0;
 				}
@@ -50,15 +46,13 @@ namespace emu
 				static u16 CP_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_CP_8_REG_SHIFT);
+					u8 reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_CP_8_REG_SHIFT);
 
 					//Compare A with reg
-					u16 diff = (regs.main.a - reg);
+					u16 result = (regs.main.a - reg);
 
 					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
 
 					return 0;
 				}
@@ -78,13 +72,14 @@ namespace emu
 				//Compare A with value at address in (HL)
 				static u16 CP_A_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//Get value at (HL)
+					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
+
 					//Compare A with value at address in (HL)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.main.hl));
+					u16 result = (regs.main.a - value);
 
 					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
 
 					return 0;
 				}
@@ -92,13 +87,14 @@ namespace emu
 				//Compare A with value at address in (IX+offset)
 				static u16 CP_A_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//Get value at (IX+offset)
+					u8 value = bus.memoryController.ReadMemory(regs.ix + params[0]);
+
 					//Compare A with value at address in (IX+offset)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.ix + params[0]));
+					u16 result = (regs.main.a - value);
 
 					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
 
 					return 0;
 				}
@@ -106,13 +102,14 @@ namespace emu
 				//Compare A with value at address in (IY+offset)
 				static u16 CP_A_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
+					//Get value at (IY+offset)
+					u8 value = bus.memoryController.ReadMemory(regs.iy + params[0]);
+
 					//Compare A with value at address in (IY+offset)
-					u16 diff = (regs.main.a - bus.memoryController.ReadMemory(regs.iy + params[0]));
+					u16 result = (regs.main.a - value);
 
 					//Set flags
-					ComputeFlagZ(diff, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(diff, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
 
 					return 0;
 				}
@@ -162,7 +159,7 @@ namespace emu
 						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
-					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
+					} while (regs.main.bc != 0 && !CheckFlagZ(regs.main.f));
 
 					return 0;
 				}
@@ -212,7 +209,7 @@ namespace emu
 						SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 						SetFlagN(1, regs.main.f);
 
-					} while (regs.main.bc != 0 && !CheckFlagsZ(regs.main.f));
+					} while (regs.main.bc != 0 && !CheckFlagZ(regs.main.f));
 
 					return 0;
 				}

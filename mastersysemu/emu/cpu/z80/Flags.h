@@ -75,30 +75,44 @@ namespace emu
 				flags ^= (-value ^ flags) & (1 << FLAG_INDEX_S);
 			}
 
-			static bool CheckFlagsZ(u8& flags)
+			static bool CheckFlagZ(u8& flags)
 			{
 				return (flags & FLAG_Z) != 0;
 			}
 
-			static bool CheckFlagsC(u8& flags)
+			static bool CheckFlagC(u8& flags)
 			{
 				return (flags & FLAG_C) != 0;
 			}
 
-			static bool CheckFlagsS(u8& flags)
+			static bool CheckFlagS(u8& flags)
 			{
 				return (flags & FLAG_S) != 0;
 			}
 
-			static bool CheckFlagsP(u8& flags)
+			static bool CheckFlagP(u8& flags)
 			{
 				return (flags & FLAG_PV) != 0;
+			}
+
+			static bool CheckFlagN(u8& flags)
+			{
+				return (flags & FLAG_N) != 0;
 			}
 
 			static void ComputeFlagZ(u16 diff, u8& flags)
 			{
 				//Zero flag if 0
 				if ((diff & 0xFF) == 0)
+					flags |= FLAG_Z;
+				else
+					flags &= ~FLAG_Z;
+			}
+
+			static void ComputeFlagZ_16(u32 diff, u8& flags)
+			{
+				//Zero flag if 0
+				if ((diff & 0xFFFF) == 0)
 					flags |= FLAG_Z;
 				else
 					flags &= ~FLAG_Z;
@@ -113,10 +127,28 @@ namespace emu
 					flags &= ~FLAG_S;
 			}
 
+			static void ComputeFlagS_16(u32 diff, u8& flags)
+			{
+				//Sign flag if bit 15 (signed overflow)
+				if (diff & 0x8000)
+					flags |= FLAG_S;
+				else
+					flags &= ~FLAG_S;
+			}
+
 			static void ComputeFlagC(u16 diff, u8& flags)
 			{
 				//Carry flag if bit 8 (unsigned overflow)
 				if (diff & 0x100)
+					flags |= FLAG_C;
+				else
+					flags &= ~FLAG_C;
+			}
+
+			static void ComputeFlagC_16(u32 diff, u8& flags)
+			{
+				//Carry flag if bit 16 (unsigned overflow)
+				if (diff & 0x10000)
 					flags |= FLAG_C;
 				else
 					flags &= ~FLAG_C;
@@ -212,15 +244,6 @@ namespace emu
 				SetFlagH(0, flags);
 				SetFlagC(0, flags);
 				SetFlagN(0, flags);
-			}
-
-			static void ComputeFlagC_16(u32 diff, u8& flags)
-			{
-				//Carry flag if bit 16 (unsigned overflow)
-				if (diff & 0x10000)
-					flags |= FLAG_C;
-				else
-					flags &= ~FLAG_C;
 			}
 		}
 	}

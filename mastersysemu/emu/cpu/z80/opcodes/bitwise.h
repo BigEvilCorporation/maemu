@@ -1160,18 +1160,11 @@ namespace emu
 				//Logic OR A with 8-bit register
 				static u16 OR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
 					//OR A with reg
-					regs.main.a |= reg;
+					regs.main.a |= DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1179,18 +1172,11 @@ namespace emu
 				//Logic OR A with IXH/IXL
 				static u16 OR_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
 					//OR A with reg
-					regs.main.a |= reg;
+					regs.main.a |= DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1198,18 +1184,11 @@ namespace emu
 				//Logic OR A with IYH/IYL
 				static u16 OR_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
 					//OR A with reg
-					regs.main.a |= reg;
+					regs.main.a |= DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1233,11 +1212,7 @@ namespace emu
 					regs.main.a |= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1249,11 +1224,7 @@ namespace emu
 					regs.main.a |= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1265,11 +1236,7 @@ namespace emu
 					regs.main.a |= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_OR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1277,18 +1244,11 @@ namespace emu
 				//Logic AND A with 8-bit register
 				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
-
 					//AND A with reg
-					regs.main.a &= reg;
+					regs.main.a &= DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1296,18 +1256,11 @@ namespace emu
 				//Logic AND A with IXH/IXL
 				static u16 AND_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
-
 					//AND A with reg
-					regs.main.a &= reg;
+					regs.main.a &= DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1315,18 +1268,11 @@ namespace emu
 				//Logic AND A with IYH/IYL
 				static u16 AND_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
-
 					//AND A with reg
-					regs.main.a &= reg;
+					regs.main.a &= DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1350,11 +1296,7 @@ namespace emu
 					regs.main.a &= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1366,11 +1308,7 @@ namespace emu
 					regs.main.a &= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1382,11 +1320,7 @@ namespace emu
 					regs.main.a &= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1394,18 +1328,11 @@ namespace emu
 				//Logic XOR A with 8-bit register
 				static u16 XOR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
 					//XOR A with reg
-					regs.main.a ^= reg;
+					regs.main.a ^= DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1413,18 +1340,11 @@ namespace emu
 				//Logic XOR A with IXH/IXL
 				static u16 XOR_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
 					//XOR A with reg
-					regs.main.a ^= reg;
+					regs.main.a ^= DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1432,18 +1352,11 @@ namespace emu
 				//Logic XOR A with IYH/IYL
 				static u16 XOR_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
 					//XOR A with reg
-					regs.main.a ^= reg;
+					regs.main.a ^= DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1467,11 +1380,7 @@ namespace emu
 					regs.main.a ^= bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1483,11 +1392,7 @@ namespace emu
 					regs.main.a ^= bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1499,11 +1404,7 @@ namespace emu
 					regs.main.a ^= bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					SetFlagC(0, regs.main.f);
-					SetFlagN(0, regs.main.f);
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -1512,6 +1413,7 @@ namespace emu
 				static u16 CPL_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					regs.main.a = ~regs.main.a;
+					SetFlagH(1, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
 					return 0;

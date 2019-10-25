@@ -51,18 +51,16 @@ namespace emu
 				static u16 ADD_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Add to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + reg;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + reg;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + (reg & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -71,18 +69,16 @@ namespace emu
 				static u16 ADD_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Add to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + reg;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + reg;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + (reg & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -91,18 +87,16 @@ namespace emu
 				static u16 ADD_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Add to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + reg;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + reg;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + (reg & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -114,15 +108,13 @@ namespace emu
 					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Add (HL) to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + value;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + value;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -134,15 +126,13 @@ namespace emu
 					u8 value = bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Add (IX+offset) to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + value;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + value;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -154,15 +144,13 @@ namespace emu
 					u8 value = bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Add (IY+offset) to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + value;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + value;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + (value & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -174,18 +162,16 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Add reg + C flag to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + reg + carry;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + reg + carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + ((reg + carry) & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -197,18 +183,21 @@ namespace emu
 					u16 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
+					u16 reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
 					//Add reg + C flag to HL
-					u16 prev = regs.main.hl;
-					u32 diff = regs.main.hl + reg + carry;
-					regs.main.hl = diff;
+					u32 result = regs.main.hl + reg + carry;
 
-					//Determine flags
-					ComputeFlagZ(regs.main.hl, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.hl, regs.main.f);
-					SetFlagH((((prev & 0xFFF) + ((reg + carry) & 0xFFF)) & 0x1000) ? 1 : 0, regs.main.f);
+					//Set flags
+					ComputeFlagZ_16(result, regs.main.f);
+					ComputeFlagS_16(result, regs.main.f);
+					ComputeFlagC_16(result, regs.main.f);
+					SetFlagP(((regs.main.hl & 0x8000) == (reg & 0x8000) && (result & 0x8000) != (regs.main.hl & 0x8000)) ? 1 : 0, regs.main.f);
+					SetFlagH((((regs.main.hl ^ reg ^ result) >> 8) & FLAG_H) ? 1 : 0, regs.main.f);
+					SetFlagN(0, regs.main.f);
+
+					//Set result
+					regs.main.hl = result;
 
 					return 0;
 				}
@@ -220,18 +209,16 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Add reg + C flag to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + reg + carry;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + reg + carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + ((reg + carry) & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -243,18 +230,16 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Add reg + C flag to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + reg + carry;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + reg + carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + ((reg + carry) & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -287,15 +272,13 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Add (HL) + C flag to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + value + carry;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + value + carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + ((value + carry) & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -310,15 +293,13 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Add (IX+offset) + C flag to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + value + carry;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + value + carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + ((value + carry) & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -333,15 +314,13 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Add (IY+offset) + C flag to A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a + value + carry;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a + value + carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
-					SetFlagH((((prev & 0xF) + ((value + carry) & 0xF)) & 0x10) ? 1 : 0, regs.main.f);
+					ComputeFlags_ArithmeticADD(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -353,14 +332,15 @@ namespace emu
 					u16 reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
 					//Add to HL
-					u16 prev = regs.main.hl;
-					u32 diff = regs.main.hl + reg;
-					regs.main.hl = diff;
+					u32 result = regs.main.hl + reg;
 
-					//Determine C/H flags
-					ComputeFlagC_16(diff, regs.main.f);
-					SetFlagH((((prev & 0xFFF) + (reg & 0xFFF)) & 0x1000) ? 1 : 0, regs.main.f);
+					//Set flags
+					ComputeFlagC_16(result, regs.main.f);
+					SetFlagH((((regs.main.hl ^ reg ^ result) >> 8) & FLAG_H) ? 1 : 0, regs.main.f);
 					SetFlagN(0, regs.main.f);
+
+					//Set result
+					regs.main.hl = result;
 
 					return 0;
 				}
@@ -372,14 +352,15 @@ namespace emu
 					u16 reg = DecodeReg16_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
 					//Add to IX
-					u16 prev = regs.ix;
-					u32 diff = regs.ix + reg;
-					regs.ix = diff;
+					u32 result = regs.ix + reg;
 
-					//Determine C/H flags
-					ComputeFlagC_16(diff, regs.main.f);
-					SetFlagH((((prev & 0xFFF) + (reg & 0xFFF)) & 0x1000) ? 1 : 0, regs.main.f);
+					//Set flags
+					ComputeFlagC_16(result, regs.main.f);
+					SetFlagH((((regs.ix ^ reg ^ result) >> 8) & FLAG_H) ? 1 : 0, regs.main.f);
 					SetFlagN(0, regs.main.f);
+
+					//Set result
+					regs.ix = result;
 
 					return 0;
 				}
@@ -391,14 +372,15 @@ namespace emu
 					u16 reg = DecodeReg16_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
 					//Add to IY
-					u16 prev = regs.iy;
-					u32 diff = regs.iy + reg;
-					regs.iy = diff;
+					u32 result = regs.iy + reg;
 
-					//Determine C/H flags
-					ComputeFlagC_16(diff, regs.main.f);
-					SetFlagH((((prev & 0xFFF) + (reg & 0xFFF)) & 0x1000) ? 1 : 0, regs.main.f);
+					//Set flags
+					ComputeFlagC_16(result, regs.main.f);
+					SetFlagH((((regs.iy ^ reg ^ result) >> 8) & FLAG_H) ? 1 : 0, regs.main.f);
 					SetFlagN(0, regs.main.f);
+
+					//Set result
+					regs.iy = result;
 
 					return 0;
 				}
@@ -422,17 +404,16 @@ namespace emu
 				static u16 SUB_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - reg;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - reg;
 
-					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					//Determine flags
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -441,17 +422,16 @@ namespace emu
 				static u16 SUB_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - reg;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - reg;
 
-					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					//Determine flags
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -460,17 +440,16 @@ namespace emu
 				static u16 SUB_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - reg;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - reg;
 
-					//Set flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					//Determine flags
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -482,14 +461,13 @@ namespace emu
 					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
 
 					//Subtract (HL) from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - value;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - value;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -501,14 +479,13 @@ namespace emu
 					u8 value = bus.memoryController.ReadMemory(regs.ix + params[0]);
 
 					//Subtract (IX+offset) from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - value;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - value;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -520,14 +497,13 @@ namespace emu
 					u8 value = bus.memoryController.ReadMemory(regs.iy + params[0]);
 
 					//Subtract (IY+offset) from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - value;
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - value;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -539,17 +515,16 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract reg + C flag from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - (reg + carry);
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - reg - carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -561,17 +536,21 @@ namespace emu
 					u16 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
+					u16 reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG16_SHIFT);
 
 					//Subtract reg + C flag from HL
-					u16 prev = regs.main.hl;
-					u32 diff = regs.main.hl - (reg + carry);
-					regs.main.hl = diff;
+					u32 result = regs.main.hl - reg - carry;
 
-					//Determine flags
-					ComputeFlagZ(regs.main.hl, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.hl, regs.main.f);
+					//Set flags
+					ComputeFlagZ_16(result, regs.main.f);
+					ComputeFlagS_16(result, regs.main.f);
+					ComputeFlagC_16(result, regs.main.f);
+					SetFlagP(((regs.main.hl & 0x8000) != (reg & 0x8000) && (result & 0x8000) != (regs.main.hl & 0x8000)) ? 1 : 0, regs.main.f);
+					SetFlagH((((regs.main.hl ^ reg ^ result) >> 8) & FLAG_H) ? 1 : 0, regs.main.f);
+					SetFlagN(1, regs.main.f);
+
+					//Set result
+					regs.main.hl = result;
 
 					return 0;
 				}
@@ -583,17 +562,16 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract reg + C flag from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - (reg + carry);
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - reg - carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -605,17 +583,16 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
+					u8 reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_ARITH_REG8_SHIFT);
 
 					//Subtract reg + C flag from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - (reg + carry);
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - reg - carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, reg, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -648,14 +625,13 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract (HL) + C flag from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - (value + carry);
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - value - carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -670,14 +646,13 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract (IX+offset) + C flag from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - (value + carry);
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - value - carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -692,14 +667,13 @@ namespace emu
 					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
 
 					//Subtract (IY+offset) + C flag from A
-					u8 prev = regs.main.a;
-					u16 diff = regs.main.a - (value + carry);
-					regs.main.a = (u8)diff;
+					u16 result = regs.main.a - value - carry;
 
 					//Determine flags
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagC(diff, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
+
+					//Set result
+					regs.main.a = (u8)result;
 
 					return 0;
 				}
@@ -707,19 +681,18 @@ namespace emu
 				//Binary Coded Decimal correction on A
 				static u16 DAA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					u8 hi = regs.main.a >> 4;
-					u8 lo = regs.main.a & 0xF;
+					u8 result = 0;
 
 					//BCD lower nybble
-					if ((lo > 9) || (regs.main.f & FLAG_H))
+					if (((regs.main.a & 0xF) > 0x9) || (regs.main.f & FLAG_H))
 					{
-						regs.main.a += 0x06;
+						result |= 0x06;
 					}
 
 					//BCD higher nybble
-					if ((hi > 9) || (regs.main.f & FLAG_C))
+					if ((regs.main.a > 0x99) || (regs.main.f & FLAG_C))
 					{
-						regs.main.a += 0x60;
+						result |= 0x60;
 						SetFlagC(1, regs.main.f);
 					}
 					else
@@ -727,9 +700,24 @@ namespace emu
 						SetFlagC(0, regs.main.f);
 					}
 
-					ComputeFlagZ(regs.main.a, regs.main.f);
-					ComputeFlagP(regs.main.a, regs.main.f);
-					ComputeFlagS(regs.main.a, regs.main.f);
+					//Compute result
+					if (CheckFlagN(regs.main.f))
+					{
+						result = regs.main.a - result;
+					}
+					else
+					{
+						result = regs.main.a + result;
+					}
+
+					//Set flags
+					ComputeFlagZ(result, regs.main.f);
+					ComputeFlagP(result, regs.main.f);
+					ComputeFlagS(result, regs.main.f);
+					SetFlagH(((regs.main.a & FLAG_H) ^ (result & FLAG_H)) ? 1 : 0, regs.main.f);
+
+					//Set result
+					regs.main.a = result;
 
 					return 0;
 				}

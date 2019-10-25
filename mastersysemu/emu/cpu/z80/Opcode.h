@@ -358,28 +358,28 @@ namespace emu
 				switch (condition)
 				{
 				case REGISTER_DECODE_CONDITION_NZ:
-					result = !CheckFlagsZ(regs.main.f);
+					result = !CheckFlagZ(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_Z:
-					result = CheckFlagsZ(regs.main.f);
+					result = CheckFlagZ(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_NC:
-					result = !CheckFlagsC(regs.main.f);
+					result = !CheckFlagC(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_C:
-					result = CheckFlagsC(regs.main.f);
+					result = CheckFlagC(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_PO:
-					result = !CheckFlagsP(regs.main.f);
+					result = !CheckFlagP(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_PE:
-					result = CheckFlagsP(regs.main.f);
+					result = CheckFlagP(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_POS:
-					result = !CheckFlagsS(regs.main.f);
+					result = !CheckFlagS(regs.main.f);
 					break;
 				case REGISTER_DECODE_CONDITION_NEG:
-					result = CheckFlagsS(regs.main.f);
+					result = CheckFlagS(regs.main.f);
 					break;
 				}
 
