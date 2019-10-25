@@ -38,7 +38,7 @@ namespace emu
 		m_memoryControllerZ80 = new memory::Controller();
 		m_memoryControllerVRAM = new memory::Controller();
 		m_memoryControllerCRAM = new memory::Controller();
-		m_rom = new memory::Storage(ADDR_ROM_START, ADDR_ROM_END, *m_memoryControllerZ80, memory::Storage::FLAGS_READONLY);
+		m_rom = new memory::Mapper(*m_memoryControllerZ80);
 		m_ram = new memory::Storage(ADDR_RAM_START, ADDR_RAM_END, *m_memoryControllerZ80);
 		m_vram = new memory::Storage(0, cpu::vdp::VDP_VRAM_SIZE, *m_memoryControllerVRAM);
 		m_cram = new memory::Storage(0, cpu::vdp::VDP_CRAM_SIZE, *m_memoryControllerCRAM);
@@ -73,7 +73,7 @@ namespace emu
 
 		if (file.IsOpen())
 		{
-			m_romSize = (u16)file.GetSize();
+			m_romSize = (u32)file.GetSize();
 
 			//Load data
 			u8* rom = new u8[m_romSize];
@@ -83,7 +83,7 @@ namespace emu
 				//TODO: Pre-compile opcodes
 
 				//Write to ROM space
-				m_rom->Initialise(rom, (u16)m_romSize);
+				m_rom->Initialise(rom, m_romSize);
 				success = true;
 			}
 
@@ -189,7 +189,7 @@ namespace emu
 		return *m_vram;
 	}
 
-	memory::Storage& MasterSystem::GetROM()
+	memory::Mapper& MasterSystem::GetROM()
 	{
 		return *m_rom;
 	}

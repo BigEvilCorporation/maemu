@@ -8,6 +8,7 @@
 #include "cpu/vdp/VDP.h"
 #include "cpu/vdp/Bus.h"
 #include "cpu/vdp/Registers.h"
+#include "memory/Mapper.h"
 #include "memory/MemoryController.h"
 #include "memory/Storage.h"
 #include "ports/PortController.h"
@@ -42,7 +43,7 @@ namespace emu
 		const cpu::z80::Registers& GetRegistersZ80() const;
 		const cpu::vdp::Registers& GetRegistersVDP() const;
 		memory::Storage& GetRAM();
-		memory::Storage& GetROM();
+		memory::Mapper& GetROM();
 		memory::Storage& GetVRAM();
 
 	private:
@@ -60,11 +61,11 @@ namespace emu
 		memory::Controller* m_memoryControllerZ80;
 		memory::Controller* m_memoryControllerVRAM;
 		memory::Controller* m_memoryControllerCRAM;
-		memory::Storage* m_rom;
+		memory::Mapper* m_rom;
 		memory::Storage* m_ram;
 		memory::Storage* m_vram;
 		memory::Storage* m_cram;
-		u16 m_romSize;
+		u32 m_romSize;
 
 		//Ports
 		ports::Controller* m_portController;

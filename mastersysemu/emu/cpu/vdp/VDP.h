@@ -56,6 +56,13 @@ namespace emu
 					CTRL_HI_REG_MASK	= 0x0F
 				};
 
+				enum StatusFlags
+				{
+					STATUS_VBLANK		= 0x80,
+					STATUS_SPR_OVERFLOW	= 0x40,
+					STATUS_SPR_COLLISN	= 0x20
+				};
+
 				struct ControlRegister
 				{
 					union

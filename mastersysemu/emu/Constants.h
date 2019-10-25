@@ -12,6 +12,14 @@ namespace emu
 	static const int ADDR_RAM_START = 0xC000;
 	static const int ADDR_RAM_END = 0xDFFF;
 
+	//ROM mapper
+	static const int MAPPER_BANK_SIZE = 0x4000;
+	static const int MAPPER_NUM_REGS = 4;
+	static const int MAPPER_REG_STATE = 0xFFFC;
+	static const int MAPPER_REG_BANK0 = 0xFFFD;
+	static const int MAPPER_REG_BANK1 = 0xFFFE;
+	static const int MAPPER_REG_BANK2 = 0xFFFF;
+
 	//Port map
 	static const int PORT_IO_CTRL = 0x3F;
 	static const int PORT_IO_PORT1 = 0xDC;

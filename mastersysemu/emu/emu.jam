@@ -61,6 +61,8 @@ local SRC =
 	cpu/vdp/VDP.cpp
 	cpu/vdp/VDP.h
 
+	memory/Mapper.cpp
+	memory/Mapper.h
 	memory/MemoryController.cpp
 	memory/MemoryController.h
 	memory/Storage.cpp

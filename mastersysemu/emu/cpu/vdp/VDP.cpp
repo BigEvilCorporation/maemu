@@ -138,6 +138,11 @@ namespace emu
 			void VDP::BeginScanline(u8 scanline)
 			{
 				m_counterV = scanline;
+
+				if (m_counterV >= VDP_SCREEN_HEIGHT)
+					m_statusFlags |= STATUS_VBLANK;
+				else
+					m_statusFlags &= ~STATUS_VBLANK;
 			}
 
 			void VDP::DrawLine(u32* data, int line)
