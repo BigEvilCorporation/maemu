@@ -186,8 +186,8 @@ namespace emu
 
 				for (int i = 0; i < VDP_SPRITES_MAX && numSpritesOnLine < VDP_SPRITES_MAX_PER_SCANLINE; i++)
 				{
-					//Fetch Y coord
-					u8 ycoord = m_bus.memoryControllerVRAM.ReadMemory(spriteTableAddr + i);
+					//Fetch Y coord (+1)
+					u8 ycoord = m_bus.memoryControllerVRAM.ReadMemory(spriteTableAddr + i) + 1;
 
 					//If scanline within sprite
 					if (line >= ycoord && line < (ycoord + spriteHeight))
@@ -197,7 +197,7 @@ namespace emu
 
 						//Add sprite to array
 						Sprite& sprite = spritesOnLine[numSpritesOnLine++];
-						sprite.y = ycoord + 1;
+						sprite.y = ycoord;
 						sprite.x = m_bus.memoryControllerVRAM.ReadMemory(tableXAddr);
 						sprite.tileIdx = spriteTileIdxUpper | m_bus.memoryControllerVRAM.ReadMemory(tableXAddr + 1);
 
@@ -249,7 +249,7 @@ namespace emu
 							//If not transparent, use sprite pixel
 							if (index > 0)
 							{
-								colourIdx = index;
+								colourIdx = index + VDP_PALETTE_OFFS_SPRITE;
 							}
 						}
 					}
@@ -272,6 +272,12 @@ namespace emu
 
 						//Read and combine bits from each bitplane
 						colourIdx = ReadBitPlaneColourIdx(tileAddr, srcx, srcy);
+
+						//If using sprite palette, offset
+						if (cell.palette)
+						{
+							colourIdx += VDP_PALETTE_OFFS_SPRITE;
+						}
 					}
 
 					if (colourIdx == 0)
@@ -282,8 +288,7 @@ namespace emu
 					else
 					{
 						//Fetch color from palette
-						u16 colourAddr = cell.palette ? (colourIdx + VDP_PALETTE_OFFS_SPRITE) : colourIdx;
-						u8 colour = m_bus.memoryControllerCRAM.ReadMemory(colourAddr);
+						u8 colour = m_bus.memoryControllerCRAM.ReadMemory((u16)colourIdx);
 
 						//Write RGB
 						data[dstx] = ColourToRGB[colour];
