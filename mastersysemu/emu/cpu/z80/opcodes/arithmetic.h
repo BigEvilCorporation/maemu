@@ -10,7 +10,7 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static const int REGISTER_DECODE_ARITH_REG8_SHIFT = 0x3;
+				static const int REGISTER_DECODE_ARITH_REG8_SHIFT = 0x0;
 				static const int REGISTER_DECODE_ARITH_REG16_SHIFT = 0x4;
 
 				//Negate A
