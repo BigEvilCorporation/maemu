@@ -167,7 +167,7 @@ namespace emu
 				//Get scroll values
 				u8 scrollx = m_regs[VDP_REG_8_SCROLL_X];
 				u8 scrolly = m_regs[VDP_REG_9_SCROLL_Y];
-				u8 srcy = line + scrolly;
+				u8 srcy = (line + scrolly) % (VDP_BG_PLANE_HEIGHT_TILES * VDP_TILE_HEIGHT);
 
 				//Get sprite attribute table
 				u16 spriteTableAddr = (m_regs[VDP_REG_5_SPRITE_ATTR_TABLE_ADDR] & VDP_SPRITE_REG_ADDR_MASK) << VDP_SPRITE_REG_ADDR_SHIFT;
@@ -258,7 +258,7 @@ namespace emu
 					if (colourIdx == 0)
 					{
 						//Apply scroll
-						u8 srcx = dstx - scrollx;
+						u8 srcx = (dstx - scrollx) % (VDP_BG_PLANE_WIDTH_TILES * VDP_TILE_WIDTH);
 
 						//Compute cell word address
 						cellAddr.x = srcx / VDP_TILE_WIDTH;
