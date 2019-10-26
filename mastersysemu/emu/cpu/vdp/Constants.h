@@ -24,6 +24,10 @@ namespace emu
 			static const int VDP_SCREEN_HEIGHT = 192;
 			static const int VDP_SCANLINES_NTSC = 262;
 			static const int VDP_SCANLINES_PAL = 313;
+			static const int VDP_BORDER_LEFT = 13;
+			static const int VDP_BORDER_RIGHT = 15;
+			static const int VDP_BORDER_TOP = (VDP_SCANLINES_PAL - VDP_SCREEN_HEIGHT) / 2;
+			static const int VDP_BORDER_BOTTOM = (VDP_SCANLINES_PAL - VDP_SCREEN_HEIGHT) / 2;
 
 			//Palettes
 			static const int VDP_PALETTE_SIZE = 16;

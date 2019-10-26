@@ -140,12 +140,7 @@ namespace emu
 					m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
 				}
 				
-				int yborder = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
-				if (m_scanline >= yborder)
-				{
-					m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline - yborder);
-				}
-
+				m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
 				m_scanline++;
 
 				if (m_scanline >= cpu::vdp::VDP_SCANLINES_PAL)

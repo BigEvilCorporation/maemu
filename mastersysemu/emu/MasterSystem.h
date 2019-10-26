@@ -80,7 +80,7 @@ namespace emu
 		//Timing
 		s64 m_cycleCount;
 		s64 m_cyclesToNextScanline;
-		u8 m_scanline;
+		u16 m_scanline;
 
 		//Rendering
 		std::vector<u32> m_frameBuffer;

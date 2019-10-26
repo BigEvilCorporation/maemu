@@ -37,7 +37,7 @@ namespace emu
 				void WritePSG(u16 address, u8 value);
 
 				//Rendering
-				void DrawLine(u32* data, int line);
+				void DrawLine(u32* data, int scanline);
 
 				//Debugging
 				const Registers& GetRegisters() const;
