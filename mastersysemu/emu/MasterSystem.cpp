@@ -126,8 +126,8 @@ namespace emu
 			m_Z80->Step();
 
 			//TODO: Get cycle count from Step();
-			m_cycleCount += 4;
-			m_cyclesToNextScanline -= 4;
+			m_cycleCount += 1;
+			m_cyclesToNextScanline -= 1;
 
 			if (m_cyclesToNextScanline <= 0)
 			{

@@ -79,8 +79,8 @@ namespace app
 		ion::engine.render.viewport->SetClearColour(ion::Colour(0.0f, 0.0f, 0.0f, 1.0f));
 		ion::engine.render.camera->SetPosition(ion::Vector3(-(float)ion::engine.render.window->GetClientAreaWidth() / 2.0f, -(float)ion::engine.render.window->GetClientAreaHeight() / 2.0f, 0.1f));
 		
-		//Disable vsync by default
-		ion::engine.render.renderer->EnableVSync(false);
+		//Enable vsync by default
+		ion::engine.render.renderer->EnableVSync(true);
 
 		return true;
 	}
