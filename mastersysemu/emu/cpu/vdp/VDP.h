@@ -150,7 +150,7 @@ namespace emu
 					u8 y;
 				};
 
-				u8 ReadBitPlaneColourIdx(u16 tileAddress, u8 x, u8 y);
+				u8 ReadBitPlaneColourIdx(u16 tileAddress, u8 x, u8 y, bool flipX, bool flipY);
 
 				Registers m_regs;
 				Bus& m_bus;

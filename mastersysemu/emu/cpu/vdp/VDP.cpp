@@ -156,7 +156,6 @@ namespace emu
 				return m_statusFlags;
 			}
 
-#pragma optimize("",off)
 			void VDP::DrawLine(u32* data, int line)
 			{
 				//Get BG colour (from sprite palette)
@@ -244,7 +243,7 @@ namespace emu
 							u16 tileAddr = tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
 
 							//Read and combine bits from each bitplane
-							u8 index = ReadBitPlaneColourIdx(tileAddr, sprx, spry);
+							u8 index = ReadBitPlaneColourIdx(tileAddr, sprx, spry, false, false);
 
 							//If not transparent, use sprite pixel
 							if (index > 0)
@@ -271,7 +270,7 @@ namespace emu
 						u16 tileAddr = cell.tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
 
 						//Read and combine bits from each bitplane
-						colourIdx = ReadBitPlaneColourIdx(tileAddr, srcx, srcy);
+						colourIdx = ReadBitPlaneColourIdx(tileAddr, srcx, srcy, cell.flipX, cell.flipY);
 
 						//If using sprite palette, offset
 						if (cell.palette)
@@ -295,16 +294,15 @@ namespace emu
 					}
 				}
 			}
-#pragma optimize("",on)
 
-			u8 VDP::ReadBitPlaneColourIdx(u16 tileAddress, u8 x, u8 y)
+			u8 VDP::ReadBitPlaneColourIdx(u16 tileAddress, u8 x, u8 y, bool flipX, bool flipY)
 			{
 				//Offset by current line (4 bytes per line, wrapping around 8 lines per tile)
-				u16 offsetY = (y & 0x7) * 4;
+				u16 offsetY = (flipY ? (7 - (y & 0x7)) : (y & 0x7)) * 4;
 
 				//Read and combine bits from each bitplane
 				u8 colourIdx = 0;
-				u8 bitplaneShift = 7 - (x & 0x7);
+				u8 bitplaneShift = flipX ? (x & 0x7) : (7 - (x & 0x7));
 
 				for (int i = 0; i < 4; i++)
 				{
