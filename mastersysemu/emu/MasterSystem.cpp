@@ -148,7 +148,7 @@ namespace emu
 
 				m_scanline++;
 
-				if (m_scanline >= cpu::vdp::VDP_SCREEN_HEIGHT)
+				if (m_scanline >= cpu::vdp::VDP_SCANLINES_PAL)
 				{
 					m_scanline = 0;
 				}
