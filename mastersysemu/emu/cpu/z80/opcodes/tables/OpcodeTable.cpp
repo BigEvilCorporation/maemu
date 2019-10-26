@@ -91,7 +91,7 @@ namespace emu
 				{ 0x2E, 1, opcodes::LD_r8_n8,	"LD", "L, #" },
 				{ 0x2F, 0, &opcodes::CPL_A,		"CPL_A", "" },
 
-				{ 0x30, 2, &opcodes::JR_NC_n8,	"JR", "NC, ##" },
+				{ 0x30, 1, &opcodes::JR_NC_n8,	"JR", "NC, #" },
 				{ 0x31, 2, opcodes::LD_r16_n16,	"LD", "SP, ##" },
 				{ 0x32, 2, opcodes::LD_n16_A,	"LD", "##, A" },
 				{ 0x33, 0, &opcodes::INC_r16,	"INC", "SP" },
