@@ -1,6 +1,7 @@
 #include "StateEmu.h"
 
 #include "emu/cpu/vdp/Constants.h"
+#include "emu/peripherals/Joypad.h"
 
 #include <ion/core/utils/STL.h>
 
@@ -113,6 +114,46 @@ namespace app
 
 	bool StateEmu::Update(float deltaTime, ion::input::Keyboard* keyboard, ion::input::Mouse* mouse, ion::input::Gamepad* gamepad)
 	{
+		if (m_window.HasFocus())
+		{
+			//Update digital input
+			for (int i = 0; i < emu::peripherals::Joypad::BTN_COUNT; i++)
+			{
+				bool state = false;
+
+				if (keyboard)
+				{
+					state |= keyboard->KeyDown(m_settings.keyboardMap[i]);
+				}
+
+				if (gamepad)
+				{
+					state |= gamepad->ButtonDown(m_settings.gamepadMap[i]);
+				}
+
+				m_masterSystem.SetButtonState(emu::peripherals::Joypad::JOYPAD_1, (emu::peripherals::Joypad::Button)i, state);
+			}
+
+			//Update analogue input
+			if (gamepad)
+			{
+				if (gamepad->GetLeftStick().x < 0.0f)
+					m_masterSystem.SetButtonState(emu::peripherals::Joypad::JOYPAD_1, emu::peripherals::Joypad::BTN_LEFT, true);
+				if (gamepad->GetLeftStick().x > 0.0f)
+					m_masterSystem.SetButtonState(emu::peripherals::Joypad::JOYPAD_1, emu::peripherals::Joypad::BTN_RIGHT, true);
+				if (gamepad->GetLeftStick().y > 0.0f)
+					m_masterSystem.SetButtonState(emu::peripherals::Joypad::JOYPAD_1, emu::peripherals::Joypad::BTN_UP, true);
+				if (gamepad->GetLeftStick().y < 0.0f)
+					m_masterSystem.SetButtonState(emu::peripherals::Joypad::JOYPAD_1, emu::peripherals::Joypad::BTN_DOWN, true);
+			}
+
+			//Reset button
+			if (keyboard && keyboard->KeyPressedThisFrame(ion::input::Keycode::TAB))
+			{
+				m_masterSystem.Reset();
+			}
+		}
+
 		bool debugAddressUpdated = false;
 
 		if (m_debuggerState == DebuggerState::Run)
@@ -149,15 +190,6 @@ namespace app
 					m_debuggerState = DebuggerState::Run;
 					debugAddressUpdated = true;
 				}
-			}
-		}
-
-		//Reset button
-		if (m_window.HasFocus())
-		{
-			if (keyboard->KeyPressedThisFrame(ion::input::Keycode::TAB))
-			{
-				m_masterSystem.Reset();
 			}
 		}
 

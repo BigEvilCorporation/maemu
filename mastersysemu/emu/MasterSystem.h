@@ -35,6 +35,9 @@ namespace emu
 		//Rendering
 		const std::vector<u32>& GetFramebuffer() const;
 
+		//Input
+		void SetButtonState(peripherals::Joypad::PadIndex joypad, peripherals::Joypad::Button button, bool state);
+
 		//Debugging
 		void Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly);
 		void Disassemble(std::vector<cpu::z80::disassembler::Instruction>& disassembly, u16 address, int numInstructions);

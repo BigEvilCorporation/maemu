@@ -166,6 +166,11 @@ namespace emu
 		//}
 	}
 
+	void MasterSystem::SetButtonState(peripherals::Joypad::PadIndex joypad, peripherals::Joypad::Button button, bool state)
+	{
+		m_joypad->SetButtonState(joypad, button, state);
+	}
+
 	const std::vector<u32>& MasterSystem::GetFramebuffer() const
 	{
 		return m_frameBuffer;

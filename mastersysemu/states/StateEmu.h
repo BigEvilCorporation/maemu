@@ -18,6 +18,7 @@
 #include "debugger/WindowMemory.h"
 
 #include "emu/MasterSystem.h"
+#include "Settings.h"
 
 namespace app
 {
@@ -68,6 +69,9 @@ namespace app
 
 		//The machine
 		emu::MasterSystem m_masterSystem;
+
+		//Settings
+		Settings m_settings;
 
 		//Debugging
 		DebuggerState m_debuggerState;
