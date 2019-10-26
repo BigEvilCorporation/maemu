@@ -13,6 +13,7 @@ namespace emu
 	static const int ADDR_RAM_END = 0xDFFF;
 
 	//ROM mapper
+	static const int MAPPER_START_ADDR = 0x400;
 	static const int MAPPER_BANK_SIZE = 0x4000;
 	static const int MAPPER_NUM_REGS = 4;
 	static const int MAPPER_REG_STATE = 0xFFFC;

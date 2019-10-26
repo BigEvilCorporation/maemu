@@ -25,7 +25,7 @@ namespace emu
 		{
 			namespace disassembler
 			{
-				bool HandleRedirect(u16& address, Instruction& instruction, const Opcode*& opcodeTable, const std::vector<u8>& rom)
+				bool HandleRedirect(u32& address, Instruction& instruction, const Opcode*& opcodeTable, const std::vector<u8>& rom)
 				{
 					u8 prefix = 0;
 					bool paramFirst = false;
@@ -88,7 +88,7 @@ namespace emu
 					return paramFirst;
 				}
 
-				bool HandleRedirect(u16& address, Instruction& instruction, const Opcode*& opcodeTable, memory::Controller& memoryController)
+				bool HandleRedirect(u32& address, Instruction& instruction, const Opcode*& opcodeTable, memory::Controller& memoryController)
 				{
 					u8 prefix = 0;
 					bool paramFirst = false;
@@ -151,9 +151,9 @@ namespace emu
 					return paramFirst;
 				}
 
-				void Disassemble(const std::vector<u8>& rom, u16 size, std::vector<Instruction>& disassembly)
+				void Disassemble(const std::vector<u8>& rom, u32 size, std::vector<Instruction>& disassembly)
 				{
-					u16 address = 0;
+					u32 address = 0;
 
 					while (address < size)
 					{
@@ -207,7 +207,7 @@ namespace emu
 					}
 				}
 
-				void Disassemble(memory::Controller& memoryController, u16 address, int numInstructions, std::vector<Instruction>& disassembly)
+				void Disassemble(memory::Controller& memoryController, u32 address, int numInstructions, std::vector<Instruction>& disassembly)
 				{
 					for (int i = 0; i < numInstructions; i++)
 					{

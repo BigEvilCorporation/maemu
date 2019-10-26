@@ -30,6 +30,9 @@ namespace emu
 				//Timing
 				void BeginScanline(u8 scanline);
 
+				//Peek status flags without clearing
+				u8 PeekStatus();
+
 				//TODO: Move PSG
 				void WritePSG(u16 address, u8 value);
 
@@ -54,13 +57,6 @@ namespace emu
 					CTRL_VRAM_MASK		= 0x3FFF,
 					CTRL_CRAM_MASK		= 0x001F,
 					CTRL_HI_REG_MASK	= 0x0F
-				};
-
-				enum StatusFlags
-				{
-					STATUS_VBLANK		= 0x80,
-					STATUS_SPR_OVERFLOW	= 0x40,
-					STATUS_SPR_COLLISN	= 0x20
 				};
 
 				struct ControlRegister

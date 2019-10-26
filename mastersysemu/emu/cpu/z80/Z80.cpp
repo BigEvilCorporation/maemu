@@ -64,6 +64,35 @@ namespace emu
 			{
 				if (m_regs.internal.err == 0)
 				{
+					//Process pending interrupts
+					if (m_regs.internal.irq && m_regs.internal.iff1)
+					{
+						switch (m_regs.internal.im)
+						{
+							case Z80_INT_MODE0:
+								break;
+							case Z80_INT_MODE1:
+								{
+									//Push PC
+									m_regs.sp--;
+									m_bus.memoryController.WriteMemory(m_regs.sp, m_regs.pc >> 8);
+									m_regs.sp--;
+									m_bus.memoryController.WriteMemory(m_regs.sp, m_regs.pc & 0xFF);
+
+									//Execute vector at 0x38
+									m_regs.pc = Z80_INT_MODE2_ADDRESS;
+
+									break;
+								}
+							case Z80_INT_MODE2:
+								break;
+						}
+
+						//Clear interrupts
+						m_regs.internal.iff1 = 0;
+						m_regs.internal.iff2 = 0;
+					}
+
 					m_history[m_historyIdx++ % m_history.size()] = m_regs;
 
 					//Clear prefix
@@ -91,6 +120,11 @@ namespace emu
 					//Execute instruction
 					opcode.handler(opcode, params, m_regs, m_bus);
 				}
+			}
+
+			void Z80::TriggerInterrupt(Interrupts interrupt)
+			{
+				m_regs.internal.irq = 1;
 			}
 
 			const Registers& Z80::GetRegisters() const

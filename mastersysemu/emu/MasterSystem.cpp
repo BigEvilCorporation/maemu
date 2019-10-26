@@ -1,4 +1,5 @@
 #include "MasterSystem.h"
+#include "cpu/z80/Interrupts.h"
 
 #include <ion/io/File.h>
 
@@ -130,8 +131,14 @@ namespace emu
 
 			if (m_cyclesToNextScanline <= 0)
 			{
-				//TODO: Interrupt callbacks
+				//Begin scanline (sets VINT if 0)
 				m_VDP->BeginScanline(m_scanline);
+
+				//TODO: VDP to set
+				if (m_VDP->PeekStatus() & cpu::vdp::VDP_STATUS_VBLANK)
+				{
+					m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
+				}
 				
 				int yborder = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
 				if (m_scanline >= yborder)

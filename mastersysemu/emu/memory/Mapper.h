@@ -18,6 +18,7 @@ namespace emu
 
 			void Initialise(const u8* data, u32 size);
 
+			u8 ReadVectors(u16 address);
 			u8 ReadBank0(u16 address);
 			u8 ReadBank1(u16 address);
 			u8 ReadBank2(u16 address);

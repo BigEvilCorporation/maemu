@@ -43,7 +43,12 @@ namespace emu
 				m_hiByteLatch = false;
 
 				//Control port read returns status byte
-				return m_statusFlags;
+				u8 status = m_statusFlags;
+
+				//and clears vblank flag
+				m_statusFlags &= ~VDP_STATUS_VBLANK;
+
+				return status;
 			}
 
 			u8 VDP::ReadData(u16 address)
@@ -139,10 +144,16 @@ namespace emu
 			{
 				m_counterV = scanline;
 
-				if (m_counterV >= VDP_SCREEN_HEIGHT)
-					m_statusFlags |= STATUS_VBLANK;
-				else
-					m_statusFlags &= ~STATUS_VBLANK;
+				if (m_counterV == 0)
+				{
+					//Vertical interrupt
+					m_statusFlags |= VDP_STATUS_VBLANK;
+				}
+			}
+
+			u8 VDP::PeekStatus()
+			{
+				return m_statusFlags;
 			}
 
 			void VDP::DrawLine(u32* data, int line)

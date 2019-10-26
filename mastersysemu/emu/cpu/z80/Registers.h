@@ -89,6 +89,7 @@ namespace emu
 				//Internal regs
 				struct
 				{
+					u8 irq;
 					u8 im;
 					u8 iff1;
 					u8 iff2;

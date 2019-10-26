@@ -20,6 +20,9 @@ namespace emu
 				void Reset();
 				void Step();
 
+				//Interrupts
+				void TriggerInterrupt(Interrupts interrupt);
+
 				//Debugging
 				const Registers& GetRegisters() const;
 				void GetPCHistory(std::vector<Registers>& history) const;

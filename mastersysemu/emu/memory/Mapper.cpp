@@ -11,6 +11,7 @@ namespace emu
 	{
 		Mapper::Mapper(Controller& controller)
 		{
+			controller.AddHandler(0, MAPPER_START_ADDR - 1, std::bind(&Mapper::ReadVectors, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
 			controller.AddHandler((MAPPER_BANK_SIZE * 0), (MAPPER_BANK_SIZE * 1) - 1, std::bind(&Mapper::ReadBank0, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
 			controller.AddHandler((MAPPER_BANK_SIZE * 1), (MAPPER_BANK_SIZE * 2) - 1, std::bind(&Mapper::ReadBank1, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
 			controller.AddHandler((MAPPER_BANK_SIZE * 2), (MAPPER_BANK_SIZE * 3) - 1, std::bind(&Mapper::ReadBank2, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
@@ -36,6 +37,11 @@ namespace emu
 				m_mappedBank2 = &m_rom[MAPPER_BANK_SIZE * 2];
 		}
 
+		u8 Mapper::ReadVectors(u16 address)
+		{
+			return m_rom[address];
+		}
+
 		u8 Mapper::ReadBank0(u16 address)
 		{
 			return m_mappedBank0[address];
@@ -53,25 +59,30 @@ namespace emu
 
 		u8 Mapper::ReadRegister(u16 address)
 		{
-			return m_registers[address - MAPPER_REG_STATE];
+			return m_registers[address];
 		}
 
 		void Mapper::WriteRegister(u16 address, u8 value)
 		{
-			m_registers[address - MAPPER_REG_STATE] = value;
+			m_registers[address] = value;
 
-			switch (address)
+			u16 reg = address + MAPPER_REG_STATE;
+
+			switch (reg)
 			{
-			case MAPPER_REG_STATE:
-				break;
 			case MAPPER_REG_BANK0:
+				ion::debug::log << "Mapped bank 0 to page " << value << ion::debug::end;
 				m_mappedBank0 = &m_rom[value * MAPPER_BANK_SIZE];
 				break;
 			case MAPPER_REG_BANK1:
+				ion::debug::log << "Mapped bank 1 to page " << value << ion::debug::end;
 				m_mappedBank1 = &m_rom[value * MAPPER_BANK_SIZE];
 				break;
 			case MAPPER_REG_BANK2:
+				ion::debug::log << "Mapped bank 2 to page " << value << ion::debug::end;
 				m_mappedBank2 = &m_rom[value * MAPPER_BANK_SIZE];
+				break;
+			default:
 				break;
 			}
 		}

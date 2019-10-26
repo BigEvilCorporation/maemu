@@ -6,6 +6,14 @@ namespace emu
 	{
 		namespace vdp
 		{
+			//Status reg
+			enum StatusFlags
+			{
+				VDP_STATUS_VBLANK = 0x80,
+				VDP_STATUS_SPR_OVERFLOW = 0x40,
+				VDP_STATUS_SPR_COLLISN = 0x20
+			};
+
 			//VRAM/CRAM/regs size
 			static const int VDP_VRAM_SIZE = 1024 * 16;
 			static const int VDP_CRAM_SIZE = 32;
