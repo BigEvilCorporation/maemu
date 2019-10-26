@@ -20,12 +20,12 @@ namespace emu
 
 		u8 Joypad::ReadPort1(u16 address)
 		{
-			return 0;
+			return 0xFF;
 		}
 
 		u8 Joypad::ReadPort2(u16 address)
 		{
-			return 0;
+			return 0xFF;
 		}
 
 		void Joypad::WriteControl(u16 address, u8 value)
