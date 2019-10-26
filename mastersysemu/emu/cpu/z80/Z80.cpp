@@ -67,6 +67,10 @@ namespace emu
 					//Process pending interrupts
 					if (m_regs.internal.irq && m_regs.internal.iff1)
 					{
+						//Disable interrupts before handling
+						m_regs.internal.iff1 = 0;
+						m_regs.internal.iff2 = 0;
+
 						switch (m_regs.internal.im)
 						{
 							case Z80_INT_MODE0:
@@ -88,9 +92,8 @@ namespace emu
 								break;
 						}
 
-						//Clear interrupts
-						m_regs.internal.iff1 = 0;
-						m_regs.internal.iff2 = 0;
+						//Clear IRQ
+						m_regs.internal.irq = 0;
 					}
 
 					m_history[m_historyIdx++ % m_history.size()] = m_regs;

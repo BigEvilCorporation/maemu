@@ -40,6 +40,7 @@ namespace debug
 			ion::gui::TextBox im;
 			ion::gui::TextBox iff1;
 			ion::gui::TextBox iff2;
+			ion::gui::TextBox irq;
 		} m_textBoxes;
 	};
 

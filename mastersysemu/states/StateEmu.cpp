@@ -119,7 +119,7 @@ namespace app
 		{
 			//Update machine
 			//TODO: Instruction clock
-			m_masterSystem.Update(10000);
+			m_masterSystem.Update(emu::MS_CYCLES_PER_SCANLINE * emu::cpu::vdp::VDP_SCANLINES_PAL);
 			debugAddressUpdated = true;
 
 			if (m_window.HasFocus())

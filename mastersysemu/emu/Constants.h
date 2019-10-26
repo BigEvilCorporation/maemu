@@ -3,7 +3,7 @@
 namespace emu
 {
 	//Timing
-	static const int MS_CYCLES_PER_SCANLINE = 3420;
+	static const int MS_CYCLES_PER_SCANLINE = 228;
 
 	//Address map
 	static const int ADDR_ROM_START = 0x0000;
