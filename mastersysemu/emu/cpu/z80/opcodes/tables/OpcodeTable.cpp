@@ -99,7 +99,7 @@ namespace emu
 				{ 0x35, 0, &opcodes::DEC_dHL,	"DEC", "(HL)" },
 				{ 0x36, 1, opcodes::LD_dHL_n8,	"LD", "(HL), #" },
 				{ 0x37, 0, &opcodes::SCF,		"SCF", "" },
-				{ 0x38, 2, &opcodes::JR_C_n8,	"JR", "C, ##" },
+				{ 0x38, 1, &opcodes::JR_C_n8,	"JR", "C, #" },
 				{ 0x39, 0, &opcodes::ADD_HL_r16,"ADD", "HL, SP" },
 				{ 0x3A, 2, opcodes::LD_A_d16,	"LD", "A,(##)" },
 				{ 0x3B, 0, &opcodes::DEC_r16,	"DEC", "SP" },

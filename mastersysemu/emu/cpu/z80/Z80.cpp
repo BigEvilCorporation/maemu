@@ -33,16 +33,16 @@ namespace emu
 
 				//Interrupt mode 0 by default
 				m_regs.internal.im = Z80_INT_MODE0;
+
+				//Clear interrupt state
 				m_regs.internal.iff1 = 0;
 				m_regs.internal.iff2 = 0;
+				m_regs.internal.irq = 0;
 
 				//Clear error flag
 				m_regs.internal.err = 0;
 
-				// 1616147354
-
-				int seed = -1328377131; // ion::time::GetSystemTicks();
-				ion::debug::log << "Rand seed: " << seed << ion::debug::end;
+				int seed = ion::time::GetSystemTicks();
 				ion::maths::RandSeed(seed);
 				m_regs.main.bc = ion::maths::RandInt();
 				m_regs.main.de = ion::maths::RandInt();

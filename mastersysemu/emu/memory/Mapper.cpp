@@ -71,15 +71,12 @@ namespace emu
 			switch (reg)
 			{
 			case MAPPER_REG_BANK0:
-				ion::debug::log << "Mapped bank 0 to page " << value << ion::debug::end;
 				m_mappedBank0 = &m_rom[value * MAPPER_BANK_SIZE];
 				break;
 			case MAPPER_REG_BANK1:
-				ion::debug::log << "Mapped bank 1 to page " << value << ion::debug::end;
 				m_mappedBank1 = &m_rom[value * MAPPER_BANK_SIZE];
 				break;
 			case MAPPER_REG_BANK2:
-				ion::debug::log << "Mapped bank 2 to page " << value << ion::debug::end;
 				m_mappedBank2 = &m_rom[value * MAPPER_BANK_SIZE];
 				break;
 			default:
