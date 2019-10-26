@@ -143,6 +143,15 @@ namespace emu
 					};
 				};
 
+				struct Sprite
+				{
+					u16 tileIdx;
+					u8 x;
+					u8 y;
+				};
+
+				u8 ReadBitPlaneColourIdx(u16 tileAddress, u8 x, u8 y);
+
 				Registers m_regs;
 				Bus& m_bus;
 				ControlRegister m_controlReg;

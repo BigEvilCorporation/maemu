@@ -156,24 +156,58 @@ namespace emu
 				return m_statusFlags;
 			}
 
+#pragma optimize("",off)
 			void VDP::DrawLine(u32* data, int line)
 			{
-				///////////////////////////////////////////////////////////////////
 				//Get BG colour (from sprite palette)
-				///////////////////////////////////////////////////////////////////
-
 				u8 backdropIdx = m_regs[VDP_REG_7_BACKDROP_COLOUR] & 0xF;
 				u8 backdropColour = m_bus.memoryControllerCRAM.ReadMemory(VDP_PALETTE_OFFS_SPRITE + backdropIdx);
 				u32 backdropColourRGBA = ColourToRGB[backdropColour];
-
-				///////////////////////////////////////////////////////////////////
-				//BG plane
-				///////////////////////////////////////////////////////////////////
 
 				//Get scroll values
 				u8 scrollx = m_regs[VDP_REG_8_SCROLL_X];
 				u8 scrolly = m_regs[VDP_REG_9_SCROLL_Y];
 				u8 srcy = line + scrolly;
+
+				//Get sprite attribute table
+				u16 spriteTableAddr = (m_regs[VDP_REG_5_SPRITE_ATTR_TABLE_ADDR] & VDP_SPRITE_REG_ADDR_MASK) << VDP_SPRITE_REG_ADDR_SHIFT;
+
+				//Get sprite tiles bit 8
+				u16 spriteTileIdxUpper = (m_regs[VDP_REG_6_SPRITE_PATTERN_TABLE_ADDR] & VDP_SPRITE_TILE_ADDR_MASK) << VDP_SPRITE_TILE_ADDR_SHIFT;
+
+				//Get sprite size
+				u8 spriteSizeIdx = (m_regs[VDP_REG_1_MODE_CONTROL_2] & VDP_SPRITE_SIZE_MASK) >> VDP_SPRITE_SIZE_SHIFT;
+				u8 spriteWidth = 8;
+				u8 spriteHeight = spriteSizeIdx ? 16 : 8;
+
+				//Determine sprites on line
+				Sprite spritesOnLine[VDP_SPRITES_MAX_PER_SCANLINE] = { 0 };
+				u8 numSpritesOnLine = 0;
+
+				for (int i = 0; i < VDP_SPRITES_MAX && numSpritesOnLine < VDP_SPRITES_MAX_PER_SCANLINE; i++)
+				{
+					//Fetch Y coord
+					u8 ycoord = m_bus.memoryControllerVRAM.ReadMemory(spriteTableAddr + i);
+
+					//If scanline within sprite
+					if (line >= ycoord && line < (ycoord + spriteHeight))
+					{
+						//Offset to X coord/tile idx
+						u16 tableXAddr = spriteTableAddr + (i * 2) + 0x80;
+
+						//Add sprite to array
+						Sprite& sprite = spritesOnLine[numSpritesOnLine++];
+						sprite.y = ycoord + 1;
+						sprite.x = m_bus.memoryControllerVRAM.ReadMemory(tableXAddr);
+						sprite.tileIdx = spriteTileIdxUpper | m_bus.memoryControllerVRAM.ReadMemory(tableXAddr + 1);
+
+						//If double height sprites, ignore bottom bit
+						if (spriteSizeIdx)
+						{
+							sprite.tileIdx &= 0xFFFE;
+						}
+					}
+				}
 
 				//Tile map address bits 13-11 are in bits 3-1 of register 2
 				CellEntryAddress cellAddr;
@@ -182,59 +216,104 @@ namespace emu
 
 				CellEntry cell;
 
+				//For each X pixel on line
 				for (int dstx = 0; dstx < VDP_SCREEN_WIDTH; dstx++)
 				{
-					//Apply scroll
-					u8 srcx = dstx - scrollx;
-
-					//Compute cell word address
-					cellAddr.x = srcx / VDP_TILE_WIDTH;
-
-					//Read cell word
-					cell.hi = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address);
-					cell.lo = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address + 1);
-
-					//Get tile address
-					u16 tileAddr = cell.tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
-
-					//Offset by current line (4 bytes per line, wrapping around 8 lines per tile)
-					u16 offsetY = (srcy & 0x7) * 4;
-
-					//Read and combine bits from each bitplane
+					//Find sprite first
 					u8 colourIdx = 0;
-					u8 bitplaneShift = 7 - (srcx & 0x7);
 
-					for (int i = 0; i < 4; i++)
+					for (int i = 0; i < numSpritesOnLine && colourIdx == 0; i++)
 					{
-						//Read byte at x location
-						u8 bitplaneByte = m_bus.memoryControllerVRAM.ReadMemory(tileAddr + offsetY + i);
+						//If x within sprite
+						if (dstx >= spritesOnLine[i].x && dstx < (spritesOnLine[i].x + spriteWidth))
+						{
+							//Get x/y pixel within sprite
+							u8 sprx = dstx - spritesOnLine[i].x;
+							u8 spry = line - spritesOnLine[i].y;
 
-						//Shift bitplane bit to LSB, back to top of nybble
-						colourIdx |= ((bitplaneByte >> bitplaneShift) & 1) << 4;
+							//Get tile index
+							u16 tileIdx = spritesOnLine[i].tileIdx;
 
-						//Next bit
-						colourIdx >>= 1;
+							//If double height, and in the lower half, use next tile
+							if (spriteSizeIdx && spry >= 8)
+							{
+								tileIdx += 1;
+							}
+
+							//Get tile address
+							u16 tileAddr = tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
+
+							//Read and combine bits from each bitplane
+							u8 index = ReadBitPlaneColourIdx(tileAddr, sprx, spry);
+
+							//If not transparent, use sprite pixel
+							if (index > 0)
+							{
+								colourIdx = index;
+							}
+						}
 					}
 
-					//Fetch color from palette
-					u16 colourAddr = cell.palette ? (colourIdx + VDP_PALETTE_OFFS_SPRITE) : colourIdx;
-					u8 colour = m_bus.memoryControllerCRAM.ReadMemory(colourAddr);
+					//If sprite not found or transparent, draw BG plane
+					if (colourIdx == 0)
+					{
+						//Apply scroll
+						u8 srcx = dstx - scrollx;
 
-					if (colour == 0)
+						//Compute cell word address
+						cellAddr.x = srcx / VDP_TILE_WIDTH;
+
+						//Read cell word
+						cell.hi = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address);
+						cell.lo = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address + 1);
+
+						//Get tile address
+						u16 tileAddr = cell.tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
+
+						//Read and combine bits from each bitplane
+						colourIdx = ReadBitPlaneColourIdx(tileAddr, srcx, srcy);
+					}
+
+					if (colourIdx == 0)
 					{
 						//0 is transparent, write backdrop colour instead
 						data[dstx] = backdropColourRGBA;
 					}
 					else
 					{
+						//Fetch color from palette
+						u16 colourAddr = cell.palette ? (colourIdx + VDP_PALETTE_OFFS_SPRITE) : colourIdx;
+						u8 colour = m_bus.memoryControllerCRAM.ReadMemory(colourAddr);
+
 						//Write RGB
 						data[dstx] = ColourToRGB[colour];
 					}
 				}
+			}
+#pragma optimize("",on)
 
-				///////////////////////////////////////////////////////////////////
-				//TODO: Sprite plane
-				///////////////////////////////////////////////////////////////////
+			u8 VDP::ReadBitPlaneColourIdx(u16 tileAddress, u8 x, u8 y)
+			{
+				//Offset by current line (4 bytes per line, wrapping around 8 lines per tile)
+				u16 offsetY = (y & 0x7) * 4;
+
+				//Read and combine bits from each bitplane
+				u8 colourIdx = 0;
+				u8 bitplaneShift = 7 - (x & 0x7);
+
+				for (int i = 0; i < 4; i++)
+				{
+					//Read byte at x location
+					u8 bitplaneByte = m_bus.memoryControllerVRAM.ReadMemory(tileAddress + offsetY + i);
+
+					//Shift bitplane bit to LSB, back to top of nybble
+					colourIdx |= ((bitplaneByte >> bitplaneShift) & 1) << 4;
+
+					//Next bit
+					colourIdx >>= 1;
+				}
+
+				return colourIdx;
 			}
 
 			const Registers& VDP::GetRegisters() const
