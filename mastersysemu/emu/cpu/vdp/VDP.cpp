@@ -170,17 +170,25 @@ namespace emu
 				//BG plane
 				///////////////////////////////////////////////////////////////////
 
+				//Get scroll values
+				u8 scrollx = m_regs[VDP_REG_8_SCROLL_X];
+				u8 scrolly = m_regs[VDP_REG_9_SCROLL_Y];
+				u8 srcy = line + scrolly;
+
 				//Tile map address bits 13-11 are in bits 3-1 of register 2
 				CellEntryAddress cellAddr;
 				cellAddr.baseAddr = (m_regs[VDP_REG_2_NAME_TABLE_ADDR] & VDP_MAP_REG_ADDR_MASK) >> VDP_MAP_REG_ADDR_SHIFT;
-				cellAddr.y = line / VDP_TILE_HEIGHT;
+				cellAddr.y = srcy / VDP_TILE_HEIGHT;
 
 				CellEntry cell;
 
-				for (int x = 0; x < VDP_SCREEN_WIDTH; x++)
+				for (int dstx = 0; dstx < VDP_SCREEN_WIDTH; dstx++)
 				{
+					//Apply scroll
+					u8 srcx = dstx - scrollx;
+
 					//Compute cell word address
-					cellAddr.x = x / VDP_TILE_WIDTH;
+					cellAddr.x = srcx / VDP_TILE_WIDTH;
 
 					//Read cell word
 					cell.hi = m_bus.memoryControllerVRAM.ReadMemory(cellAddr.address);
@@ -190,11 +198,11 @@ namespace emu
 					u16 tileAddr = cell.tileIdx * (VDP_TILE_WIDTH * VDP_TILE_HEIGHT / 2);
 
 					//Offset by current line (4 bytes per line, wrapping around 8 lines per tile)
-					u16 offsetY = (line & 0x7) * 4;
+					u16 offsetY = (srcy & 0x7) * 4;
 
 					//Read and combine bits from each bitplane
 					u8 colourIdx = 0;
-					u8 bitplaneShift = 8 - (x & 0x7);
+					u8 bitplaneShift = 7 - (srcx & 0x7);
 
 					for (int i = 0; i < 4; i++)
 					{
@@ -215,12 +223,12 @@ namespace emu
 					if (colour == 0)
 					{
 						//0 is transparent, write backdrop colour instead
-						data[x] = backdropColourRGBA;
+						data[dstx] = backdropColourRGBA;
 					}
 					else
 					{
 						//Write RGB
-						data[x] = ColourToRGB[colour];
+						data[dstx] = ColourToRGB[colour];
 					}
 				}
 
