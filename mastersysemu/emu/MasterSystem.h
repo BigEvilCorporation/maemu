@@ -8,6 +8,7 @@
 #include "cpu/vdp/VDP.h"
 #include "cpu/vdp/Bus.h"
 #include "cpu/vdp/Registers.h"
+#include "cpu/psg/PSG.h"
 #include "memory/Mapper.h"
 #include "memory/MemoryController.h"
 #include "memory/Storage.h"
@@ -55,6 +56,7 @@ namespace emu
 		//Processors
 		cpu::z80::Z80* m_Z80;
 		cpu::vdp::VDP* m_VDP;
+		cpu::psg::PSG* m_PSG;
 
 		//Memory/peripheral bus
 		cpu::z80::Bus* m_busZ80;

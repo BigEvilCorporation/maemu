@@ -33,9 +33,6 @@ namespace emu
 				//Peek status flags without clearing
 				u8 PeekStatus();
 
-				//TODO: Move PSG
-				void WritePSG(u16 address, u8 value);
-
 				//Rendering
 				void DrawLine(u32* data, int scanline);
 

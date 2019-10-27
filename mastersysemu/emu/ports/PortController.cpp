@@ -13,21 +13,34 @@ namespace emu
 
 		void Controller::AddHandler(u16 address, OnRead const& reader, OnWrite const& writer)
 		{
-			if (m_portMap.size() <= address)
+			if (reader)
 			{
-				m_portMap.resize(address + 1);
+				if (m_portReaders.size() <= address)
+				{
+					m_portReaders.resize(address + 1);
+				}
+
+				m_portReaders[address] = reader;
 			}
 
-			m_portMap[address] = { reader, writer };
+			if (writer)
+			{
+				if (m_portWriters.size() <= address)
+				{
+					m_portWriters.resize(address + 1);
+				}
+
+				m_portWriters[address] = writer;
+			}
 		}
 
 		u8 Controller::Read(u16 address)
 		{
-			if (MappedPort* port = FindPort(address))
+			if (OnRead* port = FindPortReader(address))
 			{
-				if (port->reader)
+				if (port)
 				{
-					return port->reader(address);
+					return (*port)(address);
 				}
 			}
 
@@ -38,11 +51,11 @@ namespace emu
 
 		void Controller::Write(u16 address, u8 value)
 		{
-			if (MappedPort* port = FindPort(address))
+			if (OnWrite* port = FindPortWriter(address))
 			{
-				if (port->writer)
+				if (port)
 				{
-					port->writer(address, value);
+					(*port)(address, value);
 					return;
 				}
 				
@@ -51,11 +64,21 @@ namespace emu
 			ion::debug::log << "ports::Controller::Write() - Write to unknown port " << address << ion::debug::end;
 		}
 
-		Controller::MappedPort* Controller::FindPort(u16 address)
+		OnRead* Controller::FindPortReader(u16 address)
 		{
-			if (address < m_portMap.size())
+			if (address < m_portReaders.size() && m_portReaders[address])
 			{
-				return &m_portMap[address];
+				return &m_portReaders[address];
+			}
+
+			return nullptr;
+		}
+
+		OnWrite* Controller::FindPortWriter(u16 address)
+		{
+			if (address < m_portWriters.size() && m_portWriters[address])
+			{
+				return &m_portWriters[address];
 			}
 
 			return nullptr;

@@ -29,9 +29,11 @@ namespace emu
 				OnWrite writer;
 			};
 
-			MappedPort* FindPort(u16 address);
+			OnRead* FindPortReader(u16 address);
+			OnWrite* FindPortWriter(u16 address);
 
-			std::vector<MappedPort> m_portMap;
+			std::vector<OnRead> m_portReaders;
+			std::vector<OnWrite> m_portWriters;
 		};
 	}
 }

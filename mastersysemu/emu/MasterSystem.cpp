@@ -9,6 +9,7 @@ namespace emu
 	{
 		m_Z80 = nullptr;
 		m_VDP = nullptr;
+		m_PSG = nullptr;
 		m_busZ80 = nullptr;
 		m_busVDP = nullptr;
 		m_memoryControllerZ80 = nullptr;
@@ -56,6 +57,9 @@ namespace emu
 
 		//Create the VDP
 		m_VDP = new cpu::vdp::VDP(*m_busVDP);
+
+		//Create the PSG
+		m_PSG = new cpu::psg::PSG(*m_portController);
 
 		//Create peripherals
 		m_joypad = new peripherals::Joypad(*m_portController);
@@ -110,6 +114,7 @@ namespace emu
 		//Reset CPUs
 		m_Z80->Reset();
 		m_VDP->Reset();
+		m_PSG->Reset();
 
 		//Reset counters
 		m_cycleCount = 0;
@@ -124,6 +129,7 @@ namespace emu
 		for (int i = 0; i < steps; i++)
 		{
 			m_Z80->Step();
+			m_PSG->Step();
 
 			//TODO: Get cycle count from Step();
 			m_cycleCount += 1;
@@ -151,14 +157,6 @@ namespace emu
 				m_cyclesToNextScanline = MS_CYCLES_PER_SCANLINE;
 			}
 		}
-
-		//TODO: Interrupt callbacks
-		//int yoffset = ((cpu::vdp::VDP_SCANLINES_PAL - cpu::vdp::VDP_SCREEN_HEIGHT) / 2);
-		//
-		//for (int i = 0; i < cpu::vdp::VDP_SCREEN_HEIGHT; i++)
-		//{
-		//	m_VDP->DrawLine(&m_frameBuffer[(yoffset + i) * cpu::vdp::VDP_SCREEN_WIDTH], i);
-		//}
 	}
 
 	void MasterSystem::SetButtonState(peripherals::Joypad::PadIndex joypad, peripherals::Joypad::Button button, bool state)

@@ -54,12 +54,18 @@ local SRC =
 	cpu/z80/opcodes/routines.h
 	cpu/z80/opcodes/stack.h
 
+	cpu/vdp/Bus.h
 	cpu/vdp/Colour.h
 	cpu/vdp/Constants.h
 	cpu/vdp/Flags.h
 	cpu/vdp/Registers.h
 	cpu/vdp/VDP.cpp
 	cpu/vdp/VDP.h
+
+	cpu/psg/Constants.h
+	cpu/psg/PSG.cpp
+	cpu/psg/PSG.h
+	cpu/psg/Registers.h
 
 	memory/Mapper.cpp
 	memory/Mapper.h
