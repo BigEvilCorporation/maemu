@@ -118,34 +118,39 @@ namespace emu
 
 		//Reset counters
 		m_cycleCount = 0;
-		m_cyclesToNextScanline = MS_CYCLES_PER_SCANLINE;
+		m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
 
 		//TODO: Clear memory
 	}
 
-	void MasterSystem::Update(int steps)
+	void MasterSystem::StepFrame()
 	{
-		//Tick CPU
-		for (int i = 0; i < steps; i++)
+		for(int i = 0; i < cpu::vdp::VDP_SCANLINES_PAL; i++)
 		{
-			m_Z80->Step();
-			m_PSG->Step();
+			StepScanline();
+		}
+	}
 
-			//TODO: Get cycle count from Step();
-			m_cycleCount += 1;
-			m_cyclesToNextScanline -= 1;
+	void MasterSystem::StepScanline()
+	{
+		bool running = true;
+
+		while (running)
+		{
+			//Step CPUs
+			StepInstruction(1);
 
 			if (m_cyclesToNextScanline <= 0)
 			{
 				//Begin scanline (sets VINT if 0)
 				m_VDP->BeginScanline(m_scanline);
 
-				//TODO: VDP to set
+				//TODO: VDP should interrupt via bus
 				if (m_VDP->PeekStatus() & cpu::vdp::VDP_STATUS_VBLANK)
 				{
 					m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
 				}
-				
+
 				m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
 				m_scanline++;
 
@@ -154,8 +159,23 @@ namespace emu
 					m_scanline = 0;
 				}
 
-				m_cyclesToNextScanline = MS_CYCLES_PER_SCANLINE;
+				m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
+
+				running = false;
 			}
+		}
+	}
+
+	void MasterSystem::StepInstruction(int steps)
+	{
+		//Tick CPU
+		for (int i = 0; i < steps; i++)
+		{
+			u32 cycles = m_Z80->Step();
+			m_PSG->Step();
+
+			m_cycleCount += cycles;
+			m_cyclesToNextScanline -= cycles;
 		}
 	}
 

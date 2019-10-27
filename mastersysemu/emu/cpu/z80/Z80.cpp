@@ -60,8 +60,11 @@ namespace emu
 				}
 			}
 
-			void Z80::Step()
+			u32 Z80::Step()
 			{
+				//NOP = 4 cycles
+				u32 cycleCount = 4;
+
 				if (m_regs.internal.err == 0)
 				{
 					//Process pending interrupts
@@ -122,7 +125,12 @@ namespace emu
 
 					//Execute instruction
 					opcode.handler(opcode, params, m_regs, m_bus);
+
+					//TODO: cycle counts in table
+					cycleCount = 8;
 				}
+
+				return cycleCount;
 			}
 
 			void Z80::TriggerInterrupt(Interrupts interrupt)

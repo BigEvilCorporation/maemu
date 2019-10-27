@@ -158,9 +158,8 @@ namespace app
 
 		if (m_debuggerState == DebuggerState::Run)
 		{
-			//Update machine
-			//TODO: Instruction clock
-			m_masterSystem.Update(emu::MS_CYCLES_PER_SCANLINE * emu::cpu::vdp::VDP_SCANLINES_PAL);
+			//Tick machine a single frame
+			m_masterSystem.StepFrame();
 			debugAddressUpdated = true;
 
 			if (m_window.HasFocus())
@@ -180,7 +179,7 @@ namespace app
 				//Step if F10
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
 				{
-					m_masterSystem.Update(1);
+					m_masterSystem.StepInstruction(1);
 					debugAddressUpdated = true;
 				}
 

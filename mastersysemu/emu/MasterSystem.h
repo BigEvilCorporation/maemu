@@ -31,7 +31,9 @@ namespace emu
 		void Reset();
 
 		//Processing
-		void Update(int steps);
+		void StepFrame();
+		void StepScanline();
+		void StepInstruction(int steps);
 
 		//Rendering
 		const std::vector<u32>& GetFramebuffer() const;
