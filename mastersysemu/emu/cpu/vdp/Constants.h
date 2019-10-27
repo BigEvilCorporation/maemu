@@ -20,6 +20,7 @@ namespace emu
 			static const int VDP_NUM_REGISTERS = 16;
 
 			//Screen and planes
+			static const int VDP_REG_SCREEN_ENABLE_MASK = 0x40;
 			static const int VDP_SCREEN_WIDTH = 256;
 			static const int VDP_SCREEN_HEIGHT = 192;
 			static const int VDP_SCANLINES_NTSC = 262;

@@ -161,9 +161,11 @@ namespace emu
 				//Get BG colour (from sprite palette)
 				u8 backdropIdx = m_regs[VDP_REG_7_BACKDROP_COLOUR] & 0xF;
 				u8 backdropColour = m_bus.memoryControllerCRAM.ReadMemory(VDP_PALETTE_OFFS_SPRITE + backdropIdx);
-				u32 backdropColourRGBA = 0xFFFF0000; // ColourToRGB[backdropColour];
+				u32 backdropColourRGBA = ColourToRGB[backdropColour];
 
-				if (scanline < VDP_BORDER_TOP || scanline >= (VDP_SCANLINES_PAL - VDP_BORDER_BOTTOM))
+				bool screenActive = (m_regs[VDP_REG_1_MODE_CONTROL_2] & VDP_REG_SCREEN_ENABLE_MASK) != 0;
+
+				if (!screenActive || (scanline < VDP_BORDER_TOP) || (scanline >= (VDP_SCANLINES_PAL - VDP_BORDER_BOTTOM)))
 				{
 					//Just draw BG colour
 					for (int dstx = 0; dstx < VDP_SCREEN_WIDTH; dstx++)
