@@ -24,7 +24,6 @@ namespace emu
 				BTN_RIGHT,
 				BTN_A,
 				BTN_B,
-				BTN_START,
 				BTN_COUNT
 			};
 

@@ -8,13 +8,12 @@ namespace emu
 	{
 		const u8 Joypad::s_emulatorButtonBits[Joypad::BTN_COUNT] =
 		{
-			0x01,
-			0x02,
-			0x04,
-			0x08,
-			0x00,
-			0x10,
-			0x00
+			(1 << 0),	// Up
+			(1 << 1),	// Down
+			(1 << 2),	// Left
+			(1 << 3),	// Right
+			(1 << 4),	// A
+			(1 << 5),	// B
 		};
 
 		Joypad::Joypad(ports::Controller& portController)

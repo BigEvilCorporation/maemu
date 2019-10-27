@@ -16,7 +16,6 @@ struct Settings
 		keyboardMap[emu::peripherals::Joypad::BTN_RIGHT] = ion::input::Keycode::RIGHT;
 		keyboardMap[emu::peripherals::Joypad::BTN_A] = ion::input::Keycode::A;
 		keyboardMap[emu::peripherals::Joypad::BTN_B] = ion::input::Keycode::S;
-		keyboardMap[emu::peripherals::Joypad::BTN_START] = ion::input::Keycode::RETURN;
 
 		gamepadMap[emu::peripherals::Joypad::BTN_UP] = ion::input::GamepadButtons::DPAD_UP;
 		gamepadMap[emu::peripherals::Joypad::BTN_DOWN] = ion::input::GamepadButtons::DPAD_DOWN;
@@ -24,7 +23,6 @@ struct Settings
 		gamepadMap[emu::peripherals::Joypad::BTN_RIGHT] = ion::input::GamepadButtons::DPAD_RIGHT;
 		gamepadMap[emu::peripherals::Joypad::BTN_A] = ion::input::GamepadButtons::BUTTON_X;
 		gamepadMap[emu::peripherals::Joypad::BTN_B] = ion::input::GamepadButtons::BUTTON_A;
-		gamepadMap[emu::peripherals::Joypad::BTN_START] = ion::input::GamepadButtons::START;
 	}
 
 	ion::FixedArray<ion::input::Keycode, emu::peripherals::Joypad::BTN_COUNT> keyboardMap;
