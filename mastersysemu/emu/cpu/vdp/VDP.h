@@ -28,7 +28,7 @@ namespace emu
 				void WriteData(u16 address, u8 value);
 
 				//Timing
-				void BeginScanline(u8 scanline);
+				void BeginScanline(u16 scanline);
 
 				//Peek status flags without clearing
 				u8 PeekStatus();

@@ -3,7 +3,13 @@
 namespace emu
 {
 	//Timing
+	static const int SMS_CYCLES_PER_SECOND_PAL = 3546894;
+	static const int SMS_CYCLES_PER_SECOND_NTSC = 3579545;
+	static const int SMS_CYCLES_PER_FRAME_PAL = 71364;
+	static const int SMS_CYCLES_PER_FRAME_NTSC = 59736;
 	static const int SMS_CYCLES_PER_SCANLINE = 228;
+	static const int SMS_CYCLES_PER_PSG_STEP = 80;
+	static const int SMS_CYCLES_PER_AUDIO_OUT = SMS_CYCLES_PER_SECOND_NTSC / 44100;
 
 	//Address map
 	static const int ADDR_ROM_START = 0x0000;
@@ -31,6 +37,9 @@ namespace emu
 	static const int PORT_VDP_DATA = 0xBE;
 	static const int PORT_VDP_VCOUNTER = 0x7E;
 	static const int PORT_VDP_HCOUNTER = 0x7F;
+
+	//Audio
+	static const int PSG_OUTPUT_BUFFER_SIZE = 1024 * 128;
 
 	//Console
 	static const int SDSC_CONSOLE_WIDTH = 80;

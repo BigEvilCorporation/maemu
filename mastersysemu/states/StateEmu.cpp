@@ -4,6 +4,7 @@
 #include "emu/peripherals/Joypad.h"
 
 #include <ion/core/utils/STL.h>
+#include <ion/engine/Engine.h>
 
 namespace app
 {
@@ -55,8 +56,9 @@ namespace app
 		m_gui->AddWindow(*m_debuggerRAM);
 		m_gui->AddWindow(*m_debuggerVRAM);
 
-		//Setup rendering
+		//Setup rendering and audio
 		SetupRenderer();
+		SetupAudio();
 	}
 
 	void StateEmu::SetupRenderer()
@@ -87,6 +89,12 @@ namespace app
 				m_renderMaterial->SetShader(&shader);
 			});
 #endif
+	}
+
+	void StateEmu::SetupAudio()
+	{
+		//Create voice
+		m_audioVoice = ion::engine.audio.engine->CreateVoice(m_audioSource, false);
 	}
 
 	void StateEmu::OnLeaveState()
@@ -160,6 +168,12 @@ namespace app
 		{
 			//Tick machine a single frame
 			m_masterSystem.StepFrame();
+
+			//Push frame's audio buffer
+			std::vector<emu::cpu::psg::SampleFormat> audioBuffer;
+			m_masterSystem.ConsumeAudioBuffer(audioBuffer, AUDIO_NUM_CHANNELS);
+			m_audioSource.PushBuffer(audioBuffer);
+
 			debugAddressUpdated = true;
 
 			if (m_window.HasFocus())
@@ -167,6 +181,7 @@ namespace app
 				//Break if F10
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
 				{
+					m_audioVoice->Stop();
 					m_debuggerState = DebuggerState::Break;
 					debugAddressUpdated = true;
 				}
@@ -186,6 +201,7 @@ namespace app
 				//Run if F5
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F5))
 				{
+					m_audioVoice->Play();
 					m_debuggerState = DebuggerState::Run;
 					debugAddressUpdated = true;
 				}
@@ -281,5 +297,51 @@ namespace app
 		}
 
 		ion::debug::Log(error.str().c_str());
+	}
+
+	StateEmu::AudioSource::AudioSource()
+		: ion::audio::Source(ion::audio::Source::StreamingFeed)
+	{
+		m_streamDesc = &m_audioStreamDesc;
+		m_audioProducerBufferIdx = 0;
+		m_audioConsumerBufferIdx = 0;
+
+		//Create buffers and fill with silence
+		for (int i = 0; i < AUDIO_NUM_BUFFERS; i++)
+		{
+			m_audioBuffers[i] = new ion::audio::Buffer(AUDIO_BUFFER_LEN_BYTES);
+			m_audioBuffers[i]->Lock();
+			m_audioBuffers[i]->Reserve(AUDIO_BUFFER_LEN_BYTES);
+			m_audioBuffers[i]->Unlock();
+		}
+
+		//Init lead buffers
+		m_audioProducerBufferIdx = AUDIO_NUM_LEAD_BUFFERS;
+	}
+
+	bool StateEmu::AudioSource::OpenStream(OnStreamOpened const& onOpened)
+	{
+		return true;
+	}
+
+	void StateEmu::AudioSource::CloseStream(OnStreamClosed const& onClosed)
+	{
+	};
+
+	void StateEmu::AudioSource::PushBuffer(const std::vector<emu::cpu::psg::SampleFormat>& buffer)
+	{
+		ion::audio::Buffer* writeBuffer = m_audioBuffers[m_audioProducerBufferIdx % AUDIO_NUM_BUFFERS];
+		writeBuffer->Lock();
+		writeBuffer->Reset();
+		writeBuffer->Add((const char*)buffer.data(), buffer.size() * sizeof(emu::cpu::psg::SampleFormat));
+		writeBuffer->Unlock();
+		ion::thread::atomic::Increment(m_audioProducerBufferIdx);
+	}
+
+	void StateEmu::AudioSource::RequestBuffer(ion::audio::SourceCallback& callback)
+	{
+		callback.SubmitBuffer(*m_audioBuffers[m_audioConsumerBufferIdx % AUDIO_NUM_BUFFERS]);
+		ion::thread::atomic::Increment(m_audioConsumerBufferIdx);
+		ion::debug::Assert(m_audioConsumerBufferIdx < m_audioProducerBufferIdx, "StateEmu::AudioSource::RequestBuffer() - Not enough data");
 	}
 }

@@ -8,14 +8,12 @@ namespace emu
 	{
 		namespace psg
 		{
-			typedef u16 SampleFormat;
+			typedef s16 SampleFormat;
 
 			static const int PSG_PORT_1 = 0x7E;
 			static const int PSG_PORT_2 = 0x7F;
 
 			static const int PSG_TONE_CHANNEL_COUNT = 3;
-
-			static const int PSG_OUTPUT_BUFFER_SIZE = 1024 * 8;
 
 			enum Channels
 			{

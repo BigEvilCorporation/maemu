@@ -38,6 +38,9 @@ namespace emu
 		//Rendering
 		const std::vector<u32>& GetFramebuffer() const;
 
+		//Audio
+		void ConsumeAudioBuffer(std::vector<cpu::psg::SampleFormat>& buffer, int numChannels);
+
 		//Input
 		void SetButtonState(peripherals::Joypad::PadIndex joypad, peripherals::Joypad::Button button, bool state);
 
@@ -77,6 +80,10 @@ namespace emu
 		//Ports
 		ports::Controller* m_portController;
 
+		//Audio
+		cpu::psg::SampleFormat* m_audioBuffer;
+		u32 m_audioOutputPtr;
+
 		//Peripherals
 		peripherals::Joypad* m_joypad;
 		debug::SDSCConsole* m_console;
@@ -84,6 +91,8 @@ namespace emu
 		//Timing
 		s64 m_cycleCount;
 		s64 m_cyclesToNextScanline;
+		s64 m_cyclesToNextPSGStep;
+		s64 m_cyclesToNextAudioOut;
 		u16 m_scanline;
 
 		//Rendering

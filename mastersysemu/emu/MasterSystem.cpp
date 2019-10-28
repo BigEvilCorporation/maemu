@@ -24,8 +24,8 @@ namespace emu
 		m_console = nullptr;
 		m_romSize = 0;
 		m_cycleCount = 0;
-		m_cyclesToNextScanline = 0;
 		m_scanline = 0;
+		m_audioOutputPtr = 0;
 
 		//Construct the system
 		BuildSystem();
@@ -68,6 +68,10 @@ namespace emu
 		//Initialise framebuffer
 		//TODO: PAL vs. NTSC
 		m_frameBuffer.resize(cpu::vdp::VDP_SCREEN_WIDTH * cpu::vdp::VDP_SCANLINES_PAL);
+
+		//Alloc and initialise audio buffer
+		m_audioBuffer = new cpu::psg::SampleFormat[PSG_OUTPUT_BUFFER_SIZE];
+		ion::memory::MemSet(m_audioBuffer, 0, sizeof(cpu::psg::SampleFormat) * PSG_OUTPUT_BUFFER_SIZE);
 	}
 
 	bool MasterSystem::LoadROM(const std::string& filename)
@@ -118,7 +122,10 @@ namespace emu
 
 		//Reset counters
 		m_cycleCount = 0;
+		m_scanline = 0;
 		m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
+		m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
+		m_cyclesToNextAudioOut = SMS_CYCLES_PER_AUDIO_OUT;
 
 		//TODO: Clear memory
 	}
@@ -133,12 +140,32 @@ namespace emu
 
 	void MasterSystem::StepScanline()
 	{
-		bool running = true;
+		int scanline = m_scanline;
 
-		while (running)
+		while (scanline == m_scanline)
 		{
 			//Step CPUs
 			StepInstruction(1);
+		}
+	}
+
+	void MasterSystem::StepInstruction(int steps)
+	{
+		//Tick CPU
+		for (int i = 0; i < steps; i++)
+		{
+			u32 cycles = m_Z80->Step();
+
+			m_cycleCount += cycles;
+			m_cyclesToNextScanline -= cycles;
+			m_cyclesToNextPSGStep -= cycles;
+			m_cyclesToNextAudioOut -= cycles;
+
+			if (m_cyclesToNextPSGStep <= 0)
+			{
+				m_PSG->Step();
+				m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
+			}
 
 			if (m_cyclesToNextScanline <= 0)
 			{
@@ -160,22 +187,17 @@ namespace emu
 				}
 
 				m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
-
-				running = false;
 			}
-		}
-	}
 
-	void MasterSystem::StepInstruction(int steps)
-	{
-		//Tick CPU
-		for (int i = 0; i < steps; i++)
-		{
-			u32 cycles = m_Z80->Step();
-			m_PSG->Step();
+			if (m_cyclesToNextAudioOut <= 0)
+			{
+				if (m_audioOutputPtr < PSG_OUTPUT_BUFFER_SIZE)
+				{
+					m_audioBuffer[m_audioOutputPtr++] = m_PSG->GetOutputSample();
+				}
 
-			m_cycleCount += cycles;
-			m_cyclesToNextScanline -= cycles;
+				m_cyclesToNextAudioOut = SMS_CYCLES_PER_AUDIO_OUT;
+			}
 		}
 	}
 
@@ -188,6 +210,23 @@ namespace emu
 	{
 		return m_frameBuffer;
 	}
+
+#pragma optimize("",off)
+	void MasterSystem::ConsumeAudioBuffer(std::vector<cpu::psg::SampleFormat>& buffer, int numChannels)
+	{
+		buffer.resize(m_audioOutputPtr * numChannels);
+
+		for (int i = 0; i < m_audioOutputPtr; i++)
+		{
+			for (int j = 0; j < numChannels; j++)
+			{
+				buffer[(i * numChannels) + j] = m_audioBuffer[i];
+			}
+		}
+
+		m_audioOutputPtr = 0;
+	}
+#pragma optimize("",on)
 
 	const debug::SDSCConsole& MasterSystem::GetConsole() const
 	{

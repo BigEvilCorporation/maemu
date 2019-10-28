@@ -10,6 +10,27 @@ namespace emu
 		namespace psg
 		{
 #pragma optimize("",off)
+
+			const s16 PSG::s_attenuationTable[] =
+			{
+				32767,
+				26028,
+				20675,
+				16422,
+				13045,
+				10362,
+				8231,
+				6568,
+				5193,
+				4125,
+				3277,
+				2603,
+				2067,
+				1642,
+				1304,
+				0
+			};
+
 			PSG::PSG(ports::Controller& ports)
 			{
 				ports.AddHandler(PSG_PORT_1, nullptr, std::bind(&PSG::WriteReg, this, std::placeholders::_1, std::placeholders::_2));
@@ -28,41 +49,30 @@ namespace emu
 
 				m_latchedChannel = 0;
 				m_latchedRegister = 0;
-				m_outputBufferPtr = 0;
-
-				ion::memory::MemSet(m_outputBuffer, 0, PSG_OUTPUT_BUFFER_SIZE * sizeof(SampleFormat));
+				m_outputSample = 0;
 			}
 
 			void PSG::Step()
 			{
-				if (m_outputBufferPtr < PSG_OUTPUT_BUFFER_SIZE)
-				{
-					u8 outputByte = 0;
+				m_outputSample = 0;
 
-					for (int i = 0; i < PSG_TONE_CHANNEL_COUNT; i++)
+				for (int i = 0; i < PSG_TONE_CHANNEL_COUNT; i++)
+				{
+					//If channel enabled
+					if (m_timers[i] > 0)
 					{
-						//If channel enabled
-						if (m_timers[i] > 0)
+						//Decrement channel counter
+						if (--m_timers[i] == 0)
 						{
-							//Decrement channel counter
-							if (--m_timers[i] == 0)
-							{
-								//Depleted, reset timer and revert square wave polarity
-								m_timers[i] = m_registers[i][PSG_CHANNEL_REG_DATA];
-								m_polarities[i] *= -1;
-							}
-
-							//Mix channel output byte
-							outputByte += (m_polarities[i] * (256 - m_registers[i][PSG_CHANNEL_REG_ATTENUATION])) / PSG_CHANNEL_COUNT;
+							//Depleted, reset timer and revert square wave polarity
+							m_timers[i] = m_registers[i][PSG_CHANNEL_REG_DATA];
+							m_polarities[i] *= -1;
 						}
-					}
 
-					static const float outputScalar = (float)std::numeric_limits<SampleFormat>::max() / 256.0f;
-					m_outputBuffer[m_outputBufferPtr++] = (SampleFormat)(outputByte * outputScalar);
-				}
-				else
-				{
-					m_outputBufferPtr = 0;
+						//Mix channel output byte
+						static const float outputScalar = (float)std::numeric_limits<SampleFormat>::max() / 256.0f;
+						m_outputSample += ((m_polarities[i] * s_attenuationTable[m_registers[i][PSG_CHANNEL_REG_ATTENUATION]]) / PSG_CHANNEL_COUNT) * outputScalar;
+					}
 				}
 			}
 
@@ -90,12 +100,9 @@ namespace emu
 				}
 			}
 
-			void PSG::GetOutput(std::vector<SampleFormat>& data)
+			SampleFormat PSG::GetOutputSample()
 			{
-				data.resize(m_outputBufferPtr);
-				ion::memory::MemCopy(data.data(), m_outputBuffer, m_outputBufferPtr * sizeof(SampleFormat));
-				ion::memory::MemSet(m_outputBuffer, 0, PSG_OUTPUT_BUFFER_SIZE * sizeof(SampleFormat));
-				m_outputBufferPtr = 0;
+				return m_outputSample;
 			}
 #pragma optimize("",on)
 		}

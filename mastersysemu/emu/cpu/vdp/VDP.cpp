@@ -135,7 +135,7 @@ namespace emu
 				m_hiByteLatch = false;
 			}
 
-			void VDP::BeginScanline(u8 scanline)
+			void VDP::BeginScanline(u16 scanline)
 			{
 				m_counterV = scanline;
 

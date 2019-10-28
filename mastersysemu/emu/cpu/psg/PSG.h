@@ -19,17 +19,16 @@ namespace emu
 				void Step();
 				void WriteReg(u16 address, u8 value);
 
-				void GetOutput(std::vector<SampleFormat>& data);
+				SampleFormat GetOutputSample();
 
 			private:
+				static const s16 s_attenuationTable[];
 				u8 m_registers[PSG_CHANNEL_COUNT][PSG_CHANNEL_REG_COUNT];
 				u8 m_timers[PSG_CHANNEL_COUNT];
 				s8 m_polarities[PSG_CHANNEL_COUNT];
 				u8 m_latchedChannel;
 				u8 m_latchedRegister;
-
-				SampleFormat m_outputBuffer[PSG_OUTPUT_BUFFER_SIZE];
-				u32 m_outputBufferPtr;
+				SampleFormat m_outputSample;
 			};
 		}
 	}

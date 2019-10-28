@@ -32,9 +32,11 @@ local SRC =
 	debugger/WindowMemory.h
 	states/StateEmu.cpp
 	states/StateEmu.h
+	Constants.h
 	MasterSysEmu.cpp
 	MasterSysEmu.h
 	main.cpp
+	Settings.h
 	;
 
 # No TTY console in release builds
