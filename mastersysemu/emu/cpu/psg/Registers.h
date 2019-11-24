@@ -2,6 +2,8 @@
 
 #include <ion/core/Types.h>
 
+#include "Constants.h"
+
 namespace emu
 {
 	namespace cpu
@@ -14,6 +16,11 @@ namespace emu
 				PSG_CHANNEL_REG_ATTENUATION,
 
 				PSG_CHANNEL_REG_COUNT
+			};
+
+			struct Registers
+			{
+				u8 channels[PSG_CHANNEL_COUNT][PSG_CHANNEL_REG_COUNT];
 			};
 
 			struct RegisterWriteByte

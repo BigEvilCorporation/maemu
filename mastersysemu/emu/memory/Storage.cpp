@@ -35,7 +35,9 @@ namespace emu
 
 		void Storage::WriteError(u16 address, u8 value)
 		{
+#if defined ION_BUILD_DEBUG
 			ion::debug::log << "Write to read-only storage: " << address << " " << value << ion::debug::end;
+#endif
 		}
 	}
 }

@@ -20,6 +20,8 @@ SubInclude bigevilcorp mastersysemu emu : emu ;
 C.LinkLibraries mastersysemu : emu ;
 
 local SRC =
+	debugger/WindowAudio.cpp
+	debugger/WindowAudio.h
 	debugger/WindowConsole.cpp
 	debugger/WindowConsole.h
 	debugger/WindowDisassembly.cpp
@@ -32,6 +34,8 @@ local SRC =
 	debugger/WindowMemory.h
 	states/StateEmu.cpp
 	states/StateEmu.h
+	Audio.cpp
+	Audio.h
 	Constants.h
 	MasterSysEmu.cpp
 	MasterSysEmu.h

@@ -40,6 +40,7 @@ namespace app
 		m_masterSystem.Disassemble(m_disassembly);
 
 		//Create debugger
+		m_debuggerAudio = new debug::WindowAudio(*m_gui, m_audioSource, m_masterSystem.GetRegistersPSG(), ion::Vector2i(20, 20), ion::Vector2i(200, 400));
 		m_debuggerRegsZ80 = new debug::WindowRegsZ80(*m_gui, m_masterSystem.GetRegistersZ80(), ion::Vector2i(20, 20), ion::Vector2i(200, 400));
 		m_debuggerRegsVDP = new debug::WindowRegsVDP(*m_gui, m_masterSystem.GetRegistersVDP(), ion::Vector2i(230, 20), ion::Vector2i(200, 400));
 		m_debuggerROM = new debug::WindowMemory("ROM", *m_gui, m_masterSystem.GetROM(), ion::Vector2i(450, 10), ion::Vector2i(400, 195));
@@ -48,13 +49,14 @@ namespace app
 		m_debuggerConsole = new debug::WindowConsole(*m_gui, m_masterSystem.GetConsole().GetBuffer(), ion::Vector2i(440, 230), ion::Vector2i(400, 195));
 		m_debuggerDisassembly = new debug::WindowDisassembly(*m_gui, m_disassembly, ion::Vector2i(20, 430), ion::Vector2i(850, 300));
 
-		m_gui->AddWindow(*m_debuggerConsole);
-		m_gui->AddWindow(*m_debuggerDisassembly);
+		m_gui->AddWindow(*m_debuggerAudio);
+		//m_gui->AddWindow(*m_debuggerConsole);
+		//m_gui->AddWindow(*m_debuggerDisassembly);
 		m_gui->AddWindow(*m_debuggerRegsZ80);
-		m_gui->AddWindow(*m_debuggerRegsVDP);
-		m_gui->AddWindow(*m_debuggerROM);
-		m_gui->AddWindow(*m_debuggerRAM);
-		m_gui->AddWindow(*m_debuggerVRAM);
+		//m_gui->AddWindow(*m_debuggerRegsVDP);
+		//m_gui->AddWindow(*m_debuggerROM);
+		//m_gui->AddWindow(*m_debuggerRAM);
+		//m_gui->AddWindow(*m_debuggerVRAM);
 
 		//Setup rendering and audio
 		SetupRenderer();
@@ -194,7 +196,7 @@ namespace app
 				//Step if F10
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
 				{
-					m_masterSystem.StepInstruction(1);
+					m_masterSystem.StepInstruction();
 					debugAddressUpdated = true;
 				}
 
@@ -297,51 +299,5 @@ namespace app
 		}
 
 		ion::debug::Log(error.str().c_str());
-	}
-
-	StateEmu::AudioSource::AudioSource()
-		: ion::audio::Source(ion::audio::Source::StreamingFeed)
-	{
-		m_streamDesc = &m_audioStreamDesc;
-		m_audioProducerBufferIdx = 0;
-		m_audioConsumerBufferIdx = 0;
-
-		//Create buffers and fill with silence
-		for (int i = 0; i < AUDIO_NUM_BUFFERS; i++)
-		{
-			m_audioBuffers[i] = new ion::audio::Buffer(AUDIO_BUFFER_LEN_BYTES);
-			m_audioBuffers[i]->Lock();
-			m_audioBuffers[i]->Reserve(AUDIO_BUFFER_LEN_BYTES);
-			m_audioBuffers[i]->Unlock();
-		}
-
-		//Init lead buffers
-		m_audioProducerBufferIdx = AUDIO_NUM_LEAD_BUFFERS;
-	}
-
-	bool StateEmu::AudioSource::OpenStream(OnStreamOpened const& onOpened)
-	{
-		return true;
-	}
-
-	void StateEmu::AudioSource::CloseStream(OnStreamClosed const& onClosed)
-	{
-	};
-
-	void StateEmu::AudioSource::PushBuffer(const std::vector<emu::cpu::psg::SampleFormat>& buffer)
-	{
-		ion::audio::Buffer* writeBuffer = m_audioBuffers[m_audioProducerBufferIdx % AUDIO_NUM_BUFFERS];
-		writeBuffer->Lock();
-		writeBuffer->Reset();
-		writeBuffer->Add((const char*)buffer.data(), buffer.size() * sizeof(emu::cpu::psg::SampleFormat));
-		writeBuffer->Unlock();
-		ion::thread::atomic::Increment(m_audioProducerBufferIdx);
-	}
-
-	void StateEmu::AudioSource::RequestBuffer(ion::audio::SourceCallback& callback)
-	{
-		callback.SubmitBuffer(*m_audioBuffers[m_audioConsumerBufferIdx % AUDIO_NUM_BUFFERS]);
-		ion::thread::atomic::Increment(m_audioConsumerBufferIdx);
-		ion::debug::Assert(m_audioConsumerBufferIdx < m_audioProducerBufferIdx, "StateEmu::AudioSource::RequestBuffer() - Not enough data");
 	}
 }

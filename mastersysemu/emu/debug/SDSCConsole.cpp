@@ -17,8 +17,8 @@ namespace emu
 			m_cursorY = 0;
 
 			//Connect ports
-			portController.AddHandler(PORT_SDSC_CTRL, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
-			portController.AddHandler(PORT_SDSC_DATA, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteData, this, std::placeholders::_1, std::placeholders::_2));
+			portController.AddHandler(SMS_PORT_SMS_SDSC_CTRL, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
+			portController.AddHandler(SMS_PORT_SMS_SDSC_DATA, std::bind(&SDSCConsole::Read, this, std::placeholders::_1), std::bind(&SDSCConsole::WriteData, this, std::placeholders::_1, std::placeholders::_2));
 
 			Clear();
 		}
@@ -26,7 +26,7 @@ namespace emu
 		void SDSCConsole::Clear()
 		{
 			m_buffer.clear();
-			//m_buffer.resize(SDSC_CONSOLE_WIDTH * SDSC_CONSOLE_HEIGHT);
+			//m_buffer.resize(SMS_SDSC_CONSOLE_WIDTH * SMS_SDSC_CONSOLE_HEIGHT);
 			//
 			////Fill with spaces, rather than 0
 			//for (int i = 0; i < m_buffer.size(); i++)
@@ -73,7 +73,7 @@ namespace emu
 						case CTRL_SET_ROW:
 						{
 							//Value is row
-							m_cursorY = ion::maths::Clamp(value, 0, SDSC_CONSOLE_HEIGHT);
+							m_cursorY = ion::maths::Clamp(value, (u8)0, (u8)SMS_SDSC_CONSOLE_HEIGHT);
 
 							//Expecting col value next
 							value = CTRL_SET_COL;
@@ -81,7 +81,7 @@ namespace emu
 						case CTRL_SET_COL:
 						{
 							//Value is col
-							m_cursorX = ion::maths::Clamp(value, 0, SDSC_CONSOLE_WIDTH);
+							m_cursorX = ion::maths::Clamp(value, (u8)0, (u8)SMS_SDSC_CONSOLE_WIDTH);
 
 							//Done setting row/col
 							value = CTRL_NONE;
@@ -100,27 +100,27 @@ namespace emu
 			/*
 			if (value == '\n')
 			{
-				m_cursorX = SDSC_CONSOLE_WIDTH;
+				m_cursorX = SMS_SDSC_CONSOLE_WIDTH;
 			}
 			else
 			{
 				//Write to buffer
-				m_buffer[(m_cursorY * SDSC_CONSOLE_WIDTH) + m_cursorX] = value;
+				m_buffer[(m_cursorY * SMS_SDSC_CONSOLE_WIDTH) + m_cursorX] = value;
 
 				//Next X
 				m_cursorX++;
 			}
 
-			if (m_cursorX == SDSC_CONSOLE_WIDTH)
+			if (m_cursorX == SMS_SDSC_CONSOLE_WIDTH)
 			{
 				//Next Y
 				m_cursorX = 0;
 				m_cursorY++;
 
-				if (m_cursorY == SDSC_CONSOLE_HEIGHT)
+				if (m_cursorY == SMS_SDSC_CONSOLE_HEIGHT)
 				{
 					//TODO: Scroll up
-					m_cursorY = SDSC_CONSOLE_HEIGHT - 1;
+					m_cursorY = SMS_SDSC_CONSOLE_HEIGHT - 1;
 				}
 			}
 			*/

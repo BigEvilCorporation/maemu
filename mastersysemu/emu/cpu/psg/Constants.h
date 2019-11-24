@@ -10,8 +10,8 @@ namespace emu
 		{
 			typedef s16 SampleFormat;
 
-			static const int PSG_PORT_1 = 0x7E;
-			static const int PSG_PORT_2 = 0x7F;
+			static const int PSG_SMS_PORT_1 = 0x7E;
+			static const int PSG_SMS_PORT_2 = 0x7F;
 
 			static const int PSG_TONE_CHANNEL_COUNT = 3;
 

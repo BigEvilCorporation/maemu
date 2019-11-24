@@ -9,6 +9,7 @@
 #include "cpu/vdp/Bus.h"
 #include "cpu/vdp/Registers.h"
 #include "cpu/psg/PSG.h"
+#include "cpu/psg/Registers.h"
 #include "memory/Mapper.h"
 #include "memory/MemoryController.h"
 #include "memory/Storage.h"
@@ -33,7 +34,8 @@ namespace emu
 		//Processing
 		void StepFrame();
 		void StepScanline();
-		void StepInstruction(int steps);
+		void StepCycles(u32 cycles);
+		void StepInstruction();
 
 		//Rendering
 		const std::vector<u32>& GetFramebuffer() const;
@@ -51,12 +53,14 @@ namespace emu
 		const debug::SDSCConsole& GetConsole() const;
 		const cpu::z80::Registers& GetRegistersZ80() const;
 		const cpu::vdp::Registers& GetRegistersVDP() const;
+		const cpu::psg::Registers& GetRegistersPSG() const;
 		memory::Storage& GetRAM();
 		memory::Mapper& GetROM();
 		memory::Storage& GetVRAM();
 
 	private:
 		void BuildSystem();
+		void ProcessAudioVideo(u32 cycles);
 
 		//Processors
 		cpu::z80::Z80* m_Z80;
@@ -89,10 +93,10 @@ namespace emu
 		debug::SDSCConsole* m_console;
 
 		//Timing
-		s64 m_cycleCount;
-		s64 m_cyclesToNextScanline;
-		s64 m_cyclesToNextPSGStep;
-		s64 m_cyclesToNextAudioOut;
+		u32 m_cycleCount;
+		int m_cyclesToNextScanline;
+		int m_cyclesToNextPSGStep;
+		int m_cyclesToNextDAC;
 		u16 m_scanline;
 
 		//Rendering

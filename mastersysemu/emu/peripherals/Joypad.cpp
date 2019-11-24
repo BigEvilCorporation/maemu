@@ -18,9 +18,9 @@ namespace emu
 
 		Joypad::Joypad(ports::Controller& portController)
 		{
-			portController.AddHandler(PORT_IO_CTRL, std::bind(&Joypad::ReadControl, this, std::placeholders::_1), std::bind(&Joypad::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
-			portController.AddHandler(PORT_IO_PORT1, std::bind(&Joypad::ReadPort1, this, std::placeholders::_1), std::bind(&Joypad::WritePort1, this, std::placeholders::_1, std::placeholders::_2));
-			portController.AddHandler(PORT_IO_PORT2, std::bind(&Joypad::ReadPort2, this, std::placeholders::_1), std::bind(&Joypad::WritePort2, this, std::placeholders::_1, std::placeholders::_2));
+			portController.AddHandler(SMS_PORT_IO_CTRL, std::bind(&Joypad::ReadControl, this, std::placeholders::_1), std::bind(&Joypad::WriteControl, this, std::placeholders::_1, std::placeholders::_2));
+			portController.AddHandler(SMS_PORT_IO_PORT1, std::bind(&Joypad::ReadPort1, this, std::placeholders::_1), std::bind(&Joypad::WritePort1, this, std::placeholders::_1, std::placeholders::_2));
+			portController.AddHandler(SMS_PORT_IO_PORT2, std::bind(&Joypad::ReadPort2, this, std::placeholders::_1), std::bind(&Joypad::WritePort2, this, std::placeholders::_1, std::placeholders::_2));
 
 			for (int i = 0; i < JOYPAD_COUNT; i++)
 			{

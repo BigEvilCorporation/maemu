@@ -54,7 +54,7 @@ namespace emu
 				m_regs.ix = ion::maths::RandInt();
 				m_regs.iy = ion::maths::RandInt();
 
-				for (int i = ADDR_RAM_START; i < ADDR_RAM_END; i++)
+				for (int i = SMS_ADDR_RAM_START; i < SMS_ADDR_RAM_END; i++)
 				{
 					m_bus.memoryController.WriteMemory(i, ion::maths::RandInt());
 				}

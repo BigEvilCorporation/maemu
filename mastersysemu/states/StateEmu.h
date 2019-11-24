@@ -10,12 +10,8 @@
 #include <ion/renderer/Material.h>
 #include <ion/renderer/Primitive.h>
 #include <ion/renderer/TexCoord.h>
-#include <ion/audio/Engine.h>
-#include <ion/audio/Buffer.h>
-#include <ion/audio/Source.h>
-#include <ion/audio/Voice.h>
-#include <ion/audio/StreamDesc.h>
 
+#include "debugger/WindowAudio.h"
 #include "debugger/WindowConsole.h"
 #include "debugger/WindowDisassembly.h"
 #include "debugger/WindowRegsZ80.h"
@@ -25,6 +21,7 @@
 #include "emu/MasterSystem.h"
 #include "Settings.h"
 #include "Constants.h"
+#include "Audio.h"
 
 namespace app
 {
@@ -48,38 +45,6 @@ namespace app
 			Run
 		};
 
-		class AudioStreamDesc : public ion::audio::StreamDesc
-		{
-		public:
-			virtual ion::audio::DataFormat GetEncodedFormat() const { return ion::audio::PCM16; }
-			virtual ion::audio::DataFormat GetDecodedFormat() const { return ion::audio::PCM16; }
-
-			virtual u32 GetNumChannels() const { return AUDIO_NUM_CHANNELS; }
-			virtual u32 GetSampleRate() const { return AUDIO_SAMPLE_RATE_HZ; }
-			virtual u32 GetBitsPerSample() const { return AUDIO_BUFFER_FORMAT_SIZE * 8; }
-			virtual u32 GetBlockSize() const { return (GetNumChannels() * GetBitsPerSample()) / 8; }
-			virtual u32 GetEncodedSizeBytes() const { return AUDIO_BUFFER_LEN_BYTES; }
-			virtual u32 GetDecodedSizeBytes() const { return AUDIO_BUFFER_LEN_BYTES; }
-			virtual u32 GetSizeSamples() const { return AUDIO_BUFFER_LEN_SAMPLES; }
-		};
-
-		class AudioSource : public ion::audio::Source
-		{
-		public:
-			AudioSource();
-			virtual bool OpenStream(OnStreamOpened const& onOpened);
-			virtual void CloseStream(OnStreamClosed const& onClosed);
-			virtual void RequestBuffer(ion::audio::SourceCallback& callback);
-
-			void PushBuffer(const std::vector<emu::cpu::psg::SampleFormat>& buffer);
-
-		private:
-			u32 m_audioProducerBufferIdx;
-			u32 m_audioConsumerBufferIdx;
-			ion::audio::Buffer* m_audioBuffers[AUDIO_NUM_BUFFERS];
-			AudioStreamDesc m_audioStreamDesc;
-		};
-
 		void SetupRenderer();
 		void SetupAudio();
 		void DumpError();
@@ -87,6 +52,7 @@ namespace app
 		//UI
 		ion::gui::GUI* m_gui;
 		ion::render::Window& m_window;
+		debug::WindowAudio* m_debuggerAudio;
 		debug::WindowConsole* m_debuggerConsole;
 		debug::WindowDisassembly* m_debuggerDisassembly;
 		debug::WindowRegsZ80* m_debuggerRegsZ80;

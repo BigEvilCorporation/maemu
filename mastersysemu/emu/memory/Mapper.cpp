@@ -11,13 +11,13 @@ namespace emu
 	{
 		Mapper::Mapper(Controller& controller)
 		{
-			controller.AddHandler(0, MAPPER_START_ADDR - 1, std::bind(&Mapper::ReadVectors, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
-			controller.AddHandler((MAPPER_BANK_SIZE * 0), (MAPPER_BANK_SIZE * 1) - 1, std::bind(&Mapper::ReadBank0, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
-			controller.AddHandler((MAPPER_BANK_SIZE * 1), (MAPPER_BANK_SIZE * 2) - 1, std::bind(&Mapper::ReadBank1, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
-			controller.AddHandler((MAPPER_BANK_SIZE * 2), (MAPPER_BANK_SIZE * 3) - 1, std::bind(&Mapper::ReadBank2, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
-			controller.AddHandler(MAPPER_REG_STATE, MAPPER_REG_BANK2, std::bind(&Mapper::ReadRegister, this, std::placeholders::_1), std::bind(&Mapper::WriteRegister, this, std::placeholders::_1, std::placeholders::_2));
+			controller.AddHandler(0, SMS_MAPPER_START_ADDR - 1, std::bind(&Mapper::ReadVectors, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
+			controller.AddHandler((SMS_MAPPER_BANK_SIZE * 0), (SMS_MAPPER_BANK_SIZE * 1) - 1, std::bind(&Mapper::ReadBank0, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
+			controller.AddHandler((SMS_MAPPER_BANK_SIZE * 1), (SMS_MAPPER_BANK_SIZE * 2) - 1, std::bind(&Mapper::ReadBank1, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
+			controller.AddHandler((SMS_MAPPER_BANK_SIZE * 2), (SMS_MAPPER_BANK_SIZE * 3) - 1, std::bind(&Mapper::ReadBank2, this, std::placeholders::_1), std::bind(&Mapper::WriteError, this, std::placeholders::_1, std::placeholders::_2));
+			controller.AddHandler(SMS_MAPPER_REG_STATE, SMS_MAPPER_REG_BANK2, std::bind(&Mapper::ReadRegister, this, std::placeholders::_1), std::bind(&Mapper::WriteRegister, this, std::placeholders::_1, std::placeholders::_2));
 
-			for (int i = 0; i < MAPPER_NUM_REGS; i++)
+			for (int i = 0; i < SMS_MAPPER_NUM_REGS; i++)
 			{
 				m_registers[i] = 0;
 			}
@@ -29,12 +29,12 @@ namespace emu
 			ion::memory::MemCopy(m_rom.data(), data, size);
 
 			//Map default banks
-			if(size >= MAPPER_BANK_SIZE * 0)
-				m_mappedBank0 = &m_rom[MAPPER_BANK_SIZE * 0];
-			if (size >= MAPPER_BANK_SIZE * 1)
-				m_mappedBank1 = &m_rom[MAPPER_BANK_SIZE * 1];
-			if (size >= MAPPER_BANK_SIZE * 2)
-				m_mappedBank2 = &m_rom[MAPPER_BANK_SIZE * 2];
+			if(size >= SMS_MAPPER_BANK_SIZE * 0)
+				m_mappedBank0 = &m_rom[SMS_MAPPER_BANK_SIZE * 0];
+			if (size >= SMS_MAPPER_BANK_SIZE * 1)
+				m_mappedBank1 = &m_rom[SMS_MAPPER_BANK_SIZE * 1];
+			if (size >= SMS_MAPPER_BANK_SIZE * 2)
+				m_mappedBank2 = &m_rom[SMS_MAPPER_BANK_SIZE * 2];
 		}
 
 		u8 Mapper::ReadVectors(u16 address)
@@ -66,18 +66,18 @@ namespace emu
 		{
 			m_registers[address] = value;
 
-			u16 reg = address + MAPPER_REG_STATE;
+			u16 reg = address + SMS_MAPPER_REG_STATE;
 
 			switch (reg)
 			{
-			case MAPPER_REG_BANK0:
-				m_mappedBank0 = &m_rom[value * MAPPER_BANK_SIZE];
+			case SMS_MAPPER_REG_BANK0:
+				m_mappedBank0 = &m_rom[value * SMS_MAPPER_BANK_SIZE];
 				break;
-			case MAPPER_REG_BANK1:
-				m_mappedBank1 = &m_rom[value * MAPPER_BANK_SIZE];
+			case SMS_MAPPER_REG_BANK1:
+				m_mappedBank1 = &m_rom[value * SMS_MAPPER_BANK_SIZE];
 				break;
-			case MAPPER_REG_BANK2:
-				m_mappedBank2 = &m_rom[value * MAPPER_BANK_SIZE];
+			case SMS_MAPPER_REG_BANK2:
+				m_mappedBank2 = &m_rom[value * SMS_MAPPER_BANK_SIZE];
 				break;
 			default:
 				break;

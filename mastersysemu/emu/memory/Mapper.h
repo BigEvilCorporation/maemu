@@ -35,7 +35,7 @@ namespace emu
 			u8* m_mappedBank0;
 			u8* m_mappedBank1;
 			u8* m_mappedBank2;
-			u8 m_registers[MAPPER_NUM_REGS];
+			u8 m_registers[SMS_MAPPER_NUM_REGS];
 		};
 	}
 }

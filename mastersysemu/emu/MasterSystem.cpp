@@ -41,7 +41,7 @@ namespace emu
 		m_memoryControllerVRAM = new memory::Controller();
 		m_memoryControllerCRAM = new memory::Controller();
 		m_rom = new memory::Mapper(*m_memoryControllerZ80);
-		m_ram = new memory::Storage(ADDR_RAM_START, ADDR_RAM_END, *m_memoryControllerZ80);
+		m_ram = new memory::Storage(SMS_ADDR_RAM_START, SMS_ADDR_RAM_END, *m_memoryControllerZ80);
 		m_vram = new memory::Storage(0, cpu::vdp::VDP_VRAM_SIZE, *m_memoryControllerVRAM);
 		m_cram = new memory::Storage(0, cpu::vdp::VDP_CRAM_SIZE, *m_memoryControllerCRAM);
 
@@ -70,8 +70,8 @@ namespace emu
 		m_frameBuffer.resize(cpu::vdp::VDP_SCREEN_WIDTH * cpu::vdp::VDP_SCANLINES_PAL);
 
 		//Alloc and initialise audio buffer
-		m_audioBuffer = new cpu::psg::SampleFormat[PSG_OUTPUT_BUFFER_SIZE];
-		ion::memory::MemSet(m_audioBuffer, 0, sizeof(cpu::psg::SampleFormat) * PSG_OUTPUT_BUFFER_SIZE);
+		m_audioBuffer = new cpu::psg::SampleFormat[SMS_PSG_OUTPUT_BUFFER_SIZE];
+		ion::memory::MemSet(m_audioBuffer, 0, sizeof(cpu::psg::SampleFormat) * SMS_PSG_OUTPUT_BUFFER_SIZE);
 	}
 
 	bool MasterSystem::LoadROM(const std::string& filename)
@@ -89,8 +89,6 @@ namespace emu
 
 			if (file.Read(rom, m_romSize) == m_romSize)
 			{
-				//TODO: Pre-compile opcodes
-
 				//Write to ROM space
 				m_rom->Initialise(rom, m_romSize);
 				success = true;
@@ -125,9 +123,7 @@ namespace emu
 		m_scanline = 0;
 		m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
 		m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
-		m_cyclesToNextAudioOut = SMS_CYCLES_PER_AUDIO_OUT;
-
-		//TODO: Clear memory
+		m_cyclesToNextDAC = SMS_CYCLES_PER_AUDIO_OUT;
 	}
 
 	void MasterSystem::StepFrame()
@@ -144,60 +140,78 @@ namespace emu
 
 		while (scanline == m_scanline)
 		{
-			//Step CPUs
-			StepInstruction(1);
+			//Step approx. one scanline's worth of CPU cycles
+			StepCycles(SMS_CYCLES_PER_SCANLINE);
 		}
 	}
 
-	void MasterSystem::StepInstruction(int steps)
+	void MasterSystem::StepInstruction()
 	{
-		//Tick CPU
-		for (int i = 0; i < steps; i++)
+		u32 cyclesExecuted = m_Z80->Step();
+		m_cycleCount += cyclesExecuted;
+		ProcessAudioVideo(cyclesExecuted);
+	}
+
+	void MasterSystem::StepCycles(u32 cycles)
+	{
+		int cyclesRemaining = (int)cycles;
+		while(cyclesRemaining > 0)
 		{
-			u32 cycles = m_Z80->Step();
+			u32 cyclesExecuted = m_Z80->Step();
 
-			m_cycleCount += cycles;
-			m_cyclesToNextScanline -= cycles;
-			m_cyclesToNextPSGStep -= cycles;
-			m_cyclesToNextAudioOut -= cycles;
+			m_cycleCount += cyclesExecuted;
+			cyclesRemaining -= cyclesExecuted;
 
-			if (m_cyclesToNextPSGStep <= 0)
+			ProcessAudioVideo(cyclesExecuted);
+		}
+	}
+
+	void MasterSystem::ProcessAudioVideo(u32 cycles)
+	{
+		m_cyclesToNextScanline -= cycles;
+		m_cyclesToNextPSGStep -= cycles;
+		m_cyclesToNextDAC -= cycles;
+
+		if (m_cyclesToNextPSGStep <= 0)
+		{
+			m_PSG->Step();
+			m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
+		}
+
+		if (m_cyclesToNextScanline <= 0)
+		{
+			//Begin scanline (sets VINT if 0)
+			m_VDP->BeginScanline(m_scanline);
+
+			//TODO: VDP should interrupt via bus
+			if (m_VDP->PeekStatus() & cpu::vdp::VDP_STATUS_VBLANK)
 			{
-				m_PSG->Step();
-				m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
+				m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
 			}
 
-			if (m_cyclesToNextScanline <= 0)
+			m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
+			m_scanline++;
+
+			if (m_scanline >= cpu::vdp::VDP_SCANLINES_PAL)
 			{
-				//Begin scanline (sets VINT if 0)
-				m_VDP->BeginScanline(m_scanline);
-
-				//TODO: VDP should interrupt via bus
-				if (m_VDP->PeekStatus() & cpu::vdp::VDP_STATUS_VBLANK)
-				{
-					m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
-				}
-
-				m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
-				m_scanline++;
-
-				if (m_scanline >= cpu::vdp::VDP_SCANLINES_PAL)
-				{
-					m_scanline = 0;
-				}
-
-				m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
+				m_scanline = 0;
 			}
 
-			if (m_cyclesToNextAudioOut <= 0)
-			{
-				if (m_audioOutputPtr < PSG_OUTPUT_BUFFER_SIZE)
-				{
-					m_audioBuffer[m_audioOutputPtr++] = m_PSG->GetOutputSample();
-				}
+			m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
+		}
 
-				m_cyclesToNextAudioOut = SMS_CYCLES_PER_AUDIO_OUT;
+		if (m_cyclesToNextDAC <= 0)
+		{
+			if (m_audioOutputPtr < SMS_PSG_OUTPUT_BUFFER_SIZE)
+			{
+				m_audioBuffer[m_audioOutputPtr++] = m_PSG->GetOutputSample();
 			}
+			else
+			{
+				ion::debug::Error("Out of audio buffer space, PSG running too fast");
+			}
+
+			m_cyclesToNextDAC = SMS_CYCLES_PER_AUDIO_OUT;
 		}
 	}
 
@@ -211,7 +225,6 @@ namespace emu
 		return m_frameBuffer;
 	}
 
-#pragma optimize("",off)
 	void MasterSystem::ConsumeAudioBuffer(std::vector<cpu::psg::SampleFormat>& buffer, int numChannels)
 	{
 		buffer.resize(m_audioOutputPtr * numChannels);
@@ -226,7 +239,6 @@ namespace emu
 
 		m_audioOutputPtr = 0;
 	}
-#pragma optimize("",on)
 
 	const debug::SDSCConsole& MasterSystem::GetConsole() const
 	{
@@ -241,6 +253,11 @@ namespace emu
 	const cpu::vdp::Registers& MasterSystem::GetRegistersVDP() const
 	{
 		return m_VDP->GetRegisters();
+	}
+
+	const cpu::psg::Registers& MasterSystem::GetRegistersPSG() const
+	{
+		return m_PSG->GetRegisters();
 	}
 
 	memory::Storage& MasterSystem::GetRAM()
