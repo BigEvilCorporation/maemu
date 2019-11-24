@@ -19,6 +19,7 @@ local SRC =
 	cpu/z80/Z80.h
 
 	# Opcode and redirect tables
+	cpu/z80/opcodes/tables/OpcodeTimings.h
 	cpu/z80/opcodes/tables/OpcodeTable.cpp
 	cpu/z80/opcodes/tables/OpcodeTable.h
 	cpu/z80/opcodes/tables/OpcodeTableCB.cpp

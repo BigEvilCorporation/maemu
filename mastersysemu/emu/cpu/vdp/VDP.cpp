@@ -137,13 +137,13 @@ namespace emu
 
 			void VDP::BeginScanline(u16 scanline)
 			{
-				m_counterV = scanline;
-
-				if (m_counterV == 0)
+				if (scanline == 0 && m_counterV != 0)
 				{
 					//Vertical interrupt
 					m_statusFlags |= VDP_STATUS_VBLANK;
 				}
+
+				m_counterV = scanline;
 			}
 
 			u8 VDP::PeekStatus()

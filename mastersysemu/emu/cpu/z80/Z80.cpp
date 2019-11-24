@@ -1,6 +1,7 @@
 #include "Z80.h"
 #include "Constants.h"
 #include "Interrupts.h"
+#include "opcodes/tables/OpcodeTimings.h"
 
 #include "../../Constants.h"
 
@@ -62,8 +63,7 @@ namespace emu
 
 			u32 Z80::StepInstruction()
 			{
-				//NOP = 4 cycles
-				u32 cycleCount = 4;
+				u32 cycleCount = timing::NOP;
 
 				if (m_regs.internal.err == 0)
 				{

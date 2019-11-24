@@ -14,6 +14,10 @@ namespace emu
 				VDP_STATUS_SPR_COLLISN = 0x20
 			};
 
+			//Interrupts
+			static const int VDP_REG_INTERRUPT_LINE = 0x10;
+			static const int VDP_REG_INTERRUPT_FRAME = 0x20;
+
 			//VRAM/CRAM/regs size
 			static const int VDP_VRAM_SIZE = 1024 * 16;
 			static const int VDP_CRAM_SIZE = 32;
