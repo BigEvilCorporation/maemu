@@ -26,7 +26,7 @@ namespace emu
 			private:
 				static const s16 s_attenuationTable[];
 				Registers m_registers;
-				u8 m_timers[PSG_CHANNEL_COUNT];
+				u16 m_timers[PSG_CHANNEL_COUNT];
 				s8 m_polarities[PSG_CHANNEL_COUNT];
 				u8 m_latchedChannel;
 				u8 m_latchedRegister;

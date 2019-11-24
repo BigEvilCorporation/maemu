@@ -91,7 +91,7 @@ namespace emu
 				else
 				{
 					//Data only
-					m_registers.channels[m_latchedChannel][m_latchedRegister] |= dataByte.unlatched.data;
+					m_registers.channels[m_latchedChannel][m_latchedRegister] |= dataByte.unlatched.data << 4;
 				}
 
 				//If data, reset timer

@@ -20,7 +20,7 @@ namespace emu
 
 			struct Registers
 			{
-				u8 channels[PSG_CHANNEL_COUNT][PSG_CHANNEL_REG_COUNT];
+				u16 channels[PSG_CHANNEL_COUNT][PSG_CHANNEL_REG_COUNT];
 			};
 
 			struct RegisterWriteByte
