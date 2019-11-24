@@ -126,8 +126,8 @@ namespace emu
 					//Execute instruction
 					opcode.handler(opcode, params, m_regs, m_bus);
 
-					//TODO: cycle counts in table
-					cycleCount = 8;
+					//Set cycle count
+					cycleCount = opcode.cycles;
 				}
 
 				return cycleCount;

@@ -67,6 +67,7 @@ namespace emu
 			{
 				u8 opcode;
 				u8 paramBytes;
+				u8 cycles;
 				OpcodeHandler handler;
 				std::string name;
 				std::string paramsFormat;
