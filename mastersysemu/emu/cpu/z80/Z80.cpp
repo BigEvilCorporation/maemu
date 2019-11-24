@@ -60,7 +60,7 @@ namespace emu
 				}
 			}
 
-			u32 Z80::Step()
+			u32 Z80::StepInstruction()
 			{
 				//NOP = 4 cycles
 				u32 cycleCount = 4;

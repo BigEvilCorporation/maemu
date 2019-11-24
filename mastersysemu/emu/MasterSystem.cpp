@@ -121,14 +121,20 @@ namespace emu
 		//Reset counters
 		m_cycleCount = 0;
 		m_scanline = 0;
-		m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
-		m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
-		m_cyclesToNextDAC = SMS_CYCLES_PER_AUDIO_OUT;
+		m_cyclesToNextScanline = SMS_Z80_CYCLES_PER_SCANLINE;
+		m_cyclesToNextPSGStep = SMS_Z80_CYCLES_PER_PSG_STEP;
+		m_cyclesToNextDAC = SMS_Z80_CYCLES_PER_DAC_OUT;
+	}
+
+	void MasterSystem::StepDelta(float deltaTime)
+	{
+		m_cyclesDelta += ion::maths::Round((float)SMS_Z80_CYCLES_PER_SECOND_NTSC * deltaTime);
+		m_cyclesDelta -= StepCycles(m_cyclesDelta);
 	}
 
 	void MasterSystem::StepFrame()
 	{
-		for(int i = 0; i < cpu::vdp::VDP_SCANLINES_PAL; i++)
+		for(int i = 0; i < cpu::vdp::VDP_SCANLINES_NTSC; i++)
 		{
 			StepScanline();
 		}
@@ -136,34 +142,34 @@ namespace emu
 
 	void MasterSystem::StepScanline()
 	{
-		int scanline = m_scanline;
-
-		while (scanline == m_scanline)
-		{
-			//Step approx. one scanline's worth of CPU cycles
-			StepCycles(SMS_CYCLES_PER_SCANLINE);
-		}
+		//Step approx. one scanline's worth of CPU cycles
+		StepCycles(SMS_Z80_CYCLES_PER_SCANLINE);
 	}
 
 	void MasterSystem::StepInstruction()
 	{
-		u32 cyclesExecuted = m_Z80->Step();
+		u32 cyclesExecuted = m_Z80->StepInstruction();
 		m_cycleCount += cyclesExecuted;
 		ProcessAudioVideo(cyclesExecuted);
 	}
 
-	void MasterSystem::StepCycles(u32 cycles)
+	u32 MasterSystem::StepCycles(u32 cycles)
 	{
 		int cyclesRemaining = (int)cycles;
+		u32 totalCyclesExecuted = 0;
+
 		while(cyclesRemaining > 0)
 		{
-			u32 cyclesExecuted = m_Z80->Step();
+			u32 cyclesExecuted = m_Z80->StepInstruction();
 
 			m_cycleCount += cyclesExecuted;
+			totalCyclesExecuted += cyclesExecuted;
 			cyclesRemaining -= cyclesExecuted;
 
 			ProcessAudioVideo(cyclesExecuted);
 		}
+
+		return totalCyclesExecuted;
 	}
 
 	void MasterSystem::ProcessAudioVideo(u32 cycles)
@@ -172,12 +178,14 @@ namespace emu
 		m_cyclesToNextPSGStep -= cycles;
 		m_cyclesToNextDAC -= cycles;
 
+		//Process PSG
 		if (m_cyclesToNextPSGStep <= 0)
 		{
 			m_PSG->Step();
-			m_cyclesToNextPSGStep = SMS_CYCLES_PER_PSG_STEP;
+			m_cyclesToNextPSGStep += SMS_Z80_CYCLES_PER_PSG_STEP;
 		}
 
+		//Process scanline rendering
 		if (m_cyclesToNextScanline <= 0)
 		{
 			//Begin scanline (sets VINT if 0)
@@ -192,26 +200,20 @@ namespace emu
 			m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
 			m_scanline++;
 
-			if (m_scanline >= cpu::vdp::VDP_SCANLINES_PAL)
+			if (m_scanline == cpu::vdp::VDP_SCANLINES_NTSC)
 			{
 				m_scanline = 0;
 			}
 
-			m_cyclesToNextScanline = SMS_CYCLES_PER_SCANLINE;
+			m_cyclesToNextScanline += SMS_Z80_CYCLES_PER_SCANLINE;
 		}
 
+		//Process DAC
 		if (m_cyclesToNextDAC <= 0)
 		{
-			if (m_audioOutputPtr < SMS_PSG_OUTPUT_BUFFER_SIZE)
-			{
-				m_audioBuffer[m_audioOutputPtr++] = m_PSG->GetOutputSample();
-			}
-			else
-			{
-				ion::debug::Error("Out of audio buffer space, PSG running too fast");
-			}
-
-			m_cyclesToNextDAC = SMS_CYCLES_PER_AUDIO_OUT;
+			ion::debug::Assert(m_audioOutputPtr < SMS_PSG_OUTPUT_BUFFER_SIZE, "Out of audio buffer space, PSG running too fast");
+			m_audioBuffer[m_audioOutputPtr++] = m_PSG->GetOutputSample();
+			m_cyclesToNextDAC += SMS_Z80_CYCLES_PER_DAC_OUT;
 		}
 	}
 

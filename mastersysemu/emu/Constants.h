@@ -3,17 +3,15 @@
 namespace emu
 {
 	//Audio
-	static const int SMS_PSG_OUTPUT_BUFFER_SIZE = 1024 * 16;
+	static const int SMS_PSG_OUTPUT_BUFFER_SIZE = 1024 * 8;
 	static const int SMS_PSG_OUTPUT_SAMPLE_RATE = 44100;
 
 	//Timing
-	static const int SMS_CYCLES_PER_SECOND_PAL = 3546894;
-	static const int SMS_CYCLES_PER_SECOND_NTSC = 3579545;
-	static const int SMS_CYCLES_PER_FRAME_PAL = 71364;
-	static const int SMS_CYCLES_PER_FRAME_NTSC = 59736;
-	static const int SMS_CYCLES_PER_SCANLINE = 228;
-	static const int SMS_CYCLES_PER_PSG_STEP = 80;
-	static const int SMS_CYCLES_PER_AUDIO_OUT = SMS_CYCLES_PER_SECOND_NTSC / SMS_PSG_OUTPUT_SAMPLE_RATE;
+	static const int SMS_Z80_CYCLES_PER_SECOND_PAL = 3546894;
+	static const int SMS_Z80_CYCLES_PER_SECOND_NTSC = 3579545;
+	static const int SMS_Z80_CYCLES_PER_SCANLINE = 228;
+	static const int SMS_Z80_CYCLES_PER_PSG_STEP = 16;
+	static const int SMS_Z80_CYCLES_PER_DAC_OUT = SMS_Z80_CYCLES_PER_SECOND_NTSC / SMS_PSG_OUTPUT_SAMPLE_RATE;
 
 	//Address map
 	static const int SMS_ADDR_ROM_START = 0x0000;

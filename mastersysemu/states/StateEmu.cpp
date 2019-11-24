@@ -22,6 +22,7 @@ namespace app
 	{
 		m_debuggerState = DebuggerState::Break;
 		m_Z80ErrorState = 0;
+		m_prevAudioClock = 0.0f;
 	}
 
 	void StateEmu::OnEnterState()
@@ -168,8 +169,13 @@ namespace app
 
 		if (m_debuggerState == DebuggerState::Run)
 		{
+			//Use audio clock
+			float audioClock = m_audioVoice->GetPositionSeconds();
+			float audioDelta = audioClock - m_prevAudioClock;
+			m_prevAudioClock = audioClock;
+
 			//Tick machine a single frame
-			m_masterSystem.StepFrame();
+			m_masterSystem.StepDelta(audioDelta);
 
 			//Push frame's audio buffer
 			std::vector<emu::cpu::psg::SampleFormat> audioBuffer;

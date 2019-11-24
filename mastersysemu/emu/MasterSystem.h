@@ -32,9 +32,10 @@ namespace emu
 		void Reset();
 
 		//Processing
+		void StepDelta(float deltaTime);
 		void StepFrame();
 		void StepScanline();
-		void StepCycles(u32 cycles);
+		u32 StepCycles(u32 cycles);
 		void StepInstruction();
 
 		//Rendering
@@ -94,6 +95,7 @@ namespace emu
 
 		//Timing
 		u32 m_cycleCount;
+		int m_cyclesDelta;
 		int m_cyclesToNextScanline;
 		int m_cyclesToNextPSGStep;
 		int m_cyclesToNextDAC;

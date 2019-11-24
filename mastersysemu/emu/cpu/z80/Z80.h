@@ -18,7 +18,7 @@ namespace emu
 
 				//Execution
 				void Reset();
-				u32 Step();
+				u32 StepInstruction();
 
 				//Interrupts
 				void TriggerInterrupt(Interrupts interrupt);
