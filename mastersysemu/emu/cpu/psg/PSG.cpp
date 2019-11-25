@@ -42,7 +42,7 @@ namespace emu
 			{
 				for (int i = 0; i < PSG_CHANNEL_COUNT; i++)
 				{
-					m_registers.channels[i][PSG_CHANNEL_REG_ATTENUATION] = 0xFF;
+					m_registers.channels[i][PSG_CHANNEL_REG_ATTENUATION] = 0x0F;
 					m_registers.channels[i][PSG_CHANNEL_REG_DATA] = 0x00;
 					m_timers[i] = 0;
 					m_polarities[i] = -1;
@@ -71,8 +71,7 @@ namespace emu
 						}
 
 						//Mix channel output byte
-						static const float outputScalar = (float)std::numeric_limits<SampleFormat>::max() / 256.0f;
-						m_outputSample += ion::maths::Round(((m_polarities[i] * s_attenuationTable[m_registers.channels[i][PSG_CHANNEL_REG_ATTENUATION]]) / PSG_CHANNEL_COUNT) * outputScalar);
+						m_outputSample += ((s_attenuationTable[m_registers.channels[i][PSG_CHANNEL_REG_ATTENUATION]] * m_polarities[i]) / PSG_CHANNEL_COUNT);
 					}
 				}
 			}
