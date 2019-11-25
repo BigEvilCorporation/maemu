@@ -120,6 +120,7 @@ namespace emu
 
 		//Reset counters
 		m_cycleCount = 0;
+		m_cyclesDelta = 0;
 		m_scanline = 0;
 		m_cyclesToNextScanline = SMS_Z80_CYCLES_PER_SCANLINE;
 		m_cyclesToNextPSGStep = SMS_Z80_CYCLES_PER_PSG_STEP;
