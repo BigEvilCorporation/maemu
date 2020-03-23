@@ -29,11 +29,11 @@ namespace emu
 			ion::memory::MemCopy(m_rom.data(), data, size);
 
 			//Map default banks
-			if(size >= SMS_MAPPER_BANK_SIZE * 0)
+			if(size > SMS_MAPPER_BANK_SIZE * 0)
 				m_mappedBank0 = &m_rom[SMS_MAPPER_BANK_SIZE * 0];
-			if (size >= SMS_MAPPER_BANK_SIZE * 1)
+			if (size > SMS_MAPPER_BANK_SIZE * 1)
 				m_mappedBank1 = &m_rom[SMS_MAPPER_BANK_SIZE * 1];
-			if (size >= SMS_MAPPER_BANK_SIZE * 2)
+			if (size > SMS_MAPPER_BANK_SIZE * 2)
 				m_mappedBank2 = &m_rom[SMS_MAPPER_BANK_SIZE * 2];
 		}
 
