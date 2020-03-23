@@ -1,4 +1,4 @@
-SubDir bigevilcorp mastersysemu emu ;
+SubDir bigevilcorp maemu emu ;
 
 ApplyIonCompiler emu ;
 ApplyIonDefines emu ;

@@ -1,13 +1,13 @@
 #include <ion/engine/Engine.h>
 #include <ion/core/time/Time.h>
-#include "mastersysemu.h"
+#include "Maemu.h"
 
 #include <ion/core/thread/Sleep.h>
 
 int main(int numargs, char** args)
 {
 	//Create engine
-	ion::engine.Initialise("SMS EMU", 1024, 768, false, ion::render::Viewport::eOrtho2DAbsolute);
+	ion::engine.Initialise("maemu", 1024, 768, false, ion::render::Viewport::eOrtho2DAbsolute);
 
 	app::MasterSystemEmu app;
 

@@ -1,4 +1,4 @@
-SubDir bigevilcorp mastersysemu ;
+SubDir bigevilcorp maemu ;
 
 ion_renderer_api ?= opengl ;
 ion_renderer_opts ?= shader ;
@@ -14,10 +14,10 @@ else
 	ion_audio_engine ?= sdl2 ;
 }
 
-ApplyIonEngine mastersysemu ;
+ApplyIonEngine maemu ;
 
-SubInclude bigevilcorp mastersysemu emu : emu ;
-C.LinkLibraries mastersysemu : emu ;
+SubInclude bigevilcorp maemu emu : emu ;
+C.LinkLibraries maemu : emu ;
 
 local SRC =
 	debugger/WindowAudio.cpp
@@ -37,8 +37,8 @@ local SRC =
 	Audio.cpp
 	Audio.h
 	Constants.h
-	MasterSysEmu.cpp
-	MasterSysEmu.h
+	Maemu.cpp
+	Maemu.h
 	main.cpp
 	Settings.h
 	;
@@ -52,8 +52,8 @@ CONSOLE_OPTION = console ;
 #	CONSOLE_OPTION = console ;
 #}
 
-C.IncludeDirectories mastersysemu : . ;
+C.IncludeDirectories maemu : . ;
 
-AutoSourceGroup mastersysemu : $(SRC) ;
-C.RuntimeType mastersysemu : static ;
-C.Application mastersysemu : $(SRC) : $(CONSOLE_OPTION) ;
+AutoSourceGroup maemu : $(SRC) ;
+C.RuntimeType maemu : static ;
+C.Application maemu : $(SRC) : $(CONSOLE_OPTION) ;
