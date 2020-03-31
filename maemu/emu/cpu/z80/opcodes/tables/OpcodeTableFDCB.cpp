@@ -53,7 +53,7 @@ namespace emu
 				{ 0x23, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x24, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x25, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0x26, 1, timing::SLA_dIY,		&opcodes::SLA_dIY,		"SLA", "(IY+#)" },
+				{ 0x26, 1, timing::SLA_dIY,		opcodes::SLA_dIY,		"SLA", "(IY+#)" },
 				{ 0x27, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x28, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x29, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
