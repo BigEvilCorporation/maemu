@@ -71,7 +71,7 @@ namespace app
 		SetupAudio();
 
 		//If not debugging, run immediately
-#if !EMU_INCLUDE_DEBUGGER
+#if EMU_INCLUDE_AUDIO && !EMU_INCLUDE_DEBUGGER
 		m_audioVoice->Play();
 #endif
 	}
@@ -109,7 +109,9 @@ namespace app
 	void StateEmu::SetupAudio()
 	{
 		//Create voice
+#if EMU_INCLUDE_AUDIO
 		m_audioVoice = ion::engine.audio.engine->CreateVoice(m_audioSource, false);
+#endif
 	}
 
 	void StateEmu::OnLeaveState()
@@ -185,13 +187,17 @@ namespace app
 		if (m_debuggerState == DebuggerState::Run)
 #endif
 		{
+#if EMU_INCLUDE_AUDIO
 			//Use audio clock
 			float audioClock = m_audioVoice->GetPositionSeconds();
-			float audioDelta = audioClock - m_prevAudioClock;
+			float stepDelta = audioClock - m_prevAudioClock;
 			m_prevAudioClock = audioClock;
+#else
+			float stepDelta = EMU_DEFAULT_STEP_DELTA;
+#endif
 
 			//Tick machine a single frame
-			m_masterSystem.StepDelta(audioDelta);
+			m_masterSystem.StepDelta(stepDelta);
 
 			//Push frame's audio buffer
 			std::vector<emu::cpu::psg::SampleFormat> audioBuffer;
@@ -206,7 +212,9 @@ namespace app
 				//Break if F10
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F10))
 				{
+#if EMU_INCLUDE_AUDIO
 					m_audioVoice->Stop();
+#endif
 					m_debuggerState = DebuggerState::Break;
 					debugAddressUpdated = true;
 				}
@@ -228,7 +236,9 @@ namespace app
 				//Run if F5
 				if (keyboard->KeyPressedThisFrame(ion::input::Keycode::F5))
 				{
+#if EMU_INCLUDE_AUDIO
 					m_audioVoice->Play();
+#endif
 					m_debuggerState = DebuggerState::Run;
 					debugAddressUpdated = true;
 				}

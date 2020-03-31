@@ -16,7 +16,7 @@
 namespace app
 {
 	MasterSystemEmu::MasterSystemEmu()
-		: ion::framework::Application("MasterSystemEmu")
+		: ion::framework::Application("maemu")
 	{
 		m_camera = nullptr;
 		m_stateEmu = nullptr;
