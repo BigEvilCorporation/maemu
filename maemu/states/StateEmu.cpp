@@ -16,12 +16,17 @@ namespace app
 		ion::Vector2(1.0f, 0.0f)
 	};
 
+	const ion::Vector2 StateEmu::s_fixedUISize(1024.0f, 768.0f);
+
 	StateEmu::StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window)
 		: ion::gamekit::State("emu", stateManager, resourceManager)
 		, m_window(window)
 	{
+#if EMU_INCLUDE_DEBUGGER
 		m_debuggerState = DebuggerState::Break;
 		m_Z80ErrorState = 0;
+#endif
+		
 		m_prevAudioClock = 0.0f;
 	}
 
@@ -29,14 +34,15 @@ namespace app
 	{
 		//Create GUI
 		//TODO
-		m_gui = new ion::gui::GUI(ion::Vector2i(1024, 768));
+		m_gui = new ion::gui::GUI(ion::Vector2i(m_window.GetClientAreaWidth(), m_window.GetClientAreaHeight()), m_window.GetClientAreaHeight() / s_fixedUISize.y);
 
 		//Initialise emulator
-		if (!m_masterSystem.LoadROM("roms/sonic.sms"))
+		if (!m_masterSystem.LoadROM("roms/zexdoc_sdsc.sms"))
 		{
 			ion::debug::Error("Could not load ROM");
 		}
 
+#if EMU_INCLUDE_DEBUGGER
 		//Disassemble
 		m_masterSystem.Disassemble(m_disassembly);
 
@@ -51,17 +57,23 @@ namespace app
 		m_debuggerDisassembly = new debug::WindowDisassembly(*m_gui, m_disassembly, ion::Vector2i(20, 430), ion::Vector2i(850, 300));
 
 		m_gui->AddWindow(*m_debuggerAudio);
-		//m_gui->AddWindow(*m_debuggerConsole);
-		//m_gui->AddWindow(*m_debuggerDisassembly);
+		m_gui->AddWindow(*m_debuggerConsole);
+		m_gui->AddWindow(*m_debuggerDisassembly);
 		m_gui->AddWindow(*m_debuggerRegsZ80);
-		//m_gui->AddWindow(*m_debuggerRegsVDP);
-		//m_gui->AddWindow(*m_debuggerROM);
-		//m_gui->AddWindow(*m_debuggerRAM);
-		//m_gui->AddWindow(*m_debuggerVRAM);
+		m_gui->AddWindow(*m_debuggerRegsVDP);
+		m_gui->AddWindow(*m_debuggerROM);
+		m_gui->AddWindow(*m_debuggerRAM);
+		m_gui->AddWindow(*m_debuggerVRAM);
+#endif
 
 		//Setup rendering and audio
 		SetupRenderer();
 		SetupAudio();
+
+		//If not debugging, run immediately
+#if !EMU_INCLUDE_DEBUGGER
+		m_audioVoice->Play();
+#endif
 	}
 
 	void StateEmu::SetupRenderer()
@@ -102,8 +114,10 @@ namespace app
 
 	void StateEmu::OnLeaveState()
 	{
+#if EMU_INCLUDE_DEBUGGER
 		delete m_debuggerRegsZ80;
 		m_debuggerRegsZ80 = nullptr;
+#endif
 
 		delete m_gui;
 		m_gui = nullptr;
@@ -165,9 +179,11 @@ namespace app
 			}
 		}
 
+#if EMU_INCLUDE_DEBUGGER
 		bool debugAddressUpdated = false;
 
 		if (m_debuggerState == DebuggerState::Run)
+#endif
 		{
 			//Use audio clock
 			float audioClock = m_audioVoice->GetPositionSeconds();
@@ -182,6 +198,7 @@ namespace app
 			m_masterSystem.ConsumeAudioBuffer(audioBuffer, AUDIO_NUM_CHANNELS);
 			m_audioSource.PushBuffer(audioBuffer);
 
+#if EMU_INCLUDE_DEBUGGER
 			debugAddressUpdated = true;
 
 			if (m_window.HasFocus())
@@ -194,7 +211,9 @@ namespace app
 					debugAddressUpdated = true;
 				}
 			}
+#endif
 		}
+#if EMU_INCLUDE_DEBUGGER
 		else if (m_debuggerState == DebuggerState::Break)
 		{
 			if (m_window.HasFocus())
@@ -215,18 +234,21 @@ namespace app
 				}
 			}
 		}
+#endif
 
+#if EMU_INCLUDE_DEBUGGER
 		//Update debugger
 		if (m_debuggerDisassembly && debugAddressUpdated)
 		{
 			m_debuggerDisassembly->HighlightAddress(m_masterSystem.GetRegistersZ80().pc);
+		}
+#endif
 
-			if (m_Z80ErrorState != m_masterSystem.GetRegistersZ80().internal.err)
-			{
-				DumpError();
-				m_Z80ErrorState = m_masterSystem.GetRegistersZ80().internal.err;
-				m_debuggerState = DebuggerState::Break;
-			}
+		//Dump error if Z80 failed
+		if (m_masterSystem.GetRegistersZ80().internal.err && (m_Z80ErrorState != m_masterSystem.GetRegistersZ80().internal.err))
+		{
+			DumpError();
+			m_Z80ErrorState = m_masterSystem.GetRegistersZ80().internal.err;
 		}
 
 		//Update UI
@@ -241,7 +263,7 @@ namespace app
 			std::stringstream text;
 			text.setf(std::ios::fixed, std::ios::floatfield);
 			text.precision(2);
-			text << "Master System Emu : FPS: " << m_fpsCounter.GetLastFPS();
+			text << "maemu : FPS: " << m_fpsCounter.GetLastFPS();
 			m_window.SetTitle(text.str().c_str());
 		}
 

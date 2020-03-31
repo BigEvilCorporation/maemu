@@ -39,11 +39,13 @@ namespace app
 		virtual void Render(ion::render::Renderer& renderer, const ion::render::Camera& camera, ion::render::Viewport& viewport);
 
 	private:
+#if EMU_INCLUDE_DEBUGGER
 		enum class DebuggerState
 		{
 			Break,
 			Run
 		};
+#endif
 
 		void SetupRenderer();
 		void SetupAudio();
@@ -52,6 +54,8 @@ namespace app
 		//UI
 		ion::gui::GUI* m_gui;
 		ion::render::Window& m_window;
+
+#if EMU_INCLUDE_DEBUGGER
 		debug::WindowAudio* m_debuggerAudio;
 		debug::WindowConsole* m_debuggerConsole;
 		debug::WindowDisassembly* m_debuggerDisassembly;
@@ -60,6 +64,8 @@ namespace app
 		debug::WindowMemory* m_debuggerROM;
 		debug::WindowMemory* m_debuggerRAM;
 		debug::WindowMemory* m_debuggerVRAM;
+#endif
+
 		ion::gamekit::FPSCounter m_fpsCounter;
 
 		//Rendering
@@ -67,6 +73,7 @@ namespace app
 		ion::render::Material* m_renderMaterial;
 		ion::render::Quad* m_renderPrimitive;
 		static const ion::render::TexCoord s_texCoords[4];
+		static const ion::Vector2 s_fixedUISize;
 
 		//Audio
 		ion::audio::Voice* m_audioVoice;
@@ -80,12 +87,16 @@ namespace app
 		//The machine
 		emu::MasterSystem m_masterSystem;
 
+		//Z80 error state
+		u8 m_Z80ErrorState;
+
 		//Settings
 		Settings m_settings;
 
 		//Debugging
+#if EMU_INCLUDE_DEBUGGER
 		DebuggerState m_debuggerState;
 		std::vector<emu::cpu::z80::disassembler::Instruction> m_disassembly;
-		u8 m_Z80ErrorState;
+#endif
 	};
 }

@@ -3,6 +3,8 @@
 #include "emu/Constants.h"
 #include "emu/cpu/psg/Constants.h"
 
+#define EMU_INCLUDE_DEBUGGER 1
+
 static const int AUDIO_NUM_CHANNELS = 1;
 static const int AUDIO_NUM_LEAD_BUFFERS = 3;
 static const int AUDIO_NUM_BUFFERS = 3;
