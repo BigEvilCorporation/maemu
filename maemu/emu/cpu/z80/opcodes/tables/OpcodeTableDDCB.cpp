@@ -70,7 +70,7 @@ namespace emu
 				{ 0x33, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x34, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x35, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0x36, 1, timing::SLL_dIX,		&opcodes::SLL_dIX,		"SRL", "(IX+#)" },
+				{ 0x36, 1, timing::SLL_dIX,		opcodes::SLL_dIX,		"SRL", "(IX+#)" },
 				{ 0x37, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x38, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x39, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
