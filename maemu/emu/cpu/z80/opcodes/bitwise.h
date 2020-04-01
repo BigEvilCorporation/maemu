@@ -348,6 +348,12 @@ namespace emu
 				//Rotate value at address in (IY+offset) to the left
 				static auto RLC_dIY = RL<LD_Fetch_dIYoff, LD_Store_dIYoff>;
 
+				//Rotate value at address in (IX+offset) to the left, and copy result to 8-bit register
+				static auto RLC_dIX_r8 = RLC_CP<LD_Fetch_dIXoff, LD_Store_dIXoff, LD_Store_DST_r8>;
+
+				//Rotate value at address in (IY+offset) to the left, and copy result to 8-bit register
+				static auto RLC_dIY_r8 = RLC_CP<LD_Fetch_dIYoff, LD_Store_dIYoff, LD_Store_DST_r8>;
+
 				//Rotate A to the left
 				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -358,70 +364,6 @@ namespace emu
 					regs.main.a = (regs.main.a << 1) | bit7;
 
 					//Set flags
-					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate value at address in (IX+offset) to the left, and copy result to 8-bit register
-				static u16 RLC_dIX_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IX+offset)
-					u16 address = regs.ix + params[0];
-
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
-
-					//Read value
-					reg = bus.memoryController.ReadMemory(address);
-
-					//Copy bit 7 (sign)
-					u8 bit7 = (reg >> 7);
-
-					//Rotate left
-					reg = (reg << 1) | bit7;
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, reg);
-
-					//Set flags
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagP(reg, regs.main.f);
-					ComputeFlagS(reg, regs.main.f);
-					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate value at address in (IY+offset) to the left, and copy result to 8-bit register
-				static u16 RLC_dIY_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IY+offset)
-					u16 address = regs.iy + params[0];
-
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
-
-					//Read value
-					reg = bus.memoryController.ReadMemory(address);
-
-					//Copy bit 7 (sign)
-					u8 bit7 = (reg >> 7);
-
-					//Rotate left
-					reg = (reg << 1) | bit7;
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, reg);
-
-					//Set flags
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagP(reg, regs.main.f);
-					ComputeFlagS(reg, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);

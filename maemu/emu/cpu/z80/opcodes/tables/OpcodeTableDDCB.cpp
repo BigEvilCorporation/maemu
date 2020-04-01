@@ -13,14 +13,14 @@ namespace emu
 		{
 			const Opcode OpcodeTableDDCB[Z80_MAX_OPCODE_TABLE_SIZE] =
 			{
-				{ 0x00, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->B" },
-				{ 0x01, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->C" },
-				{ 0x02, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->D" },
-				{ 0x03, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->E" },
-				{ 0x04, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->H" },
-				{ 0x05, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->L" },
+				{ 0x00, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->B" },
+				{ 0x01, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->C" },
+				{ 0x02, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->D" },
+				{ 0x03, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->E" },
+				{ 0x04, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->H" },
+				{ 0x05, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->L" },
 				{ 0x06, 1, timing::RLC_dIX,		 opcodes::RLC_dIX,		"RLC", "(IX+#)" },
-				{ 0x07, 1, timing::RLC_dIX_r8,	&opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->A" },
+				{ 0x07, 1, timing::RLC_dIX_r8,	 opcodes::RLC_dIX_r8,	"RLC", "(IX+#)->A" },
 				{ 0x08, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x09, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x0A, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
