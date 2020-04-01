@@ -48,7 +48,7 @@ namespace emu
 				{ 0x04, 0, timing::INC_r8,		&opcodes::INC_r8,		"INC", "B" },
 				{ 0x05, 0, timing::DEC_r8,		&opcodes::DEC_r8,		"DEC", "B" },
 				{ 0x06, 1, timing::LD_r8_n8,	 opcodes::LD_r8_n8,		"LD", "B, #" },
-				{ 0x07, 0, timing::RLCA,		&opcodes::RLCA,			"RLCA", "" },
+				{ 0x07, 0, timing::RLCA,		 opcodes::RLCA,			"RLCA", "" },
 				{ 0x08, 0, timing::EX_AF_AFa,	&opcodes::EX_AF_AFa,	"EX", "AF, AF'" },
 				{ 0x09, 0, timing::ADD_HL_r16,	&opcodes::ADD_HL_r16,	"ADD", "HL, BC" },
 				{ 0x0A, 0, timing::LD_A_dBC,	 opcodes::LD_A_dBC,		"LD", "A, (BC)" },

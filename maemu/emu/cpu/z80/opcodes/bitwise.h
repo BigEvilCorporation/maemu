@@ -191,6 +191,63 @@ namespace emu
 					return 0;
 				}
 
+				//Rotate to the left
+				template <LoadFunc8 LOAD_8_T, StoreFunc8 STORE_8_T>
+				u16 RL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load value
+					u8 value = LOAD_8_T(opcode, params, regs, bus);
+
+					//Copy bit 7 (sign)
+					u8 bit7 = (value >> 7);
+
+					//Rotate left
+					value = (value << 1) | bit7;
+
+					//Store value
+					STORE_8_T(opcode, params, regs, bus, value);
+
+					//Set flags
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate value at address in (IX+offset) to the left, and copy result to 8-bit register
+				template <LoadFunc8 LOAD_8_T, StoreFunc8 STORE_8_T, StoreFunc8 STORE_REG_8_T>
+				u16 RLC_CP(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load value
+					u8 value = LOAD_8_T(opcode, params, regs, bus);
+
+					//Copy bit 7 (sign)
+					u8 bit7 = (value >> 7);
+
+					//Rotate left
+					value = (value << 1) | bit7;
+
+					//Store value
+					STORE_8_T(opcode, params, regs, bus, value);
+
+					//Store reg
+					STORE_REG_8_T(opcode, params, regs, bus, value);
+
+					//Set flags
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagP(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				// BIT OPERATIONS
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,6 +336,15 @@ namespace emu
 				//Non-arithmetic shift value at address in (IY+offset) to the right
 				static auto SRL_dIY = SRL<LD_Fetch_dIYoff, LD_Store_dIYoff>;
 
+				//Rotate an 8-bit register to the left
+				static auto RLC = RL<LD_Fetch_r8, LD_Store_SRC_r8>;
+
+				//Rotate value at address in (HL) to the left
+				static auto RLC_dHL = RL<LD_Fetch_dHL, LD_Store_dHL>;
+
+				//Rotate value at address in (IX+offset) to the left
+				static auto RLC_dIX = RL<LD_Fetch_dIXoff, LD_Store_dIXoff>;
+
 				//Rotate A to the left
 				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -289,87 +355,6 @@ namespace emu
 					regs.main.a = (regs.main.a << 1) | bit7;
 
 					//Set flags
-					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate an 8-bit register to the left
-				static u16 RLC(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_SHIFT_SHIFT);
-
-					//Copy bit 7 (sign)
-					u8 bit7 = (reg >> 7);
-
-					//Rotate left
-					reg = (reg << 1) | bit7;
-
-					//Set flags
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagP(reg, regs.main.f);
-					ComputeFlagS(reg, regs.main.f);
-					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate value at address in (HL) to the left
-				static u16 RLC_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (HL)
-					u16 address = regs.main.hl;
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Copy bit 7 (sign)
-					u8 bit7 = (value >> 7);
-
-					//Rotate left
-					value = (value << 1) | bit7;
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set flags
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagP(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate value at address in (IX+offset) to the left
-				static u16 RLC_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address (IX+offset)
-					u16 address = regs.ix + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-
-					//Copy bit 7 (sign)
-					u8 bit7 = (value >> 7);
-
-					//Rotate left
-					value = (value << 1) | bit7;
-
-					//Store value in memory
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set flags
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagP(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);

@@ -25,14 +25,14 @@ namespace emu
 		{
 			const Opcode OpcodeTableCB[Z80_MAX_OPCODE_TABLE_SIZE] =
 			{
-				{ 0x00, 0, timing::RLC,			&opcodes::RLC,			"RLC", "B" },
-				{ 0x01, 0, timing::RLC,			&opcodes::RLC,			"RLC", "C" },
-				{ 0x02, 0, timing::RLC,			&opcodes::RLC,			"RLC", "D" },
-				{ 0x03, 0, timing::RLC,			&opcodes::RLC,			"RLC", "E" },
-				{ 0x04, 0, timing::RLC,			&opcodes::RLC,			"RLC", "H" },
-				{ 0x05, 0, timing::RLC,			&opcodes::RLC,			"RLC", "L" },
-				{ 0x06, 0, timing::RLC_dHL,		&opcodes::RLC_dHL,		"RLC", "(HL)" },
-				{ 0x07, 0, timing::RLC,			&opcodes::RLC,			"RLC", "A" },
+				{ 0x00, 0, timing::RLC,			 opcodes::RLC,			"RLC", "B" },
+				{ 0x01, 0, timing::RLC,			 opcodes::RLC,			"RLC", "C" },
+				{ 0x02, 0, timing::RLC,			 opcodes::RLC,			"RLC", "D" },
+				{ 0x03, 0, timing::RLC,			 opcodes::RLC,			"RLC", "E" },
+				{ 0x04, 0, timing::RLC,			 opcodes::RLC,			"RLC", "H" },
+				{ 0x05, 0, timing::RLC,			 opcodes::RLC,			"RLC", "L" },
+				{ 0x06, 0, timing::RLC_dHL,		 opcodes::RLC_dHL,		"RLC", "(HL)" },
+				{ 0x07, 0, timing::RLC,			 opcodes::RLC,			"RLC", "A" },
 				{ 0x08, 0, timing::RRC,			&opcodes::RRC,			"RRC", "B" },
 				{ 0x09, 0, timing::RRC,			&opcodes::RRC,			"RRC", "C" },
 				{ 0x0A, 0, timing::RRC,			&opcodes::RRC,			"RRC", "D" },
