@@ -216,6 +216,18 @@ namespace emu
 					return DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
 				}
 
+				//Load from 16-bit register (incl. IXH/IXL)
+				static u16 LD_Fetch_r16_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg16_IX(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
+				}
+
+				//Load from 16-bit register (incl. IYH/IYL)
+				static u16 LD_Fetch_r16_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg16_IY(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
+				}
+
 				//Load from SP
 				static u16 LD_Fetch_rSP(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
