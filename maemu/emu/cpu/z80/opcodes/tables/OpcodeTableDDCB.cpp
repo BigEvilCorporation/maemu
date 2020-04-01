@@ -27,7 +27,7 @@ namespace emu
 				{ 0x0B, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x0C, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x0D, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0x0E, 1, timing::RRC_dIX,		&opcodes::RRC_dIX,		"RRC", "(IX+#)" },
+				{ 0x0E, 1, timing::RRC_dIX,		 opcodes::RRC_dIX,		"RRC", "(IX+#)" },
 				{ 0x0F, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 
 				{ 0x10, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
@@ -36,7 +36,7 @@ namespace emu
 				{ 0x13, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x14, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x15, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0x16, 1, timing::RL_dIX,		&opcodes::RL_dIX,		"RL", "(IX+#)" },
+				{ 0x16, 1, timing::RL_dIX,		 opcodes::RL_dIX,		"RL", "(IX+#)" },
 				{ 0x17, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x18, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x19, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
@@ -44,7 +44,7 @@ namespace emu
 				{ 0x1B, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x1C, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x1D, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0x1E, 1, timing::RR_dIX,		&opcodes::RR_dIX,		"RR", "(IX+#)" },
+				{ 0x1E, 1, timing::RR_dIX,		 opcodes::RR_dIX,		"RR", "(IX+#)" },
 				{ 0x1F, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 
 				{ 0x20, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
