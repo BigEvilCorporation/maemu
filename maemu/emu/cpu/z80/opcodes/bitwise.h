@@ -331,6 +331,19 @@ namespace emu
 					return 0;
 				}
 
+				//Logic OR with A
+				template <LoadFunc8 LOAD_8_T>
+				static u16 OR_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//OR A with reg
+					regs.main.a |= LOAD_8_T(opcode, params, regs, bus);
+
+					//Set flags
+					ComputeFlags_OR(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				// BIT OPERATIONS
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -473,159 +486,26 @@ namespace emu
 				//Rotate value at address in (IY+offset) to the right (incl. carry flag)
 				static auto RR_dIY = RR<LD_Fetch_dIYoff, LD_Store_dIYoff>;
 
-				//Rotate A to the left
-				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Copy bit 7 (sign)
-					u8 bit7 = (regs.main.a >> 7);
-
-					//Rotate left
-					regs.main.a = (regs.main.a << 1) | bit7;
-
-					//Set flags
-					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate A to the left (incl. carry flag)
-				static u16 RLA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Copy C flag and bit 7
-					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
-					u8 bit7 = (regs.main.a >> 7);
-
-					//Rotate left
-					regs.main.a = (regs.main.a << 1) | carry;
-
-					//Set flags
-					SetFlagC(bit7 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate A to the right
-				static u16 RRCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Copy bit 0
-					u8 bit0 = (regs.main.a & 0x1);
-
-					//Rotate right
-					regs.main.a = (regs.main.a >> 1) | (bit0 << 7);
-
-					//Set flags
-					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Rotate A to the right (incl. carry flag)
-				static u16 RRA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Take C flag and bit 0
-					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
-					u8 bit0 = (regs.main.a & 0x1);
-
-					//Rotate right
-					regs.main.a = (regs.main.a >> 1) | (carry << 7);
-
-					//Set flags
-					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
-					SetFlag(FLAG_H, false, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
+				//Logic OR A with 8-bit literal
+				static auto OR_A_n8 = OR_A<LD_Fetch_n8>;
 
 				//Logic OR A with 8-bit register
-				static u16 OR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with reg
-					regs.main.a |= DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic OR A with IXH/IXL
-				static u16 OR_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with reg
-					regs.main.a |= DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic OR A with IYH/IYL
-				static u16 OR_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with reg
-					regs.main.a |= DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic OR A with 8-bit literal
-				static u16 OR_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with param
-					regs.main.a |= params[0];
-
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto OR_A_r8 = OR_A<LD_Fetch_r8>;
 
 				//Logic OR A with value at address in (HL)
-				static u16 OR_A_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with (HL)
-					regs.main.a |= bus.memoryController.ReadMemory(regs.main.hl);
-
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto OR_A_dHL = OR_A<LD_Fetch_dHL>;
 
 				//Logic OR A with value at address in (IX+offset)
-				static u16 OR_A_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with (IX+offset)
-					regs.main.a |= bus.memoryController.ReadMemory(regs.ix + params[0]);
-
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto OR_A_dIX = OR_A<LD_Fetch_dIXoff>;
 
 				//Logic OR A with value at address in (IY+offset)
-				static u16 OR_A_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//OR A with (IY+offset)
-					regs.main.a |= bus.memoryController.ReadMemory(regs.iy + params[0]);
+				static auto OR_A_dIY = OR_A<LD_Fetch_dIYoff>;
 
-					//Set flags
-					ComputeFlags_OR(regs.main.a, regs.main.f);
+				//Logic OR A with IXH/IXL
+				static auto OR_A_IXHL = OR_A<LD_Fetch_rIXHL>;
 
-					return 0;
-				}
+				//Logic OR A with IYH/IYL
+				static auto OR_A_IYHL = OR_A<LD_Fetch_rIYHL>;
 
 				//Logic AND A with 8-bit register
 				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
@@ -791,6 +671,76 @@ namespace emu
 
 					//Set flags
 					ComputeFlags_XOR(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate A to the left
+				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy bit 7 (sign)
+					u8 bit7 = (regs.main.a >> 7);
+
+					//Rotate left
+					regs.main.a = (regs.main.a << 1) | bit7;
+
+					//Set flags
+					SetFlag(FLAG_C, bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate A to the left (incl. carry flag)
+				static u16 RLA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy C flag and bit 7
+					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
+					u8 bit7 = (regs.main.a >> 7);
+
+					//Rotate left
+					regs.main.a = (regs.main.a << 1) | carry;
+
+					//Set flags
+					SetFlagC(bit7 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate A to the right
+				static u16 RRCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Copy bit 0
+					u8 bit0 = (regs.main.a & 0x1);
+
+					//Rotate right
+					regs.main.a = (regs.main.a >> 1) | (bit0 << 7);
+
+					//Set flags
+					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Rotate A to the right (incl. carry flag)
+				static u16 RRA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Take C flag and bit 0
+					u8 carry = (regs.main.f & FLAG_C) >> FLAG_INDEX_C;
+					u8 bit0 = (regs.main.a & 0x1);
+
+					//Rotate right
+					regs.main.a = (regs.main.a >> 1) | (carry << 7);
+
+					//Set flags
+					SetFlag(FLAG_C, bit0 != 0, regs.main.f);
+					SetFlag(FLAG_H, false, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
 
 					return 0;
 				}
