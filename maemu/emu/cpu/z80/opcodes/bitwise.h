@@ -335,11 +335,24 @@ namespace emu
 				template <LoadFunc8 LOAD_8_T>
 				static u16 OR_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//OR A with reg
+					//OR A with value
 					regs.main.a |= LOAD_8_T(opcode, params, regs, bus);
 
 					//Set flags
 					ComputeFlags_OR(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
+				//Logic AND with A
+				template <LoadFunc8 LOAD_8_T>
+				static u16 AND_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//AND A with value
+					regs.main.a &= LOAD_8_T(opcode, params, regs, bus);
+
+					//Set flags
+					ComputeFlags_AND(regs.main.a, regs.main.f);
 
 					return 0;
 				}
@@ -507,89 +520,26 @@ namespace emu
 				//Logic OR A with IYH/IYL
 				static auto OR_A_IYHL = OR_A<LD_Fetch_rIYHL>;
 
-				//Logic AND A with 8-bit register
-				static u16 AND_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with reg
-					regs.main.a &= DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
-
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic AND A with IXH/IXL
-				static u16 AND_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with reg
-					regs.main.a &= DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
-
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic AND A with IYH/IYL
-				static u16 AND_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with reg
-					regs.main.a &= DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_AND_SHIFT);
-
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
 				//Logic AND A with 8-bit literal
-				static u16 AND_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with literal
-					regs.main.a &= params[0];
+				static auto AND_A_n8 = AND_A<LD_Fetch_n8>;
 
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				//Logic AND A with 8-bit register
+				static auto AND_A_r8 = AND_A<LD_Fetch_r8>;
 
 				//Logic AND A with value at address in (HL)
-				static u16 AND_A_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with (HL)
-					regs.main.a &= bus.memoryController.ReadMemory(regs.main.hl);
-
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto AND_A_dHL = AND_A<LD_Fetch_dHL>;
 
 				//Logic AND A with value at address in (IX+offset)
-				static u16 AND_A_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with (IX+offset)
-					regs.main.a &= bus.memoryController.ReadMemory(regs.ix + params[0]);
-
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto AND_A_dIX = AND_A<LD_Fetch_dIXoff>;
 
 				//Logic AND A with value at address in (IY+offset)
-				static u16 AND_A_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//AND A with (IY+offset)
-					regs.main.a &= bus.memoryController.ReadMemory(regs.iy + params[0]);
+				static auto AND_A_dIY = AND_A<LD_Fetch_dIYoff>;
 
-					//Set flags
-					ComputeFlags_AND(regs.main.a, regs.main.f);
+				//Logic AND A with IXH/IXL
+				static auto AND_A_IXHL = AND_A<LD_Fetch_rIXHL>;
 
-					return 0;
-				}
+				//Logic AND A with IYH/IYL
+				static auto AND_A_IYHL = AND_A<LD_Fetch_rIYHL>;
 
 				//Logic XOR A with 8-bit register
 				static u16 XOR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
