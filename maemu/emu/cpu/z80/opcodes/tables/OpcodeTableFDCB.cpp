@@ -19,7 +19,7 @@ namespace emu
 				{ 0x03, 1, timing::RLC_dIY_r8,	&opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->E" },
 				{ 0x04, 1, timing::RLC_dIY_r8,	&opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->H" },
 				{ 0x05, 1, timing::RLC_dIY_r8,	&opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->L" },
-				{ 0x06, 1, timing::RLC_dIY,		&opcodes::RLC_dIY,		"RLC", "(IY+#)" },
+				{ 0x06, 1, timing::RLC_dIY,		 opcodes::RLC_dIY,		"RLC", "(IY+#)" },
 				{ 0x07, 1, timing::RLC_dIY_r8,	&opcodes::RLC_dIY_r8,	"RLC", "(IY+#)->A" },
 				{ 0x08, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0x09, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
