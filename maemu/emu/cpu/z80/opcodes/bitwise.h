@@ -11,10 +11,6 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static const int REGISTER_DECODE_SHIFT_SHIFT = 0x0;
-				static const int REGISTER_DECODE_OR_SHIFT = 0x0;
-				static const int REGISTER_DECODE_AND_SHIFT = 0x0;
-
 				static const int REGISTER_DECODE_BIT_MASK = 0x07;
 				static const int REGISTER_DECODE_BIT_SHIFT = 0x03;
 
@@ -357,6 +353,19 @@ namespace emu
 					return 0;
 				}
 
+				//Logic XOR with A
+				template <LoadFunc8 LOAD_8_T>
+				static u16 XOR_A(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//XOR A with value
+					regs.main.a ^= LOAD_8_T(opcode, params, regs, bus);
+
+					//Set flags
+					ComputeFlags_XOR(regs.main.a, regs.main.f);
+
+					return 0;
+				}
+
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				// BIT OPERATIONS
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -541,89 +550,26 @@ namespace emu
 				//Logic AND A with IYH/IYL
 				static auto AND_A_IYHL = AND_A<LD_Fetch_rIYHL>;
 
-				//Logic XOR A with 8-bit register
-				static u16 XOR_A_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with reg
-					regs.main.a ^= DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic XOR A with IXH/IXL
-				static u16 XOR_A_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with reg
-					regs.main.a ^= DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
-				//Logic XOR A with IYH/IYL
-				static u16 XOR_A_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with reg
-					regs.main.a ^= DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_OR_SHIFT);
-
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
-
 				//Logic XOR A with 8-bit literal
-				static u16 XOR_A_n8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with param
-					regs.main.a ^= params[0];
+				static auto XOR_A_n8 = XOR_A<LD_Fetch_n8>;
 
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				//Logic XOR A with 8-bit register
+				static auto XOR_A_r8 = XOR_A<LD_Fetch_r8>;
 
 				//Logic XOR A with value at address in (HL)
-				static u16 XOR_A_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with (HL)
-					regs.main.a ^= bus.memoryController.ReadMemory(regs.main.hl);
-
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto XOR_A_dHL = XOR_A<LD_Fetch_dHL>;
 
 				//Logic XOR A with value at address in (IX+offset)
-				static u16 XOR_A_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with (IX+offset)
-					regs.main.a ^= bus.memoryController.ReadMemory(regs.ix + params[0]);
-
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
-
-					return 0;
-				}
+				static auto XOR_A_dIX = XOR_A<LD_Fetch_dIXoff>;
 
 				//Logic XOR A with value at address in (IY+offset)
-				static u16 XOR_A_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//XOR A with (IY+offset)
-					regs.main.a ^= bus.memoryController.ReadMemory(regs.iy + params[0]);
+				static auto XOR_A_dIY = XOR_A<LD_Fetch_dIYoff>;
 
-					//Set flags
-					ComputeFlags_XOR(regs.main.a, regs.main.f);
+				//Logic XOR A with IXH/IXL
+				static auto XOR_A_IXHL = XOR_A<LD_Fetch_rIXHL>;
 
-					return 0;
-				}
+				//Logic XOR A with IYH/IYL
+				static auto XOR_A_IYHL = XOR_A<LD_Fetch_rIYHL>;
 
 				//Rotate A to the left
 				static u16 RLCA(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)

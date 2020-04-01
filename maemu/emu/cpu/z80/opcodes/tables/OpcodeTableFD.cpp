@@ -215,9 +215,9 @@ namespace emu
 				{ 0xA9, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0xAA, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0xAB, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0xAC, 0, timing::XOR_A_IYHL,	&opcodes::XOR_A_IYHL,	"XOR", "A, IYH" },
-				{ 0xAD, 0, timing::XOR_A_IYHL,	&opcodes::XOR_A_IYHL,	"XOR", "A, IYY" },
-				{ 0xAE, 1, timing::XOR_A_dIY,	&opcodes::XOR_A_dIY,	"XOR", "A, (IY+#)" },
+				{ 0xAC, 0, timing::XOR_A_IYHL,	 opcodes::XOR_A_IYHL,	"XOR", "A, IYH" },
+				{ 0xAD, 0, timing::XOR_A_IYHL,	 opcodes::XOR_A_IYHL,	"XOR", "A, IYY" },
+				{ 0xAE, 1, timing::XOR_A_dIY,	 opcodes::XOR_A_dIY,	"XOR", "A, (IY+#)" },
 				{ 0xAF, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 
 				{ 0xB0, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
