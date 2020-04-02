@@ -231,9 +231,9 @@ namespace emu
 				{ 0xB9, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0xBA, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 				{ 0xBB, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
-				{ 0xBC, 0, timing::CP_A_IXHL,	&opcodes::CP_A_IXHL,	"CP", "A, IXH" },
-				{ 0xBD, 0, timing::CP_A_IXHL,	&opcodes::CP_A_IXHL,	"CP", "A, IXL" },
-				{ 0xBE, 1, timing::CP_A_dIX,	&opcodes::CP_A_dIX,		"CP", "A, (IX+#)" },
+				{ 0xBC, 0, timing::CP_A_IXHL,	 opcodes::CP_A_IXHL,	"CP", "A, IXH" },
+				{ 0xBD, 0, timing::CP_A_IXHL,	 opcodes::CP_A_IXHL,	"CP", "A, IXL" },
+				{ 0xBE, 1, timing::CP_A_dIX,	 opcodes::CP_A_dIX,		"CP", "A, (IX+#)" },
 				{ 0xBF, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
 
 				{ 0xC0, 0, timing::NOP,			&opcodes::Unknown,		"UNKNOWN", "" },
