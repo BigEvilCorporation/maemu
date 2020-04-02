@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../Opcode.h"
+#include "load.h"
 
 namespace emu
 {
@@ -10,310 +11,137 @@ namespace emu
 		{
 			namespace opcodes
 			{
-				static const int REGISTER_DECODE_INCDEC_8_REG_SHIFT = 0x3;
 				static const int REGISTER_DECODE_INCDEC_16_REG_SHIFT = 0x4;
 
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// OPERATION TEMPLATES
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+				//Increment 8-bit
+				template <LoadFunc8 LOAD_8_T, StoreFunc8 STORE_8_T>
+				static u16 INC_8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load value
+					u8 value = LOAD_8_T(opcode, params, regs, bus);
+					u8 prev = value;
+
+					//Increment value
+					value++;
+
+					//Store value
+					STORE_8_T(opcode, params, regs, bus, value);
+
+					//Set flags
+					ComputeFlagS(value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					SetFlag(FLAG_N, false, regs.main.f);
+
+					return 0;
+				}
+
+				//Decrement 8-bit
+				template <LoadFunc8 LOAD_8_T, StoreFunc8 STORE_8_T>
+				static u16 DEC_8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load value
+					u8 value = LOAD_8_T(opcode, params, regs, bus);
+					u8 prev = value;
+
+					//Decrement value
+					value--;
+
+					//Store value
+					STORE_8_T(opcode, params, regs, bus, value);
+
+					//Set flags
+					ComputeFlagH(prev, value, regs.main.f);
+					ComputeFlagV(prev, value, regs.main.f);
+					ComputeFlagZ(value, regs.main.f);
+					ComputeFlagS(value, regs.main.f);
+					SetFlag(FLAG_N, true, regs.main.f);
+
+					return 0;
+				}
+
+				//Increment 16-bit
+				template <LoadFunc16 LOAD_16_T, StoreFunc16 STORE_16_T>
+				static u16 INC_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load, increment, store
+					STORE_16_T(opcode, params, regs, bus, LOAD_16_T(opcode, params, regs, bus) + 1);
+
+					return 0;
+				}
+
+				//Decrement 16-bit
+				template <LoadFunc16 LOAD_16_T, StoreFunc16 STORE_16_T>
+				static u16 DEC_16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					//Load, decrement, store
+					STORE_16_T(opcode, params, regs, bus, LOAD_16_T(opcode, params, regs, bus) - 1);
+
+					return 0;
+				}
+
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				// INCREMENT/DECREMENT OPERATIONS
+				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 				//Increment 8-bit register
-				static u16 INC_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_INCDEC_8_REG_SHIFT);
-					u8 prev = reg;
-
-					//Increment reg
-					reg++;
-
-					//Set flags
-					ComputeFlagS(reg, regs.main.f);
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagH(prev, reg, regs.main.f);
-					ComputeFlagV(prev, reg, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Increment IXH/IXL
-				static u16 INC_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_INCDEC_8_REG_SHIFT);
-					u8 prev = reg;
-
-					//Increment reg
-					reg++;
-
-					//Set flags
-					ComputeFlagH(prev, reg, regs.main.f);
-					ComputeFlagV(prev, reg, regs.main.f);
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagS(reg, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
+				static auto INC_r8 = INC_8<LD_Fetch_DST_r8, LD_Store_DST_r8>;
 
 				//Increment value at address in (HL)
-				static u16 INC_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
-					u8 prev = value;
-
-					//Increment and write
-					value++;
-					bus.memoryController.WriteMemory(regs.main.hl, value);
-
-					//Set flags
-					ComputeFlagH(prev, value, regs.main.f);
-					ComputeFlagV(prev, value, regs.main.f);
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
+				static auto INC_dHL = INC_8<LD_Fetch_dHL, LD_Store_dHL>;
 
 				//Increment value at address in (IX+offset)
-				static u16 INC_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address + offset
-					u16 address = regs.ix + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-					u8 prev = value;
-
-					//Increment and write
-					value++;
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set flags
-					ComputeFlagH(prev, value, regs.main.f);
-					ComputeFlagV(prev, value, regs.main.f);
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
+				static auto INC_dIX = INC_8<LD_Fetch_dIXoff, LD_Store_dIXoff>;
 
 				//Increment value at address in (IY+offset)
-				static u16 INC_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address + offset
-					u16 address = regs.iy + params[0];
+				static auto INC_dIY = INC_8<LD_Fetch_dIYoff, LD_Store_dIYoff>;
 
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-					u8 prev = value;
-
-					//Increment and write
-					value++;
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set flags
-					ComputeFlagH(prev, value, regs.main.f);
-					ComputeFlagV(prev, value, regs.main.f);
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_N, false, regs.main.f);
-
-					return 0;
-				}
-
-				//Decrement 8-bit register
-				static u16 DEC_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_INCDEC_8_REG_SHIFT);
-					u8 prev = reg;
-
-					//Decrement reg
-					reg--;
-
-					//Set flags
-					ComputeFlagH(prev, reg, regs.main.f);
-					ComputeFlagV(prev, reg, regs.main.f);
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagS(reg, regs.main.f);
-					SetFlag(FLAG_N, true, regs.main.f);
-
-					return 0;
-				}
-
-				//Decrement IXH/IXL
-				static u16 DEC_IXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_INCDEC_8_REG_SHIFT);
-					u8 prev = reg;
-
-					//Decrement reg
-					reg--;
-
-					//Set flags
-					ComputeFlagH(prev, reg, regs.main.f);
-					ComputeFlagV(prev, reg, regs.main.f);
-					ComputeFlagZ(reg, regs.main.f);
-					ComputeFlagS(reg, regs.main.f);
-					SetFlag(FLAG_N, true, regs.main.f);
-
-					return 0;
-				}
-
-				//Decrement value at address in (HL)
-				static u16 DEC_dHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(regs.main.hl);
-					u8 prev = value;
-
-					//Decrement and write
-					value--;
-					bus.memoryController.WriteMemory(regs.main.hl, value);
-
-					//Set flags
-					ComputeFlagH(prev, value, regs.main.f);
-					ComputeFlagV(prev, value, regs.main.f);
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_N, true, regs.main.f);
-
-					return 0;
-				}
-
-				//Decrement value at address in (IX+offset)
-				static u16 DEC_dIX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address + offset
-					u16 address = regs.ix + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-					u8 prev = value;
-
-					//Decrement and write
-					value--;
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set flags
-					ComputeFlagH(prev, value, regs.main.f);
-					ComputeFlagV(prev, value, regs.main.f);
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_N, true, regs.main.f);
-
-					return 0;
-				}
-
-				//Decrement value at address in (IY+offset)
-				static u16 DEC_dIY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Get address + offset
-					u16 address = regs.iy + params[0];
-
-					//Read value
-					u8 value = bus.memoryController.ReadMemory(address);
-					u8 prev = value;
-
-					//Decrement and write
-					value--;
-					bus.memoryController.WriteMemory(address, value);
-
-					//Set flags
-					ComputeFlagH(prev, value, regs.main.f);
-					ComputeFlagV(prev, value, regs.main.f);
-					ComputeFlagZ(value, regs.main.f);
-					ComputeFlagS(value, regs.main.f);
-					SetFlag(FLAG_N, true, regs.main.f);
-
-					return 0;
-				}
-
-				//Increment 16-bit register
-				static u16 INC_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_INCDEC_16_REG_SHIFT);
-
-					//Increment reg
-					reg++;
-
-					return 0;
-				}
-
-				//Decrement 16-bit register
-				static u16 DEC_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u16& reg = DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_INCDEC_16_REG_SHIFT);
-
-					//Decrement reg
-					reg--;
-
-					return 0;
-				}
-
-				//Increment IX
-				static u16 INC_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Increment IX
-					regs.ix++;
-
-					return 0;
-				}
-
-				//Decrement IX
-				static u16 DEC_IX(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Decrement IX
-					regs.ix--;
-
-					return 0;
-				}
-
-				//Increment IY
-				static u16 INC_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Increment IY
-					regs.iy++;
-
-					return 0;
-				}
-
-				//Decrement IY
-				static u16 DEC_IY(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Decrement IY
-					regs.iy--;
-
-					return 0;
-				}
+				//Increment IXH/IXL
+				static auto INC_IXHL = INC_8<LD_Fetch_DST_rIXHL, LD_Store_rIXHL>;
 
 				//Increment IYH/IYL
-				static u16 INC_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_INCDEC_8_REG_SHIFT);
+				static auto INC_IYHL = INC_8<LD_Fetch_DST_rIYHL, LD_Store_rIYHL>;
 
-					//Increment reg
-					reg++;
+				//Decrement 8-bit register
+				static auto DEC_r8 = DEC_8<LD_Fetch_DST_r8, LD_Store_DST_r8>;
 
-					return 0;
-				}
+				//Decrement value at address in (HL)
+				static auto DEC_dHL = DEC_8<LD_Fetch_dHL, LD_Store_dHL>;
+
+				//Decrement value at address in (IX+offset)
+				static auto DEC_dIX = DEC_8<LD_Fetch_dIXoff, LD_Store_dIXoff>;
+
+				//Decrement value at address in (IY+offset)
+				static auto DEC_dIY = DEC_8<LD_Fetch_dIYoff, LD_Store_dIYoff>;
+
+				//Decrement IXH/IXL
+				static auto DEC_IXHL = DEC_8<LD_Fetch_DST_rIXHL, LD_Store_rIXHL>;
 
 				//Decrement IYH/IYL
-				static u16 DEC_IYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Determine reg
-					u8& reg = DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_INCDEC_8_REG_SHIFT);
+				static auto DEC_IYHL = DEC_8<LD_Fetch_DST_rIYHL, LD_Store_rIYHL>;
 
-					//Decrement reg
-					reg--;
+				//Increment 16-bit register
+				static auto INC_r16 = INC_16<LD_Fetch_DST_r16, LD_Store_r16>;
 
-					return 0;
-				}
+				//Increment IX
+				static auto INC_IX = INC_16<LD_Fetch_rIX, LD_Store_rIX>;
+
+				//Increment IY
+				static auto INC_IY = INC_16<LD_Fetch_rIY, LD_Store_rIY>;
+
+				//Decrement 16-bit register
+				static auto DEC_r16 = DEC_16<LD_Fetch_DST_r16, LD_Store_r16>;
+
+				//Decrement IX
+				static auto DEC_IX = DEC_16<LD_Fetch_rIX, LD_Store_rIX>;
+
+				//Decrement IY
+				static auto DEC_IY = DEC_16<LD_Fetch_rIY, LD_Store_rIY>;
 			}
 		}
 	}

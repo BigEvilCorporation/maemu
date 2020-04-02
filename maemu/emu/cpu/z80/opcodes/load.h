@@ -50,16 +50,34 @@ namespace emu
 					return DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 				}
 
+				//Load from destination 8-bit register
+				static u8 LD_Fetch_DST_r8(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg8(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+				}
+
 				//Load from 8-bit register (incl. IXH/IXL)
 				static u8 LD_Fetch_rIXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
 				}
 
+				//Load from destination 8-bit register (incl. IXH/IXL)
+				static u8 LD_Fetch_DST_rIXHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg8_IX(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
+				}
+
 				//Load from 8-bit register (incl. IYH/IYL)
 				static u8 LD_Fetch_rIYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_SRC_SHIFT);
+				}
+
+				//Load from destination 8-bit register (incl. IYH/IYL)
+				static u8 LD_Fetch_DST_rIYHL(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg8_IY(regs, opcode.opcode, REGISTER_DECODE_LD_8_REG_DST_SHIFT);
 				}
 
 				//Load A
@@ -214,6 +232,12 @@ namespace emu
 				static u16 LD_Fetch_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					return DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_SRC_SHIFT);
+				}
+
+				//Load from destination 16-bit register
+				static u16 LD_Fetch_DST_r16(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					return DecodeReg16(regs, opcode.opcode, REGISTER_DECODE_LD_16_REG_DST_SHIFT);
 				}
 
 				//Load from 16-bit register (incl. IXH/IXL)
