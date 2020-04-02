@@ -99,6 +99,21 @@ namespace emu
 					return 0;
 				}
 
+				//Read from port at C into address at (HL), increment HL and decrement B while B!=0
+				static u16 INIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					INI(opcode, params, regs, bus);
+
+					//If B != 0
+					if (regs.main.b != 0)
+					{
+						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
+						regs.pc -= 2;
+					}
+
+					return 0;
+				}
+
 				//Read from port at C into address at (HL), decrement HL and B
 				static u16 IND(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -119,45 +134,10 @@ namespace emu
 					return 0;
 				}
 
-				//Read from port at C into address at (HL), increment HL and decrement B while B!=0
-				static u16 INIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Read from port in C
-					u8 value = bus.portController.Read(regs.main.c);
-
-					//Write to address at (HL)
-					bus.memoryController.WriteMemory(regs.main.hl, value);
-
-					//Increment HL, decrement B
-					regs.main.hl++;
-					regs.main.b--;
-
-					//If B != 0
-					if (regs.main.b != 0)
-					{
-						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
-						regs.pc -= 2;
-					}
-
-					//Set flags
-					SetFlagZ(1, regs.main.f);
-					SetFlagN(1, regs.main.f);
-
-					return 0;
-				}
-
 				//Read from port at C into address at (HL), decrement HL and B while B!=0
 				static u16 INDR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Read from port in C
-					u8 value = bus.portController.Read(regs.main.c);
-
-					//Write to address at (HL)
-					bus.memoryController.WriteMemory(regs.main.hl, value);
-
-					//Decrement HL and B
-					regs.main.hl--;
-					regs.main.b--;
+					IND(opcode, params, regs, bus);
 
 					//If B != 0
 					if (regs.main.b != 0)
@@ -165,10 +145,6 @@ namespace emu
 						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
 						regs.pc -= 2;
 					}
-
-					//Set flags
-					SetFlagZ(1, regs.main.f);
-					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
@@ -192,6 +168,21 @@ namespace emu
 					return 0;
 				}
 
+				//Write from (HL) to port in (C), increment HL and decrement B while B!=0
+				static u16 OTIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
+				{
+					OTI(opcode, params, regs, bus);
+
+					//If B != 0
+					if (regs.main.b != 0)
+					{
+						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
+						regs.pc -= 2;
+					}
+
+					return 0;
+				}
+
 				//Write from (HL) to port in (C), then decrement HL and B
 				static u16 OTD(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
@@ -209,41 +200,10 @@ namespace emu
 					return 0;
 				}
 
-				//Write from (HL) to port in (C), increment HL and decrement B while B!=0
-				static u16 OTIR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
-				{
-					//Write value at (HL) to port in C
-					bus.portController.Write(regs.main.c, bus.memoryController.ReadMemory(regs.main.hl));
-
-					//Increment HL
-					regs.main.hl++;
-
-					//Decrement B
-					regs.main.b--;
-
-					//If B != 0
-					if (regs.main.b != 0)
-					{
-						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
-						regs.pc -= 2;
-					}
-
-					//Set flags
-					SetFlagZ(1, regs.main.f);
-					SetFlagN(1, regs.main.f);
-
-					return 0;
-				}
-
 				//Write from (HL) to port in (C), decrement HL and B while B!=0
 				static u16 OTDR(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
-					//Write value at (HL) to port in C
-					bus.portController.Write(regs.main.c, bus.memoryController.ReadMemory(regs.main.hl));
-
-					//Decrement HL and B
-					regs.main.hl--;
-					regs.main.b--;
+					OTD(opcode, params, regs, bus);
 
 					//If B != 0
 					if (regs.main.b != 0)
@@ -251,10 +211,6 @@ namespace emu
 						//Reset PC to start of instruction (ED redirect + opcode = 2 bytes)
 						regs.pc -= 2;
 					}
-
-					//Set flags
-					SetFlagZ(1, regs.main.f);
-					SetFlagN(1, regs.main.f);
 
 					return 0;
 				}
