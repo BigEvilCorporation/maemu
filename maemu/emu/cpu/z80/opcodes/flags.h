@@ -18,7 +18,7 @@ namespace emu
 					SetFlagH(0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Invert the C flag
@@ -29,7 +29,7 @@ namespace emu
 					SetFlagC((regs.main.f & FLAG_C) ? 0 : 1, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

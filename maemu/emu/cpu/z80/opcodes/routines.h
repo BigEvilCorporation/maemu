@@ -28,7 +28,7 @@ namespace emu
 					//Load PC
 					regs.pc = (params[1] << 8) | params[0];
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Call on condition routine at literal address
@@ -50,7 +50,7 @@ namespace emu
 						regs.pc = (params[1] << 8) | params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Return from routine to address at top of stack
@@ -64,7 +64,7 @@ namespace emu
 
 					regs.pc = (hi << 8) | lo;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Return on condition to address at top of stack
@@ -85,7 +85,7 @@ namespace emu
 						regs.pc = (hi << 8) | lo;
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Call a restart routine
@@ -106,7 +106,7 @@ namespace emu
 					//Set PC
 					regs.pc = (u16)addrLo;
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

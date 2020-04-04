@@ -21,7 +21,7 @@ namespace emu
 					//Jump
 					regs.pc = address;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump to 8-bit relative offset
@@ -30,7 +30,7 @@ namespace emu
 					//Jump
 					regs.pc += (s8)params[0];
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump on condition to literal address
@@ -46,7 +46,7 @@ namespace emu
 						regs.pc = (params[1] << 8) | params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump to address in (HL)
@@ -55,7 +55,7 @@ namespace emu
 					//Jump to (HL)
 					regs.pc = regs.main.hl;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump to address in (IX)
@@ -64,7 +64,7 @@ namespace emu
 					//Jump to (IX)
 					regs.pc = regs.ix;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump to address in (IY)
@@ -73,7 +73,7 @@ namespace emu
 					//Jump to (IY)
 					regs.pc = regs.iy;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump if Z set (to 8-bit relative offset)
@@ -86,7 +86,7 @@ namespace emu
 						regs.pc += (s8)params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump if Z not set (to 8-bit relative offset)
@@ -99,7 +99,7 @@ namespace emu
 						regs.pc += (s8)params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump if C set (to 8-bit relative offset)
@@ -112,7 +112,7 @@ namespace emu
 						regs.pc += (s8)params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Jump if C not set (to 8-bit relative offset)
@@ -125,7 +125,7 @@ namespace emu
 						regs.pc += (s8)params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Decrement B, jump if non-zero (to 8-bit relative offset)
@@ -141,7 +141,7 @@ namespace emu
 						regs.pc += (s8)params[0];
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

@@ -62,7 +62,7 @@ namespace emu
 					//Load, modify, store value
 					STORE_8_T(opcode, params, regs, bus, MODIFY_8_T(opcode, params, regs, bus, LOAD_8_T(opcode, params, regs, bus)));
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Load and test value
@@ -72,7 +72,7 @@ namespace emu
 					//Load and test value
 					TEST_8_T(opcode, params, regs, bus, LOAD_8_T(opcode, params, regs, bus));
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Arithmetic shift to the left
@@ -100,7 +100,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Arithmetic shift to the left, leaving 1 in bottom bit
@@ -128,7 +128,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Arithmetic shift to the right
@@ -156,7 +156,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Non-arithmetic shift to the right
@@ -184,7 +184,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate to the left
@@ -211,7 +211,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate 8-bit register to the left (incl. carry flag)
@@ -239,7 +239,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate value at address in (IX+offset) to the left, and copy result to 8-bit register
@@ -269,7 +269,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate to the right
@@ -296,7 +296,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate 8-bit register to the right (incl. carry flag)
@@ -324,7 +324,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Logic OR with A
@@ -337,7 +337,7 @@ namespace emu
 					//Set flags
 					ComputeFlags_OR(regs.main.a, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Logic AND with A
@@ -350,7 +350,7 @@ namespace emu
 					//Set flags
 					ComputeFlags_AND(regs.main.a, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Logic XOR with A
@@ -363,7 +363,7 @@ namespace emu
 					//Set flags
 					ComputeFlags_XOR(regs.main.a, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -585,7 +585,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate A to the left (incl. carry flag)
@@ -603,7 +603,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate A to the right
@@ -620,7 +620,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate A to the right (incl. carry flag)
@@ -638,7 +638,7 @@ namespace emu
 					SetFlag(FLAG_H, false, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Invert A
@@ -648,7 +648,7 @@ namespace emu
 					SetFlagH(1, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

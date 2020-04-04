@@ -124,10 +124,7 @@ namespace emu
 					}
 
 					//Execute instruction
-					opcode.handler(opcode, params, m_regs, m_bus);
-
-					//Set cycle count
-					cycleCount = opcode.cycles;
+					cycleCount = opcode.handler(opcode, params, m_regs, m_bus);
 				}
 
 				return cycleCount;

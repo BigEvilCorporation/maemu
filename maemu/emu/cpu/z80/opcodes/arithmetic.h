@@ -31,7 +31,7 @@ namespace emu
 					//Set result
 					regs.main.a = (u8)result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Add to A (plus the C flag)
@@ -51,7 +51,7 @@ namespace emu
 					//Set result
 					regs.main.a = (u8)result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Add two 16-bit registers
@@ -73,7 +73,7 @@ namespace emu
 					SetFlagH((((reg2 ^ reg1 ^ result) >> 8)& FLAG_H) ? 1 : 0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Subtract from A
@@ -90,7 +90,7 @@ namespace emu
 					//Set result
 					regs.main.a = (u8)result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Subtract from A (plus the C flag)
@@ -110,7 +110,7 @@ namespace emu
 					//Set result
 					regs.main.a = (u8)result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -233,7 +233,7 @@ namespace emu
 					//Set result
 					regs.main.hl = result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Subtract 16-bit register (plus the C flag) from HL
@@ -259,7 +259,7 @@ namespace emu
 					//Set result
 					regs.main.hl = result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Negate A
@@ -278,7 +278,7 @@ namespace emu
 					SetFlagC((prev != 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Binary Coded Decimal correction on A
@@ -322,7 +322,7 @@ namespace emu
 					//Set result
 					regs.main.a = result;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate three nybbles - lower A and value at (HL) - to the left
@@ -347,7 +347,7 @@ namespace emu
 					SetFlagH(0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Rotate three nybbles - lower A and value at (HL) - to the right
@@ -372,7 +372,7 @@ namespace emu
 					SetFlagH(0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

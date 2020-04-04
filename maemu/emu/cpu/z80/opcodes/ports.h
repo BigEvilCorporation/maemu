@@ -18,7 +18,7 @@ namespace emu
 					//Write A to port in param 1
 					bus.portController.Write(params[0], regs.main.a);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Write 8-bit register to port held in (C)
@@ -30,7 +30,7 @@ namespace emu
 					//Write to port in C
 					bus.portController.Write(regs.main.c, reg);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Write F to port held in (C)
@@ -39,7 +39,7 @@ namespace emu
 					//Write F to port in C
 					bus.portController.Write(regs.main.c, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port at 8-bit address to A
@@ -48,7 +48,7 @@ namespace emu
 					//Read port in param 1 to A
 					regs.main.a = bus.portController.Read(params[0]);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port in (C) to 8-bit register
@@ -67,7 +67,7 @@ namespace emu
 					SetFlagH(0, regs.main.f);
 					SetFlagN(0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port in (C) to F
@@ -76,7 +76,7 @@ namespace emu
 					//Read port in param 1 to F
 					regs.main.f = bus.portController.Read(regs.main.c);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port at C into address at (HL), increment HL, decrement B
@@ -96,7 +96,7 @@ namespace emu
 					ComputeFlagZ(regs.main.b, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port at C into address at (HL), increment HL and decrement B while B!=0
@@ -111,7 +111,7 @@ namespace emu
 						regs.pc -= 2;
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port at C into address at (HL), decrement HL and B
@@ -131,7 +131,7 @@ namespace emu
 					ComputeFlagZ(regs.main.b, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Read from port at C into address at (HL), decrement HL and B while B!=0
@@ -146,7 +146,7 @@ namespace emu
 						regs.pc -= 2;
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Write from (HL) to port in (C), then increment HL and decrement B
@@ -165,7 +165,7 @@ namespace emu
 					ComputeFlagZ(regs.main.b, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Write from (HL) to port in (C), increment HL and decrement B while B!=0
@@ -180,7 +180,7 @@ namespace emu
 						regs.pc -= 2;
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Write from (HL) to port in (C), then decrement HL and B
@@ -197,7 +197,7 @@ namespace emu
 					ComputeFlagZ(regs.main.b, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Write from (HL) to port in (C), decrement HL and B while B!=0
@@ -212,7 +212,7 @@ namespace emu
 						regs.pc -= 2;
 					}
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

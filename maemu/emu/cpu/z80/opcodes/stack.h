@@ -24,7 +24,7 @@ namespace emu
 					regs.sp--;
 					bus.memoryController.WriteMemory(regs.sp, reg & 0xFF);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Pop 16-bit register from stack
@@ -41,7 +41,7 @@ namespace emu
 
 					reg = (hi << 8) | lo;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Push IX to stack
@@ -53,7 +53,7 @@ namespace emu
 					regs.sp--;
 					bus.memoryController.WriteMemory(regs.sp, regs.ix & 0xFF);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Pop IX from stack
@@ -67,7 +67,7 @@ namespace emu
 
 					regs.ix = (hi << 8) | lo;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Push IY to stack
@@ -79,7 +79,7 @@ namespace emu
 					regs.sp--;
 					bus.memoryController.WriteMemory(regs.sp, regs.iy & 0xFF);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Pop IY from stack
@@ -93,7 +93,7 @@ namespace emu
 
 					regs.iy = (hi << 8) | lo;
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

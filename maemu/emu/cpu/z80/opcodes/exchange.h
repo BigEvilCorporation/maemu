@@ -17,7 +17,7 @@ namespace emu
 					regs.main.af = regs.alt.af;
 					regs.alt.af = temp;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Exchange DE with HL
@@ -27,7 +27,7 @@ namespace emu
 					regs.main.de = regs.main.hl;
 					regs.main.hl = temp;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Exchange BC with BC', DE with DE', HL with HL'
@@ -45,7 +45,7 @@ namespace emu
 					regs.main.hl = regs.alt.hl;
 					regs.alt.hl = temp;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Exchange value at address in (SP) with HL
@@ -58,7 +58,7 @@ namespace emu
 					regs.main.l = tempLo;
 					regs.main.h = tempHi;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Exchange value at address in (SP) with IX
@@ -71,7 +71,7 @@ namespace emu
 					regs.ixl = tempLo;
 					regs.ixh = tempHi;
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Exchange value at address in (SP) with IY
@@ -84,7 +84,7 @@ namespace emu
 					regs.iyl = tempLo;
 					regs.iyh = tempHi;
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

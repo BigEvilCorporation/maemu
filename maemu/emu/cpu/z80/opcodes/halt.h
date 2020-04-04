@@ -14,7 +14,7 @@ namespace emu
 				static u16 HALT(const Opcode& opcode, const OpcodeParams& params, Registers& regs, Bus& bus)
 				{
 					//TODO: Rewind PC until received interrupt
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

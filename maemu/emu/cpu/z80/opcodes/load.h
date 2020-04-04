@@ -329,7 +329,7 @@ namespace emu
 					//Load value
 					STORE_8_T(opcode, params, regs, bus, LOAD_8_T(opcode, params, regs, bus));
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Load 16-bit source to 16-bit destination
@@ -339,7 +339,7 @@ namespace emu
 					//Load value
 					STORE_16_T(opcode, params, regs, bus, LOAD_16_T(opcode, params, regs, bus));
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -472,7 +472,7 @@ namespace emu
 					SetFlag(FLAG_N, false, regs.main.f);
 					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Load address at (DE) from address at (HL), inc DE and HL, dec BC
@@ -493,7 +493,7 @@ namespace emu
 					SetFlag(FLAG_N, false, regs.main.f);
 					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Load address at (DE) from address at (HL), dec DE and HL, dec BC, loop until BC == 0
@@ -521,7 +521,7 @@ namespace emu
 					SetFlag(FLAG_N, false, regs.main.f);
 					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Load address at (DE) from address at (HL), inc DE and HL, dec BC, loop until BC == 0
@@ -549,7 +549,7 @@ namespace emu
 					SetFlag(FLAG_N, false, regs.main.f);
 					SetFlag(FLAG_PV, regs.main.bc != 0, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}

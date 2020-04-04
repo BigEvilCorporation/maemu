@@ -38,7 +38,7 @@ namespace emu
 					ComputeFlagV(prev, value, regs.main.f);
 					SetFlag(FLAG_N, false, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Decrement 8-bit
@@ -62,7 +62,7 @@ namespace emu
 					ComputeFlagS(value, regs.main.f);
 					SetFlag(FLAG_N, true, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Increment 16-bit
@@ -72,7 +72,7 @@ namespace emu
 					//Load, increment, store
 					STORE_16_T(opcode, params, regs, bus, LOAD_16_T(opcode, params, regs, bus) + 1);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Decrement 16-bit
@@ -82,7 +82,7 @@ namespace emu
 					//Load, decrement, store
 					STORE_16_T(opcode, params, regs, bus, LOAD_16_T(opcode, params, regs, bus) - 1);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////

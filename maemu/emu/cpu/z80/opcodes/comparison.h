@@ -28,7 +28,7 @@ namespace emu
 					//Set flags
 					ComputeFlags_ArithmeticSUB(regs.main.a, value, result, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ namespace emu
 					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Compare A with value at address in (HL), then increment HL and decrement BC while BC!=0 and A!=(HL)
@@ -88,7 +88,7 @@ namespace emu
 
 					} while (regs.main.bc != 0 && !CheckFlagZ(regs.main.f));
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Compare A with value at address in (HL), then decrement HL and BC
@@ -111,7 +111,7 @@ namespace emu
 					SetFlagH((((regs.main.a & 0xF) - (value & 0xF)) < 0) ? 1 : 0, regs.main.f);
 					SetFlagN(1, regs.main.f);
 
-					return 0;
+					return opcode.cycles;
 				}
 
 				//Compare A with value at address in (HL), then decrement HL and BC while BC!=0 and A!=(HL)
@@ -123,7 +123,7 @@ namespace emu
 
 					} while (regs.main.bc != 0 && !CheckFlagZ(regs.main.f));
 
-					return 0;
+					return opcode.cycles;
 				}
 			}
 		}
