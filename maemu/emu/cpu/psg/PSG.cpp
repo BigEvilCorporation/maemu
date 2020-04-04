@@ -58,7 +58,7 @@ namespace emu
 				for (int i = 0; i < PSG_TONE_CHANNEL_COUNT; i++)
 				{
 					//If channel enabled
-					if (m_timers[i] > 0)
+					if (m_registers.channels[i][PSG_CHANNEL_REG_DATA] > 0)
 					{
 						//Decrement channel counter
 						if (--m_timers[i] == 0)
@@ -89,12 +89,6 @@ namespace emu
 				{
 					//Data only
 					m_registers.channels[m_latchedChannel][m_latchedRegister] |= dataByte.unlatched.data << 4;
-				}
-
-				//If data, reset timer
-				if (m_latchedRegister == PSG_CHANNEL_REG_DATA)
-				{
-					m_timers[m_latchedChannel] = m_registers.channels[m_latchedChannel][m_latchedRegister];
 				}
 			}
 
