@@ -37,7 +37,7 @@ namespace app
 		m_gui = new ion::gui::GUI(ion::Vector2i(m_window.GetClientAreaWidth(), m_window.GetClientAreaHeight()), m_window.GetClientAreaHeight() / s_fixedUISize.y);
 
 		//Initialise emulator
-		if (!m_masterSystem.LoadROM("roms/zexdoc_sdsc.sms"))
+		if (!m_masterSystem.LoadROM("roms/sonic.sms"))
 		{
 			ion::debug::Error("Could not load ROM");
 		}
@@ -69,11 +69,6 @@ namespace app
 		//Setup rendering and audio
 		SetupRenderer();
 		SetupAudio();
-
-		//If not debugging, run immediately
-#if EMU_INCLUDE_AUDIO && !EMU_INCLUDE_DEBUGGER
-		m_audioVoice->Play();
-#endif
 	}
 
 	void StateEmu::SetupRenderer()
@@ -108,9 +103,23 @@ namespace app
 
 	void StateEmu::SetupAudio()
 	{
-		//Create voice
 #if EMU_INCLUDE_AUDIO
+		//Create voice
 		m_audioVoice = ion::engine.audio.engine->CreateVoice(m_audioSource, false);
+
+		//Buffer filled callback
+		m_masterSystem.SetAudioCallback(
+			[&](std::vector<emu::cpu::psg::SampleFormat>& buffer)
+			{
+				//Submit buffer
+				m_audioSource.PushBuffer(*m_audioVoice, buffer);
+
+				//Begin playback
+				if (m_audioVoice->GetState() != ion::audio::Voice::Playing)
+				{
+					m_audioVoice->Play();
+				}
+			});
 #endif
 	}
 
@@ -188,21 +197,27 @@ namespace app
 #endif
 		{
 #if EMU_INCLUDE_AUDIO
-			//Use audio clock
-			float audioClock = m_audioVoice->GetPositionSeconds();
-			float stepDelta = audioClock - m_prevAudioClock;
-			m_prevAudioClock = audioClock;
+			//Use system time until audio started
+			float stepDelta = deltaTime;
+			if (deltaTime > 0.0f)
+			{
+				static volatile bool breakMe = false;
+				breakMe = !breakMe;
+			}
+
+			if (m_audioVoice->GetState() == ion::audio::Voice::Playing)
+			{
+				//Use audio clock
+				float audioClock = m_audioVoice->GetPositionSeconds();
+				stepDelta = audioClock - m_prevAudioClock;
+				m_prevAudioClock = audioClock;
+			}
 #else
 			float stepDelta = EMU_DEFAULT_STEP_DELTA;
 #endif
 
 			//Tick machine a single frame
 			m_masterSystem.StepDelta(stepDelta);
-
-			//Push frame's audio buffer
-			std::vector<emu::cpu::psg::SampleFormat> audioBuffer;
-			m_masterSystem.ConsumeAudioBuffer(audioBuffer, AUDIO_NUM_CHANNELS);
-			m_audioSource.PushBuffer(audioBuffer);
 
 #if EMU_INCLUDE_DEBUGGER
 			debugAddressUpdated = true;

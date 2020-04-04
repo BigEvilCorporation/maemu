@@ -25,6 +25,8 @@ namespace emu
 	class MasterSystem
 	{
 	public:
+		typedef std::function<void(std::vector<cpu::psg::SampleFormat>&)> OnAudioBufferFilled;
+
 		MasterSystem();
 
 		//Initialisation
@@ -42,7 +44,7 @@ namespace emu
 		const std::vector<u32>& GetFramebuffer() const;
 
 		//Audio
-		void ConsumeAudioBuffer(std::vector<cpu::psg::SampleFormat>& buffer, int numChannels);
+		void SetAudioCallback(OnAudioBufferFilled const& callback);
 
 		//Input
 		void SetButtonState(peripherals::Joypad::PadIndex joypad, peripherals::Joypad::Button button, bool state);
@@ -86,22 +88,23 @@ namespace emu
 		ports::Controller* m_portController;
 
 		//Audio
-		cpu::psg::SampleFormat* m_audioBuffer;
-		u32 m_audioOutputPtr;
+		std::vector<cpu::psg::SampleFormat> m_audioBuffer;
+		OnAudioBufferFilled m_audioBufferCallback;
 
 		//Peripherals
 		peripherals::Joypad* m_joypad;
 		debug::SDSCConsole* m_console;
 
 		//Timing
-		u32 m_cycleCount;
-		int m_cyclesDelta;
+		u64 m_cycleCount;
+		s64 m_cyclesDelta;
 		int m_cyclesToNextScanline;
 		int m_cyclesToNextPSGStep;
 		int m_cyclesToNextDAC;
 		u16 m_scanline;
 
 		//Rendering
-		std::vector<u32> m_frameBuffer;
+		int m_frameBufferIdx;
+		std::vector<u32> m_frameBuffers[SMS_EMU_NUM_FRAMEBUFFERS];
 	};
 }

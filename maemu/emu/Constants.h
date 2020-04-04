@@ -3,8 +3,11 @@
 namespace emu
 {
 	//Audio
-	static const int SMS_PSG_OUTPUT_BUFFER_SIZE = 1024 * 8;
 	static const int SMS_PSG_OUTPUT_SAMPLE_RATE = 44100;
+	static const int SMS_PSG_OUTPUT_BUFFER_SIZE_SAMPLES = (SMS_PSG_OUTPUT_SAMPLE_RATE / 60) * 2;
+
+	//Video
+	static const int SMS_EMU_NUM_FRAMEBUFFERS = 2;
 
 	//Timing
 	static const int SMS_Z80_CYCLES_PER_SECOND_PAL = 3546894;

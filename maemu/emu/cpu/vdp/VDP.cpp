@@ -160,7 +160,7 @@ namespace emu
 
 				bool screenActive = (m_regs[VDP_REG_1_MODE_CONTROL_2] & VDP_REG_SCREEN_ENABLE_MASK) != 0;
 
-				if (!screenActive || (scanline < VDP_BORDER_TOP) || (scanline >= (VDP_SCANLINES_PAL - VDP_BORDER_BOTTOM)))
+				if (!screenActive || (scanline < VDP_BORDER_TOP) || (scanline >= (VDP_SCANLINES_NTSC - VDP_BORDER_BOTTOM)))
 				{
 					//Just draw BG colour
 					for (int dstx = 0; dstx < VDP_SCREEN_WIDTH; dstx++)

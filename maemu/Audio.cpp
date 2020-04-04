@@ -9,17 +9,16 @@ AudioSource::AudioSource()
 	m_audioProducerBufferIdx = 0;
 	m_audioConsumerBufferIdx = 0;
 
-	//Create buffers and fill with silence
+	//Create buffers
+	const int bufferSize = emu::SMS_PSG_OUTPUT_BUFFER_SIZE_SAMPLES * sizeof(emu::cpu::psg::SampleFormat) * AUDIO_NUM_CHANNELS;
+
 	for (int i = 0; i < AUDIO_NUM_BUFFERS; i++)
 	{
-		m_audioBuffers[i] = new ion::audio::Buffer(AUDIO_BUFFER_LEN_BYTES);
-		m_audioBuffers[i]->Lock();
-		m_audioBuffers[i]->Reserve(AUDIO_BUFFER_LEN_BYTES);
-		m_audioBuffers[i]->Unlock();
+		m_audioBuffers[i] = new ion::audio::Buffer(bufferSize);
 	}
 
-	//Init lead buffers
-	m_audioProducerBufferIdx = AUDIO_NUM_LEAD_BUFFERS;
+	//Lock first buffer
+	m_audioBuffers[0]->Lock();
 }
 
 bool AudioSource::OpenStream(OnStreamOpened const& onOpened)
@@ -31,19 +30,35 @@ void AudioSource::CloseStream(OnStreamClosed const& onClosed)
 {
 };
 
-void AudioSource::PushBuffer(const std::vector<emu::cpu::psg::SampleFormat>& buffer)
+void AudioSource::PushBuffer(ion::audio::Voice& voice, const std::vector<emu::cpu::psg::SampleFormat>& buffer)
 {
-	ion::audio::Buffer* writeBuffer = m_audioBuffers[m_audioProducerBufferIdx % AUDIO_NUM_BUFFERS];
-	writeBuffer->Lock();
-	writeBuffer->Reset();
-	writeBuffer->Add((const char*)buffer.data(), buffer.size() * sizeof(emu::cpu::psg::SampleFormat));
-	writeBuffer->Unlock();
-	ion::thread::atomic::Increment(m_audioProducerBufferIdx);
+	if (buffer.size() > 0)
+	{
+		//Write to current buffer
+		ion::audio::Buffer* writeBuffer = m_audioBuffers[m_audioProducerBufferIdx % AUDIO_NUM_BUFFERS];
+		writeBuffer->Reset();
+		writeBuffer->Add((const char*)buffer.data(), buffer.size() * sizeof(emu::cpu::psg::SampleFormat));
+		writeBuffer->Unlock();
+
+		//Submit to voice
+		voice.SubmitBuffer(*writeBuffer);
+
+		//Advance buffer
+		ion::thread::atomic::Increment(m_audioProducerBufferIdx);
+
+		//Lock next buffer
+		m_audioBuffers[m_audioProducerBufferIdx % AUDIO_NUM_BUFFERS]->Lock();
+	}
 }
 
 void AudioSource::RequestBuffer(ion::audio::SourceCallback& callback)
 {
-	callback.SubmitBuffer(*m_audioBuffers[m_audioConsumerBufferIdx % AUDIO_NUM_BUFFERS]);
-	ion::thread::atomic::Increment(m_audioConsumerBufferIdx);
-	ion::debug::Assert(m_audioConsumerBufferIdx < m_audioProducerBufferIdx, "StateEmu::AudioSource::RequestBuffer() - Not enough data");
+	if (m_audioConsumerBufferIdx < m_audioProducerBufferIdx)
+	{
+		ion::thread::atomic::Increment(m_audioConsumerBufferIdx);
+	}
+	else
+	{
+		ion::debug::Log("StateEmu::AudioSource::RequestBuffer() - Not enough data");
+	}
 }

@@ -10,8 +10,6 @@ namespace emu
 	{
 		namespace psg
 		{
-#pragma optimize("",off)
-
 			const s16 PSG::s_attenuationTable[] =
 			{
 				32767,
@@ -109,7 +107,6 @@ namespace emu
 			{
 				return m_registers;
 			}
-#pragma optimize("",on)
 		}
 	}
 }

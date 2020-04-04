@@ -25,7 +25,7 @@ namespace emu
 		m_romSize = 0;
 		m_cycleCount = 0;
 		m_scanline = 0;
-		m_audioOutputPtr = 0;
+		m_frameBufferIdx = 0;
 
 		//Construct the system
 		BuildSystem();
@@ -65,13 +65,15 @@ namespace emu
 		m_joypad = new peripherals::Joypad(*m_portController);
 		m_console = new debug::SDSCConsole(*m_portController);
 
-		//Initialise framebuffer
+		//Initialise framebuffers
 		//TODO: PAL vs. NTSC
-		m_frameBuffer.resize(cpu::vdp::VDP_SCREEN_WIDTH * cpu::vdp::VDP_SCANLINES_PAL);
+		for (int i = 0; i < SMS_EMU_NUM_FRAMEBUFFERS; i++)
+		{
+			m_frameBuffers[i].resize(cpu::vdp::VDP_SCREEN_WIDTH * cpu::vdp::VDP_SCANLINES_NTSC);
+		}
 
-		//Alloc and initialise audio buffer
-		m_audioBuffer = new cpu::psg::SampleFormat[SMS_PSG_OUTPUT_BUFFER_SIZE];
-		ion::memory::MemSet(m_audioBuffer, 0, sizeof(cpu::psg::SampleFormat) * SMS_PSG_OUTPUT_BUFFER_SIZE);
+		//Initialise audio buffer
+		m_audioBuffer.reserve(SMS_PSG_OUTPUT_BUFFER_SIZE_SAMPLES);
 	}
 
 	bool MasterSystem::LoadROM(const std::string& filename)
@@ -129,8 +131,11 @@ namespace emu
 
 	void MasterSystem::StepDelta(float deltaTime)
 	{
+		//Can only step full instructions, so keep track of over/under cycles
 		m_cyclesDelta += ion::maths::Round((float)SMS_Z80_CYCLES_PER_SECOND_NTSC * deltaTime);
-		m_cyclesDelta -= StepCycles(m_cyclesDelta);
+
+		if(m_cyclesDelta > 0)
+			m_cyclesDelta -= StepCycles(m_cyclesDelta);
 	}
 
 	void MasterSystem::StepFrame()
@@ -156,17 +161,21 @@ namespace emu
 
 	u32 MasterSystem::StepCycles(u32 cycles)
 	{
+		//Process until (at least) this number of cycles executed
 		int cyclesRemaining = (int)cycles;
-		u32 totalCyclesExecuted = 0;
+		u64 totalCyclesExecuted = 0;
 
 		while(cyclesRemaining > 0)
 		{
+			//Step one instruction
 			u32 cyclesExecuted = m_Z80->StepInstruction();
 
+			//Adjust cycle counts based on last instruction executed
 			m_cycleCount += cyclesExecuted;
 			totalCyclesExecuted += cyclesExecuted;
 			cyclesRemaining -= cyclesExecuted;
 
+			//Tick audio/video by same number of cycles
 			ProcessAudioVideo(cyclesExecuted);
 		}
 
@@ -180,14 +189,14 @@ namespace emu
 		m_cyclesToNextDAC -= cycles;
 
 		//Process PSG
-		if (m_cyclesToNextPSGStep <= 0)
+		while (m_cyclesToNextPSGStep <= 0)
 		{
 			m_PSG->Step();
 			m_cyclesToNextPSGStep += SMS_Z80_CYCLES_PER_PSG_STEP;
 		}
 
 		//Process scanline rendering
-		if (m_cyclesToNextScanline <= 0)
+		while (m_cyclesToNextScanline <= 0)
 		{
 			//Begin scanline (sets VINT if 0)
 			m_VDP->BeginScanline(m_scanline);
@@ -198,22 +207,32 @@ namespace emu
 				m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
 			}
 
-			m_VDP->DrawLine(&m_frameBuffer[m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
+			m_VDP->DrawLine(&m_frameBuffers[m_frameBufferIdx][m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
 			m_scanline++;
 
 			if (m_scanline == cpu::vdp::VDP_SCANLINES_NTSC)
 			{
+				//End of video frame, swap framebuffers and reset scanline
 				m_scanline = 0;
+				m_frameBufferIdx = ((m_frameBufferIdx + 1) % SMS_EMU_NUM_FRAMEBUFFERS);
 			}
 
 			m_cyclesToNextScanline += SMS_Z80_CYCLES_PER_SCANLINE;
 		}
 
 		//Process DAC
-		if (m_cyclesToNextDAC <= 0)
+		while (m_cyclesToNextDAC <= 0)
 		{
-			ion::debug::Assert(m_audioOutputPtr < SMS_PSG_OUTPUT_BUFFER_SIZE, "Out of audio buffer space, PSG running too fast");
-			m_audioBuffer[m_audioOutputPtr++] = m_PSG->GetOutputSample();
+			m_audioBuffer.push_back(m_PSG->GetOutputSample());
+
+			if (m_audioBuffer.size() == SMS_PSG_OUTPUT_BUFFER_SIZE_SAMPLES)
+			{
+				if (m_audioBufferCallback)
+					m_audioBufferCallback(m_audioBuffer);
+
+				m_audioBuffer.clear();
+			}
+
 			m_cyclesToNextDAC += SMS_Z80_CYCLES_PER_DAC_OUT;
 		}
 	}
@@ -225,22 +244,12 @@ namespace emu
 
 	const std::vector<u32>& MasterSystem::GetFramebuffer() const
 	{
-		return m_frameBuffer;
+		return m_frameBuffers[ion::maths::WrapRange(m_frameBufferIdx - 1, 0, SMS_EMU_NUM_FRAMEBUFFERS)];
 	}
 
-	void MasterSystem::ConsumeAudioBuffer(std::vector<cpu::psg::SampleFormat>& buffer, int numChannels)
+	void MasterSystem::SetAudioCallback(OnAudioBufferFilled const& callback)
 	{
-		buffer.resize(m_audioOutputPtr * numChannels);
-
-		for (int i = 0; i < m_audioOutputPtr; i++)
-		{
-			for (int j = 0; j < numChannels; j++)
-			{
-				buffer[(i * numChannels) + j] = m_audioBuffer[i];
-			}
-		}
-
-		m_audioOutputPtr = 0;
+		m_audioBufferCallback = callback;
 	}
 
 	const debug::SDSCConsole& MasterSystem::GetConsole() const
