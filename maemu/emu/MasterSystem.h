@@ -34,11 +34,7 @@ namespace emu
 		void Reset();
 
 		//Processing
-		void StepDelta(float deltaTime);
-		void StepFrame();
-		void StepScanline();
-		u32 StepCycles(u32 cycles);
-		void StepInstruction();
+		u32 StepDelta(double deltaTime);
 
 		//Rendering
 		const std::vector<u32>& GetFramebuffer() const;
@@ -60,10 +56,11 @@ namespace emu
 		memory::Storage& GetRAM();
 		memory::Mapper& GetROM();
 		memory::Storage& GetVRAM();
+		u64 GetZ80CyclesExecuted() const;
+		u64 GetAudioSamplesWritten() const;
 
 	private:
 		void BuildSystem();
-		void ProcessAudioVideo(u32 cycles);
 
 		//Processors
 		cpu::z80::Z80* m_Z80;
@@ -98,9 +95,9 @@ namespace emu
 		//Timing
 		u64 m_cycleCount;
 		s64 m_cyclesDelta;
+		u64 m_audioSamplesWritten;
 		int m_cyclesToNextScanline;
 		int m_cyclesToNextPSGStep;
-		int m_cyclesToNextDAC;
 		u16 m_scanline;
 
 		//Rendering

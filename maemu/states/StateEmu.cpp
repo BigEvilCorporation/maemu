@@ -27,7 +27,7 @@ namespace app
 		m_Z80ErrorState = 0;
 #endif
 		
-		m_prevAudioClock = 0.0f;
+		m_prevAudioClock = 0.0;
 	}
 
 	void StateEmu::OnEnterState()
@@ -69,11 +69,16 @@ namespace app
 		//Setup rendering and audio
 		SetupRenderer();
 		SetupAudio();
+
+#if EMU_INCLUDE_AUDIO
+		//Begin
+		m_audioVoice->Play();
+#endif
 	}
 
 	void StateEmu::SetupRenderer()
 	{
-		ion::Vector2i renderBufferSize(emu::cpu::vdp::VDP_SCREEN_WIDTH, emu::cpu::vdp::VDP_SCANLINES_PAL);
+		ion::Vector2i renderBufferSize(emu::cpu::vdp::VDP_SCREEN_WIDTH, emu::cpu::vdp::VDP_SCANLINES_NTSC);
 
 		m_renderPrimitive = new ion::render::Quad(ion::render::Quad::xy, ion::Vector2(m_window.GetClientAreaWidth() / 2.0f, m_window.GetClientAreaHeight() / 2.0f));
 		m_renderPrimitive->SetTexCoords(s_texCoords);
@@ -107,18 +112,21 @@ namespace app
 		//Create voice
 		m_audioVoice = ion::engine.audio.engine->CreateVoice(m_audioSource, false);
 
+		//Submit silent buffers
+		std::vector<emu::cpu::psg::SampleFormat> silentBuffer;
+		silentBuffer.resize(emu::SMS_PSG_OUTPUT_BUFFER_SIZE_SAMPLES, 0);
+
+		for (int i = 0; i < AUDIO_NUM_INITIAL_BUFFERS; i++)
+		{
+			m_audioSource.PushBuffer(*m_audioVoice, silentBuffer);
+		}
+
 		//Buffer filled callback
 		m_masterSystem.SetAudioCallback(
 			[&](std::vector<emu::cpu::psg::SampleFormat>& buffer)
 			{
 				//Submit buffer
 				m_audioSource.PushBuffer(*m_audioVoice, buffer);
-
-				//Begin playback
-				if (m_audioVoice->GetState() != ion::audio::Voice::Playing)
-				{
-					m_audioVoice->Play();
-				}
 			});
 #endif
 	}
@@ -197,27 +205,16 @@ namespace app
 #endif
 		{
 #if EMU_INCLUDE_AUDIO
-			//Use system time until audio started
-			float stepDelta = deltaTime;
-			if (deltaTime > 0.0f)
-			{
-				static volatile bool breakMe = false;
-				breakMe = !breakMe;
-			}
-
-			if (m_audioVoice->GetState() == ion::audio::Voice::Playing)
-			{
-				//Use audio clock
-				float audioClock = m_audioVoice->GetPositionSeconds();
-				stepDelta = audioClock - m_prevAudioClock;
-				m_prevAudioClock = audioClock;
-			}
+			//Use audio clock
+			double audioClock = m_audioVoice->GetPositionSeconds();
+			double stepDelta = audioClock - m_prevAudioClock;
+			m_prevAudioClock = audioClock;
 #else
-			float stepDelta = EMU_DEFAULT_STEP_DELTA;
+			double stepDelta = EMU_DEFAULT_STEP_DELTA;
 #endif
 
 			//Tick machine a single frame
-			m_masterSystem.StepDelta(stepDelta);
+			u32 cycles = m_masterSystem.StepDelta(stepDelta);
 
 #if EMU_INCLUDE_DEBUGGER
 			debugAddressUpdated = true;
@@ -282,15 +279,17 @@ namespace app
 
 		//Update FPS display
 		m_fpsCounter.Update();
-		if (m_fpsCounter.GetFrameCount() % 30 == 0)
-		{
-			//Set window title
-			std::stringstream text;
-			text.setf(std::ios::fixed, std::ios::floatfield);
-			text.precision(2);
-			text << "maemu : FPS: " << m_fpsCounter.GetLastFPS();
-			m_window.SetTitle(text.str().c_str());
-		}
+
+		//Set window title
+		std::stringstream text;
+		text.setf(std::ios::fixed, std::ios::floatfield);
+		text.precision(2);
+		text << "maemu : FPS: " << m_fpsCounter.GetLastFPS()
+			<< " :: audio clock: " << m_audioVoice->GetPositionSeconds()
+			<< " :: sample clock: " << ((float)m_masterSystem.GetAudioSamplesWritten() / emu::SMS_PSG_OUTPUT_SAMPLE_RATE)
+			<< " :: Z80 clock: " << ((float)m_masterSystem.GetZ80CyclesExecuted() / emu::SMS_Z80_CYCLES_PER_SECOND_NTSC)
+			<< " :: buffers queued: " << m_audioVoice->GetQueuedBuffers();
+		m_window.SetTitle(text.str().c_str());
 
 		return true;
 	}

@@ -35,11 +35,9 @@ public:
 	void PushBuffer(ion::audio::Voice& voice, const std::vector<emu::cpu::psg::SampleFormat>& buffer);
 
 	u32 GetProducerIdx() const { return m_audioProducerBufferIdx; }
-	u32 GetConsumerIdx() const { return m_audioConsumerBufferIdx; }
 
 private:
 	u32 m_audioProducerBufferIdx;
-	u32 m_audioConsumerBufferIdx;
 	ion::audio::Buffer* m_audioBuffers[AUDIO_NUM_BUFFERS];
 	AudioStreamDesc m_audioStreamDesc;
 };

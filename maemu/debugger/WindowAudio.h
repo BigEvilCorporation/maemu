@@ -41,7 +41,6 @@ namespace debug
 			} channels[emu::cpu::psg::PSG_CHANNEL_COUNT];
 			
 			ion::gui::TextBox buffersSubmitted;
-			ion::gui::TextBox buffersConsumed;
 		} m_textBoxes;
 	};
 }

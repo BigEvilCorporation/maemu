@@ -78,7 +78,7 @@ namespace app
 		//Audio
 		ion::audio::Voice* m_audioVoice;
 		AudioSource m_audioSource;
-		float m_prevAudioClock;
+		double m_prevAudioClock;
 
 #if defined ION_RENDERER_SHADER
 		ion::io::ResourceHandle<ion::render::Shader> m_shaderFlatTextured;

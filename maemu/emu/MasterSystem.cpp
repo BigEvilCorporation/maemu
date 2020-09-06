@@ -70,6 +70,7 @@ namespace emu
 		for (int i = 0; i < SMS_EMU_NUM_FRAMEBUFFERS; i++)
 		{
 			m_frameBuffers[i].resize(cpu::vdp::VDP_SCREEN_WIDTH * cpu::vdp::VDP_SCANLINES_NTSC);
+			std::fill(m_frameBuffers[i].begin(), m_frameBuffers[i].end(), 0);
 		}
 
 		//Initialise audio buffer
@@ -123,108 +124,73 @@ namespace emu
 		//Reset counters
 		m_cycleCount = 0;
 		m_cyclesDelta = 0;
+		m_audioSamplesWritten = 0;
 		m_scanline = 0;
 		m_cyclesToNextScanline = SMS_Z80_CYCLES_PER_SCANLINE;
 		m_cyclesToNextPSGStep = SMS_Z80_CYCLES_PER_PSG_STEP;
-		m_cyclesToNextDAC = SMS_Z80_CYCLES_PER_DAC_OUT;
 	}
 
-	void MasterSystem::StepDelta(float deltaTime)
+	u32 MasterSystem::StepDelta(double deltaTime)
 	{
-		//Can only step full instructions, so keep track of over/under cycles
-		m_cyclesDelta += ion::maths::Round((float)SMS_Z80_CYCLES_PER_SECOND_NTSC * deltaTime);
+		//Can only step full Z80 instructions, so keep track of over/under Z80 cycles
+		u64 numDACCycles = ion::maths::Round(deltaTime * SMS_PSG_OUTPUT_SAMPLE_RATE);
+		u64 numz80CyclesPerDAC = SMS_Z80_CYCLES_PER_SECOND_NTSC / SMS_PSG_OUTPUT_SAMPLE_RATE;
+		
+		u32 totalZ80Cycles = 0;
 
-		if(m_cyclesDelta > 0)
-			m_cyclesDelta -= StepCycles(m_cyclesDelta);
-	}
-
-	void MasterSystem::StepFrame()
-	{
-		for(int i = 0; i < cpu::vdp::VDP_SCANLINES_NTSC; i++)
+		for (int i = 0; i < numDACCycles; i++)
 		{
-			StepScanline();
-		}
-	}
+			m_cyclesDelta += numz80CyclesPerDAC;
 
-	void MasterSystem::StepScanline()
-	{
-		//Step approx. one scanline's worth of CPU cycles
-		StepCycles(SMS_Z80_CYCLES_PER_SCANLINE);
-	}
-
-	void MasterSystem::StepInstruction()
-	{
-		u32 cyclesExecuted = m_Z80->StepInstruction();
-		m_cycleCount += cyclesExecuted;
-		ProcessAudioVideo(cyclesExecuted);
-	}
-
-	u32 MasterSystem::StepCycles(u32 cycles)
-	{
-		//Process until (at least) this number of cycles executed
-		int cyclesRemaining = (int)cycles;
-		u64 totalCyclesExecuted = 0;
-
-		while(cyclesRemaining > 0)
-		{
-			//Step one instruction
-			u32 cyclesExecuted = m_Z80->StepInstruction();
-
-			//Adjust cycle counts based on last instruction executed
-			m_cycleCount += cyclesExecuted;
-			totalCyclesExecuted += cyclesExecuted;
-			cyclesRemaining -= cyclesExecuted;
-
-			//Tick audio/video by same number of cycles
-			ProcessAudioVideo(cyclesExecuted);
-		}
-
-		return totalCyclesExecuted;
-	}
-
-	void MasterSystem::ProcessAudioVideo(u32 cycles)
-	{
-		m_cyclesToNextScanline -= cycles;
-		m_cyclesToNextPSGStep -= cycles;
-		m_cyclesToNextDAC -= cycles;
-
-		//Process PSG
-		while (m_cyclesToNextPSGStep <= 0)
-		{
-			m_PSG->Step();
-			m_cyclesToNextPSGStep += SMS_Z80_CYCLES_PER_PSG_STEP;
-		}
-
-		//Process scanline rendering
-		while (m_cyclesToNextScanline <= 0)
-		{
-			//Begin scanline (sets VINT if 0)
-			m_VDP->BeginScanline(m_scanline);
-
-			//TODO: VDP should interrupt via bus
-			if (m_VDP->PeekStatus() & cpu::vdp::VDP_STATUS_VBLANK)
+			while (m_cyclesDelta > 0)
 			{
-				m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
+				//Step Z80
+				u32 z80CyclesExecuted = m_Z80->StepInstruction();
+
+				totalZ80Cycles += z80CyclesExecuted;
+				m_cycleCount += z80CyclesExecuted;
+				m_cyclesDelta -= z80CyclesExecuted;
+				m_cyclesToNextScanline -= z80CyclesExecuted;
+				m_cyclesToNextPSGStep -= z80CyclesExecuted;
+
+				//Process PSG
+				while (m_cyclesToNextPSGStep <= 0)
+				{
+					m_PSG->Step();
+					m_cyclesToNextPSGStep += SMS_Z80_CYCLES_PER_PSG_STEP;
+				}
+
+				//Process scanline rendering
+				while (m_cyclesToNextScanline <= 0)
+				{
+					//Begin scanline (sets VINT if 0)
+					m_VDP->BeginScanline(m_scanline);
+
+					//TODO: VDP should interrupt via bus
+					if (m_VDP->PeekStatus() & cpu::vdp::VDP_STATUS_VBLANK)
+					{
+						m_Z80->TriggerInterrupt(cpu::z80::Z80_INTERRUPT_IFF1);
+					}
+
+					m_VDP->DrawLine(&m_frameBuffers[m_frameBufferIdx][m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
+					m_scanline++;
+
+					if (m_scanline == cpu::vdp::VDP_SCANLINES_NTSC)
+					{
+						//End of video frame, swap framebuffers and reset scanline
+						m_scanline = 0;
+						m_frameBufferIdx = ((m_frameBufferIdx + 1) % SMS_EMU_NUM_FRAMEBUFFERS);
+					}
+
+					m_cyclesToNextScanline += SMS_Z80_CYCLES_PER_SCANLINE;
+				}
 			}
 
-			m_VDP->DrawLine(&m_frameBuffers[m_frameBufferIdx][m_scanline * cpu::vdp::VDP_SCREEN_WIDTH], m_scanline);
-			m_scanline++;
-
-			if (m_scanline == cpu::vdp::VDP_SCANLINES_NTSC)
-			{
-				//End of video frame, swap framebuffers and reset scanline
-				m_scanline = 0;
-				m_frameBufferIdx = ((m_frameBufferIdx + 1) % SMS_EMU_NUM_FRAMEBUFFERS);
-			}
-
-			m_cyclesToNextScanline += SMS_Z80_CYCLES_PER_SCANLINE;
-		}
-
-		//Process DAC
-		while (m_cyclesToNextDAC <= 0)
-		{
+			//Process DAC
 			m_audioBuffer.push_back(m_PSG->GetOutputSample());
+			m_audioSamplesWritten++;
 
+			//Push audio buffer if full
 			if (m_audioBuffer.size() == SMS_PSG_OUTPUT_BUFFER_SIZE_SAMPLES)
 			{
 				if (m_audioBufferCallback)
@@ -232,9 +198,9 @@ namespace emu
 
 				m_audioBuffer.clear();
 			}
-
-			m_cyclesToNextDAC += SMS_Z80_CYCLES_PER_DAC_OUT;
 		}
+
+		return totalZ80Cycles;
 	}
 
 	void MasterSystem::SetButtonState(peripherals::Joypad::PadIndex joypad, peripherals::Joypad::Button button, bool state)
@@ -290,5 +256,15 @@ namespace emu
 	void MasterSystem::GetPCHistory(std::vector<cpu::z80::Registers>& history) const
 	{
 		return m_Z80->GetPCHistory(history);
+	}
+
+	u64 MasterSystem::GetZ80CyclesExecuted() const
+	{
+		return m_cycleCount;
+	}
+
+	u64 MasterSystem::GetAudioSamplesWritten() const
+	{
+		return m_audioSamplesWritten;
 	}
 }

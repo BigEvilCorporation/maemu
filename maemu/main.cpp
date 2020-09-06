@@ -4,33 +4,38 @@
 
 #include <ion/core/thread/Sleep.h>
 
-int main(int numargs, char** args)
+namespace ion
 {
-	//Create engine
-	ion::engine.Initialise("maemu", 1024, 768, false, ion::render::Viewport::eOrtho2DAbsolute);
-
-	app::MasterSystemEmu app;
-
-	if(app.Initialise())
+	int EntryPoint(int numargs, char** args)
 	{
-		float deltaTime = 0.0f;
-		bool run = true;
-		while(run)
-		{
-			u64 startTicks = ion::time::GetSystemTicks();
+		//Create engine
+		ion::engine.Initialise("maemu", 2048, 1536, false, ion::render::Viewport::eOrtho2DAbsolute);
 
-			if(run = app.Update(deltaTime))
+		app::MasterSystemEmu app;
+
+		if (app.Initialise())
+		{
+			float deltaTime = 0.0f;
+			bool run = true;
+			while (run)
 			{
-				app.Render();
+				u64 startTicks = ion::time::GetSystemTicks();
+
+				if (run = app.Update(deltaTime))
+				{
+					app.Render();
+				}
+
+				u64 endTicks = ion::time::GetSystemTicks();
+				deltaTime = (float)ion::time::TicksToSeconds(endTicks - startTicks);
 			}
 
-			u64 endTicks = ion::time::GetSystemTicks();
-			deltaTime = (float)ion::time::TicksToSeconds(endTicks - startTicks);
+			app.Shutdown();
 		}
 
-		app.Shutdown();
-	}
+		//Shutdown engine
+		ion::engine.Shutdown();
 
-	//Shutdown engine
-	ion::engine.Shutdown();
+		return 0;
+	}
 }

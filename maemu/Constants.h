@@ -7,7 +7,8 @@
 #define EMU_INCLUDE_DEBUGGER	0
 
 static const int AUDIO_NUM_CHANNELS = 1;
-static const int AUDIO_NUM_BUFFERS = 2;
+static const int AUDIO_NUM_BUFFERS = 4;
+static const int AUDIO_NUM_INITIAL_BUFFERS = 2;
 
 #if !EMU_INCLUDE_AUDIO
 //Large default delta for faster ZEXALL testing

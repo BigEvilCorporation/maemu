@@ -19,7 +19,6 @@ namespace debug
 		}
 
 		AddWidget(m_textBoxes.buffersSubmitted);
-		AddWidget(m_textBoxes.buffersConsumed);
 	}
 
 	WindowAudio::~WindowAudio()
@@ -49,7 +48,6 @@ namespace debug
 	void WindowAudio::UpdateBuffers()
 	{
 		SetRegText(m_textBoxes.buffersSubmitted, "Buffers submitted:", m_audioSource.GetProducerIdx());
-		SetRegText(m_textBoxes.buffersConsumed, "Buffers consumed:", m_audioSource.GetConsumerIdx());
 	}
 
 	void WindowAudio::SetRegText(ion::gui::TextBox& text, const std::string& name, u32 value)
