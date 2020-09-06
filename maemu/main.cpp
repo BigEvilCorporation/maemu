@@ -14,6 +14,9 @@ namespace ion
 			ion::debug::Log("github.com/BigEvilCorporation/maemu\n");
 			ion::debug::Log(" Usage:");
 			ion::debug::Log("  maeumu.exe [rom_filename]\n");
+			ion::debug::Log(" Controls:");
+			ion::debug::Log("  Arrow keys, A, S");
+			ion::debug::Log("  or an XInput compatible gamepad.\n");
 			ion::debug::Log("<3 TRANS RIGHTS <3");
 			return 0;
 		}
