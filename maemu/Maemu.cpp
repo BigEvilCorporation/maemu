@@ -22,7 +22,7 @@ namespace app
 		m_stateEmu = nullptr;
 	}
 
-	bool MasterSystemEmu::Initialise()
+	bool MasterSystemEmu::Initialise(const std::string& romFilename)
 	{
 		//Set resource directories
 		ion::engine.io.resourceManager->SetResourceDirectory<ion::render::Texture>("textures", ".ion.texture");
@@ -34,7 +34,7 @@ namespace app
 			return false;
 		}
 
-		if (!InitialiseGameStates())
+		if (!InitialiseGameStates(romFilename))
 		{
 			return false;
 		}
@@ -85,10 +85,10 @@ namespace app
 		return true;
 	}
 
-	bool MasterSystemEmu::InitialiseGameStates()
+	bool MasterSystemEmu::InitialiseGameStates(const std::string& romFilename)
 	{
 		//Create states
-		m_stateEmu = new StateEmu(m_stateManager, *ion::engine.io.resourceManager, *ion::engine.render.window);
+		m_stateEmu = new StateEmu(m_stateManager, *ion::engine.io.resourceManager, *ion::engine.render.window, romFilename);
 
 		//Push first state
 		m_stateManager.PushState(*m_stateEmu);

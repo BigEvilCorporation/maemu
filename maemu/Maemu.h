@@ -25,7 +25,7 @@ namespace app
 	public:
 		MasterSystemEmu();
 
-		virtual bool Initialise();
+		virtual bool Initialise(const std::string& romFilename);
 		virtual void Shutdown();
 		virtual bool Update(float deltaTime);
 		virtual void Render();
@@ -33,7 +33,7 @@ namespace app
 	private:
 
 		bool InitialiseRenderer();
-		bool InitialiseGameStates();
+		bool InitialiseGameStates(const std::string& romFilename);
 
 		void ShutdownGameStates();
 

@@ -18,9 +18,10 @@ namespace app
 
 	const ion::Vector2 StateEmu::s_fixedUISize(1024.0f, 768.0f);
 
-	StateEmu::StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window)
+	StateEmu::StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window, const std::string& romFilename)
 		: ion::gamekit::State("emu", stateManager, resourceManager)
 		, m_window(window)
+		, m_romFilename(romFilename)
 	{
 #if EMU_INCLUDE_DEBUGGER
 		m_debuggerState = DebuggerState::Break;
@@ -39,7 +40,7 @@ namespace app
 		//Initialise emulator
 		if (!m_masterSystem.LoadROM("roms/sonic.sms"))
 		{
-			ion::debug::Error("Could not load ROM");
+			ion::debug::error << "Could not load ROM " << m_romFilename << ion::debug::end;
 		}
 
 #if EMU_INCLUDE_DEBUGGER

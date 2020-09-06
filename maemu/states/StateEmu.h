@@ -28,7 +28,7 @@ namespace app
 	class StateEmu : public ion::gamekit::State
 	{
 	public:
-		StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window);
+		StateEmu(ion::gamekit::StateManager& stateManager, ion::io::ResourceManager& resourceManager, ion::render::Window& window, const std::string& romFilename);
 
 		virtual void OnEnterState();
 		virtual void OnLeaveState();
@@ -83,6 +83,9 @@ namespace app
 #if defined ION_RENDERER_SHADER
 		ion::io::ResourceHandle<ion::render::Shader> m_shaderFlatTextured;
 #endif
+
+		//ROM to load
+		std::string m_romFilename;
 
 		//The machine
 		emu::MasterSystem m_masterSystem;
